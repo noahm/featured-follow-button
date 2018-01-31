@@ -14,11 +14,18 @@ main {
 }
 
 .lower-third {
-  transform: scale(1.5);
   transform-origin: top right;
   position: absolute;
   right: 4rem;
   top: calc(100vh - 10rem);
+}
+
+svg  {
+  fill: currentColor;
+  vertical-align: text-top;
+  margin-right: 0.3em;
+  height: 1.2em;
+  width: 1.2em;
 }
 
 .button {
@@ -31,8 +38,8 @@ main {
   align-items: center;
   justify-content: center;
   outline: none;
-  font-size: 1.2rem;
-  line-height: 2rem;
+  font-size: 1em;
+  line-height: 2em;
   text-decoration: none;
   white-space: nowrap;
   vertical-align: middle;

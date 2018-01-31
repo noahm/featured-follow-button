@@ -37,7 +37,10 @@ export default class App extends Component {
 						<div className="animationSlide">
 							<button disabled={this.state.followUiOpen} className="button" onClick={this.onFollowClick}>
 								<span className="buttonText">
-									&lt;3 Follow {getUsername(channelName, displayName)}
+									<svg width="16px" height="16px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
+										<path clipRule="evenodd" d="M8,14L1,7V4l2-2h3l2,2l2-2h3l2,2v3L8,14z" fillRule="evenodd" />
+									</svg>
+									Follow {displayName || channelName}
 								</span>
 							</button>
 						</div>

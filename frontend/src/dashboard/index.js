@@ -15,6 +15,7 @@ export default class App extends Component {
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
 			Twitch.ext.onAuthorized((auth) => {
 				this.setState({ auth });
+				Twitch.ext.listen('broadcast', this.onExtensionBroadcast);
 			});
 		}
 	}
@@ -29,11 +30,30 @@ export default class App extends Component {
 				<Status
 					channelName={this.state.channelName}
 					displayName={this.state.displayName}
+				/>
+				<ChannelQueue
+					channelName={this.state.channelName}
+					onChange={this.updateChannel}
 					onClear={this.clearChannel}
 				/>
-				<ChannelQueue onChange={this.updateChannel} />
 			</div>
 		);
+	}
+
+	onExtensionBroadcast = (target, contentType, message) => {
+		try {
+			const decodedMessage = JSON.parse(message);
+			if (decodedMessage && (
+				decodedMessage.channelName !== this.state.channelName
+				|| decodedMessage.displayName !== this.state.displayName
+			)
+			) {
+				this.setState({
+					channelName: decodedMessage.channelName,
+					displayName: decodedMessage.displayName,
+				});
+			}
+		} catch (_) { }
 	}
 
 	updateChannel = (channelName = '', displayName = '') => {

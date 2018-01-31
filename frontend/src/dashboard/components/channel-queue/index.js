@@ -9,7 +9,7 @@ export class ChannelQueue extends Component {
         queue: [],
     };
 
-    render(props, { nextIndex, queue }) {
+    render({ channelName, onClear }, { nextIndex, queue }) {
         let nextChannel = null;
         if (queue.length && queue[nextIndex]) {
             nextChannel = queue[nextIndex];
@@ -18,6 +18,7 @@ export class ChannelQueue extends Component {
             <div className={style.ChannelQueue}>
                 <ChannelInput onAdd={this.addChannel} onActivate={this.props.onChange} />
                 <div className={style.ChannelList}>
+                    {!!channelName && <button onClick={onClear}>Clear current</button>}
                     <button disabled={!nextChannel} onClick={this.onCueNext}>Cue next</button>
                     {nextChannel && <span> => {getUsername(nextChannel.channelName, nextChannel.displayName)}</span>}
                     <ol>
