@@ -1,0 +1,136 @@
+body {
+  margin: 0;
+}
+
+html {
+  font-size: 62.5%;
+  text-size-adjust: 100%;
+}
+
+main {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.lower-third {
+  transform: scale(1.5);
+  transform-origin: top right;
+  position: absolute;
+  right: 4rem;
+  top: calc(100vh - 10rem);
+}
+
+.button {
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: #6441a4;
+  color: #fff;
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  font-size: 1.2rem;
+  line-height: 2rem;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+
+  /* position: absolute;
+  bottom: 60px;
+  right: 20px;
+  font-size: 1rem;
+  padding: 0.4rem 0.8rem; */
+}
+.buttonText {
+  position: relative;
+  flex-grow: 1;
+  padding: 0.4rem 0.8rem;
+  text-align: center;
+}
+.button:hover {
+  border-color: #7d5bbe;
+  background: #7d5bbe;
+  color: #fff;
+}
+.button:focus {
+  border-color: #9a7fcc;
+  background: #7d5bbe;
+  color: #fff;
+  box-shadow: 0 0 6px 0 #7d5bbe;
+}
+.button:active {
+  border-color: #7d5bbe;
+  background: #6441a4;
+  color: #fff;
+  box-shadow: 0 0 6px 0 #7d5bbe;
+}
+
+.animation {
+  overflow: hidden;
+  height: 100%;
+}
+.animationSlide {
+  transform: translate3d(0, 100%, 0);
+  transform-style: preserve-3d;
+  position: relative;
+}
+.animationSlide::after {
+  content: "";
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #3C2065;
+  transform: translate3d(0, 0, 0);
+}
+.animationHide {
+  animation-name: animation--hide;
+  animation-timing-function: ease;
+  animation-duration: 0.8s;
+  animation-fill-mode: forwards;
+}
+
+.animationShow .animationSlide::after {
+  position: absolute;
+  animation-name: animation--block-slide;
+  animation-timing-function: ease;
+  animation-duration: 0.8s;
+  animation-fill-mode: forwards;
+}
+.animationShow .animationSlide {
+  animation-name: animation--slide;
+  animation-timing-function: ease;
+  animation-duration: 0.8s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes animation--slide {
+  0% {
+    transform: translate3d(0, 100%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes animation--block-slide {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, -100%, 0);
+  }
+}
+@keyframes animation--hide {
+  0% {
+    max-height: 5rem;
+  }
+  100% {
+    max-height: 0;
+  }
+}
