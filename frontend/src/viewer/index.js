@@ -8,24 +8,15 @@ export default class App extends Component {
 		animateOut: false,
 		channelName: '',
 		displayName: '',
+		followUiOpen: false,
 	};
 
 	componentWillMount() {
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
 			Twitch.ext.onAuthorized((auth) => {
 				this.setState({ auth });
-				Twitch.ext.listen('broadcast', (target, contentType, message) => {
-					try {
-						const decodedMessage = JSON.parse(message);
-						if (decodedMessage && (
-								decodedMessage.channelName !== this.state.channelName
-								|| decodedMessage.displayName !== this.state.displayName
-							)
-						) {
-							this.updateChannel(decodedMessage);
-						}
-					} catch (_) {}
-				});
+				Twitch.ext.listen('broadcast', this.onExtensionBroadcast);
+				Twitch.ext.actions.onFollow(this.onFollowUiClosed);
 			});
 		}
 	}
@@ -44,7 +35,7 @@ export default class App extends Component {
 				<div className="lower-third">
 					<div className={'animation animationShow ' + (animateOut ? 'animationHide' : '')}>
 						<div className="animationSlide">
-							<button className="button">
+							<button disabled={this.state.followUiOpen} className="button" onClick={this.onFollowClick}>
 								<span className="buttonText">
 									&lt;3 Follow {getUsername(channelName, displayName)}
 								</span>
@@ -54,6 +45,19 @@ export default class App extends Component {
 				</div>
 			</main>
 		);
+	}
+
+	onExtensionBroadcast = (target, contentType, message) => {
+		try {
+			const decodedMessage = JSON.parse(message);
+			if (decodedMessage && (
+				decodedMessage.channelName !== this.state.channelName
+				|| decodedMessage.displayName !== this.state.displayName
+			)
+			) {
+				this.updateChannel(decodedMessage);
+			}
+		} catch (_) { }
 	}
 
 	updateChannel(channel) {
@@ -68,5 +72,21 @@ export default class App extends Component {
 				displayName: channel.displayName,
 			});
 		}
+	}
+
+	onFollowClick = () => {
+		if (!this.state.channelName) {
+			return;
+		}
+		Twitch.ext.actions.followChannel(this.state.channelName);
+		this.setState({
+			followUiOpen: true,
+		});
+	}
+
+	onFollowUiClosed = () => {
+		this.setState({
+			followUiOpen: false,
+		});
 	}
 }
