@@ -21,32 +21,40 @@ export default class App extends Component {
 		}
 	}
 
-	render(_, { animateOut, channelName, displayName }) {
+	render() {
 		if (!this.state.auth) {
-			return null;
-		}
-
-		if (!channelName && !animateOut) {
 			return null;
 		}
 
 		return (
 			<main>
 				<div className="lower-third">
-					<div className={'animation animationShow ' + (animateOut ? 'animationHide' : '')}>
-						<div className="animationSlide">
-							<button disabled={this.state.followUiOpen} className="button" onClick={this.onFollowClick}>
-								<span className="buttonText">
-									<svg width="16px" height="16px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
-										<path clipRule="evenodd" d="M8,14L1,7V4l2-2h3l2,2l2-2h3l2,2v3L8,14z" fillRule="evenodd" />
-									</svg>
-									Follow {displayName || channelName}
-								</span>
-							</button>
-						</div>
-					</div>
+					{this.renderButton()}
 				</div>
 			</main>
+		);
+	}
+
+	renderButton() {
+		const { animateOut, channelName, displayName } = this.state;
+
+		if (!channelName || !animateOut) {
+			return null;
+		}
+
+		return (
+			<div key={channelName} onAnimationEnd={this.animationEnded} className={'animation animationShow ' + (animateOut ? 'animationHide' : '')}>
+				<div className="animationSlide">
+					<button disabled={this.state.followUiOpen} className="button" onClick={this.onFollowClick}>
+						<span className="buttonText">
+							<svg width="16px" height="16px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
+								<path clipRule="evenodd" d="M8,14L1,7V4l2-2h3l2,2l2-2h3l2,2v3L8,14z" fillRule="evenodd" />
+							</svg>
+							Follow {displayName || channelName}
+						</span>
+					</button>
+				</div>
+			</div>
 		);
 	}
 
@@ -54,13 +62,27 @@ export default class App extends Component {
 		try {
 			const decodedMessage = JSON.parse(message);
 			if (decodedMessage && (
-				decodedMessage.channelName !== this.state.channelName
-				|| decodedMessage.displayName !== this.state.displayName
-			)
-			) {
+				// update if this gives us any channel while not displaying
+				(decodedMessage.channelName && this.state.animateOut)
+				// or update if the values are changing while displaying
+				|| !this.state.animateOut && (
+					decodedMessage.channelName !== this.state.channelName
+					|| decodedMessage.displayName !== this.state.displayName
+				)
+				
+			)) {
 				this.updateChannel(decodedMessage);
 			}
 		} catch (_) { }
+	}
+
+	animationEnded = () => {
+		if (this.state.animateOut) {
+			this.setState({
+				channelName: '',
+				displayName: '',
+			});
+		}
 	}
 
 	updateChannel(channel) {
