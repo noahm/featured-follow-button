@@ -3,7 +3,7 @@ import './style';
 import { Component } from 'preact';
 import { getUsername } from '../utils';
 
-export default class App extends Component {
+class App extends Component {
 	state = {
 		animateOut: false,
 		channelName: '',
@@ -115,3 +115,7 @@ export default class App extends Component {
 		});
 	}
 }
+
+const appNode = document.createElement('div');
+document.body.appendChild(appNode);
+render(<App />, appNode);

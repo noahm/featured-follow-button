@@ -1,10 +1,10 @@
 import '../common-styles';
 import './style';
-import { Component } from 'preact';
+import { Component, render } from 'preact';
 import { Status } from './components/status';
 import { ChannelQueue } from './components/channel-queue';
 
-export default class App extends Component {
+class App extends Component {
 	state = {
 		auth: null,
 		channelName: '',
@@ -68,7 +68,7 @@ export default class App extends Component {
 				'Content-Type': 'application/json',
 				'X-Extension-JWT': this.state.auth.token,
 			},
-		}).catch(function (e) {
+		}).catch((e) => {
 		});
 	}
 
@@ -76,3 +76,7 @@ export default class App extends Component {
 		this.updateChannel();
 	}
 }
+
+const appNode = document.createElement('div');
+document.body.appendChild(appNode);
+render(<App />, appNode);
