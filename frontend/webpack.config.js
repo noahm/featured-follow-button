@@ -29,9 +29,9 @@ module.exports = function(env = {}, argv = {}) {
     devtool: isProd ? false : 'cheap-module-eval-source-map',
     devServer: !serve ? undefined : {
       contentBase: './dist',
-      port: 9000,
     },
     entry: {
+      config: './src/config/index.jsx',
       dashboard: './src/dashboard/index.jsx',
       viewer: './src/viewer/index.jsx',
     },
@@ -115,6 +115,12 @@ module.exports = function(env = {}, argv = {}) {
         filename: 'viewer.html',
         template: './src/template.html',
         chunks: ['viewer'],
+      }),
+      new HtmlWebpackPlugin({
+        title: `${pkg.description} - Config`,
+        filename: 'config.html',
+        template: './src/template.html',
+        chunks: ['config'],
       }),
     ],
   };
