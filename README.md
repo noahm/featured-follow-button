@@ -33,3 +33,4 @@ npm run build
 ```
 
 Zip up the contents of `frontend/dist` and submit to twitch.
+Tag with the version once released. `git tag v1.0.0 && git push --tags`
