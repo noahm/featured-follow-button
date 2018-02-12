@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Featured Follow Button",
   "scripts": {
-    "start": "webpack",
+    "start": "webpack-dev-server",
+    "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -25,6 +26,7 @@
     "postcss-loader": "^2.1.0",
     "preact": "^8.2.7",
     "style-loader": "^0.20.1",
-    "webpack": "^3.11.0"
+    "webpack": "^3.11.0",
+    "webpack-dev-server": "^2.11.1"
   }
 }

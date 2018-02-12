@@ -22,13 +22,18 @@ readJson.cache = {};
 
 module.exports = function(env = {}, argv = {}) {
   const isProd = false;
+  const serve = true;
   const pkg = readJson(resolve(__dirname, './package.json')) || {};
 
   return {
     devtool: isProd ? false : 'cheap-module-eval-source-map',
+    devServer: !serve ? undefined : {
+      contentBase: './dist',
+      port: 9000,
+    },
     entry: {
       dashboard: './src/dashboard/index.jsx',
-      viewer: './src/viewer/index.js',
+      viewer: './src/viewer/index.jsx',
     },
     output: {
       filename: '[name].bundle.js',

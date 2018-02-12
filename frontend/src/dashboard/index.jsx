@@ -22,7 +22,7 @@ class App extends Component {
 
 	render() {
 		if (!this.state.auth) {
-			return <div>waiting for auth from twitch...</div>;
+			return <div>waiting for twitch...</div>;
 		}
 
 		return (
