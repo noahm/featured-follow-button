@@ -1,16 +1,15 @@
 {
-  "author": "Twitch Interactive, Inc.",
+  "name": "featured-follow-button-backend",
+  "version": "1.0.0",
+  "description": "Featured Follow Button",
+  "author": "Noah Manneschmidt",
+  "license": "MIT",
   "dependencies": {
     "@google-cloud/datastore": "^1.3.4",
     "body-parser": "^1.18.2",
     "express": "^4.15.4",
     "jsonwebtoken": "^8.1.0"
   },
-  "description": "Provides a simple starting point to create and locally develop your Twitch extension.",
-  "license": "Apache-2.0",
-  "main": "boilerplate.js",
-  "name": "twitch-extension-boilerplate",
-  "version": "1.0.0",
   "scripts": {
     "start": "node ./index.js"
   }
