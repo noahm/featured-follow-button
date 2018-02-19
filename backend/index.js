@@ -136,8 +136,8 @@ function broadcastStateForChannel(channelID) {
     },
   };
   const responseHandler = (res) => {
-    console.log('=== BROADCAST RESPONSE ===');
-    console.log(`STATUS: ${JSON.stringify(res.statusCode)}`);
+    // console.log('=== BROADCAST RESPONSE ===');
+    // console.log(`STATUS: ${JSON.stringify(res.statusCode)}`);
     // console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
     // res.setEncoding('utf8');
     // res.on('data', (chunk) => {
@@ -150,7 +150,7 @@ function broadcastStateForChannel(channelID) {
       }
     }
   };
-  const req = https.request(options);
+  const req = https.request(options, responseHandler);
   req.on('error', (err) => {
     console.error('problem broadcasting state', { channelID, err });
   });
