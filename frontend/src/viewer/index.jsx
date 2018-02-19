@@ -5,6 +5,7 @@ import { getUsername } from '../utils';
 
 class App extends Component {
 	state = {
+		auth: null,
 		animateOut: false,
 		channelName: '',
 		displayName: '',

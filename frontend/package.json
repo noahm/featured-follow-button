@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Featured Follow Button",
   "scripts": {
-    "start": "webpack-dev-server",
+    "start": "webpack-dev-server --env.dev=true",
     "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,6 +1,7 @@
 import '../common-styles';
 import './style';
 import { Component, render } from 'preact';
+import { backendHost } from '../utils';
 import { Status } from './components/status';
 import { ChannelQueue } from './components/channel-queue';
 
@@ -58,7 +59,8 @@ class App extends Component {
 
 	updateChannel = (channelName = '', displayName = '') => {
 		this.setState({ channelName, displayName });
-		fetch('https://follow-btn.manneschmidt.net:4430/followButton/' + this.state.auth.channelId, {
+		const currentChannel = this.state.auth ? this.state.auth.channelId : 0;
+		fetch(backendHost + '/followButton/' + currentChannel, {
 			method: 'POST',
 			body: JSON.stringify({
 				channelName,
@@ -66,9 +68,9 @@ class App extends Component {
 			}),
 			headers: {
 				'Content-Type': 'application/json',
-				'X-Extension-JWT': this.state.auth.token,
+				'X-Extension-JWT': this.state.auth ? this.state.auth.token : '',
 			},
-		}).catch((e) => {
+		}).catch(() => {
 		});
 	}
 

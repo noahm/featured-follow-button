@@ -21,8 +21,8 @@ function readJson(file) {
 readJson.cache = {};
 
 module.exports = function(env = {}, argv = {}) {
-  const isProd = false;
-  const serve = true;
+  const isProd = !env.dev;
+  const serve = !!env.dev;
   const pkg = readJson(resolve(__dirname, './package.json')) || {};
 
   return {
