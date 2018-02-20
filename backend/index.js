@@ -62,7 +62,7 @@ if (datastore) {
   datastore.runQuery(query).then(results => {
     const channels = results[0];
     channels.forEach(channel => {
-      channelStates.set(channel[datastore.KEY].name, channel);
+      channelStates.set(channel[datastore.KEY].name, channel.liveButton);
     });
     console.log(`Restored state for ${channels.length} channels from google`);
   });
