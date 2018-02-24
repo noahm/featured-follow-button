@@ -43,17 +43,13 @@ app.use((req, res, next) => {
   return next();
 });
 
-// app.use(express.static('../frontend/dist'));
-
 const initialState = {
   channelName: false,
   displayName: '',
 };
 
-const channelStates = new Map();
-function reportStatus() {
-  console.log('Current channels with active buttons:', channelStates.keys());
-}
+// Record<channelID: string, ChannelData.liveButton>
+const channelStates = {};
 
 // Optionally restore state from google
 if (datastore) {
@@ -62,18 +58,18 @@ if (datastore) {
   datastore.runQuery(query).then(results => {
     const channels = results[0];
     channels.forEach(channel => {
-      channelStates.set(channel[datastore.KEY].name, channel.liveButton);
+      channelStates[channel[datastore.KEY].name] = channel.liveButton;
     });
     console.log(`Restored state for ${channels.length} channels from google`);
   });
 }
 
 function getStateForChannel(channelID) {
-  return channelStates.get(channelID) || initialState;
+  return channelStates[channelID] || initialState;
 }
 
 function setStateForChannel(channelID, newState) {
-  channelStates.set(channelID, newState);
+  channelStates[channelID] = newState;
   if (datastore) {
     datastore.save(buildEntityForGoogle(channelID, newState)).then(() => {
       console.log('Saved channel to google:', channelID);
@@ -81,11 +77,13 @@ function setStateForChannel(channelID, newState) {
       console.error('Google cloud error:', err);
     });
   }
-  reportStatus();
 }
 
 function clearStateForChannel(channelID) {
-  channelStates.delete(channelID);
+  if (channelStates[channelID]) {
+    return;
+  }
+  delete channelStates[channelID];
   if (datastore) {
     datastore.delete(datastore.key([entityKind, channelID])).then(() => {
       console.log('Cleared entity from google:', channelID)
@@ -93,18 +91,9 @@ function clearStateForChannel(channelID) {
       console.error('Google cloud error:', err);
     });
   }
-  reportStatus();
 }
 
-function updateState(channelID, newState) {
-  setStateForChannel(channelID, newState);
-//  if (!channelStates.has(channelID)) {
-    // only broadcast state immediately if it was a delete operation
-    // updates will be handled naturally by the periodic broadcast
-//    broadcastStateForChannel(channelID);
-//  }
-}
-
+const extensionSecret = Buffer.from(config.twitch.extensionSecret, 'base64');
 function broadcastStateForChannel(channelID) {
   const token = {
     exp: Date.now() + 1000,
@@ -123,39 +112,35 @@ function broadcastStateForChannel(channelID) {
     message: JSON.stringify(channelState),
     targets: ['broadcast'],
   });
-  const signedToken = jwt.sign(token, new Buffer(config.twitch.extensionSecret, 'base64'));
-  const options = {
-    hostname: 'api.twitch.tv',
-    path: '/extensions/message/' + channelID,
-    method: 'POST',
-    headers: {
-      'Client-Id': config.twitch.clientID,
-      'Authorization': 'Bearer ' + signedToken,
-      'Content-Type': 'application/json',
-      'Content-Length': body.length,
-    },
-  };
-  const responseHandler = (res) => {
-    // console.log('=== BROADCAST RESPONSE ===');
-    // console.log(`STATUS: ${JSON.stringify(res.statusCode)}`);
-    // console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
-    // res.setEncoding('utf8');
-    // res.on('data', (chunk) => {
-    // });
-    // res.on('end', () => {
-    // });
-    if (res.statusCode < 300) {
-      if (!channelState.channelName) {
-        clearStateForChannel(channelID);
+  const signedToken = jwt.sign(token, extensionSecret);
+
+  return new Promise((resolve) => {
+    const req = https.request({
+      hostname: 'api.twitch.tv',
+      path: '/extensions/message/' + channelID,
+      method: 'POST',
+      headers: {
+        'Client-Id': config.twitch.clientID,
+        'Authorization': 'Bearer ' + signedToken,
+        'Content-Type': 'application/json',
+        'Content-Length': body.length,
+      },
+      timeout: 1000,
+    }, (res) => {
+      if (res.statusCode < 300) {
+        if (!channelState.channelName) {
+          clearStateForChannel(channelID);
+        }
       }
-    }
-  };
-  const req = https.request(options, responseHandler);
-  req.on('error', (err) => {
-    console.error('problem broadcasting state', { channelID, err });
+      resolve();
+    });
+    req.on('error', (err) => {
+      console.error('problem broadcasting state', { channelID, err });
+      resolve();
+    });
+    req.write(body);
+    req.end();
   });
-  req.write(body);
-  req.end();
 }
 
 app.post('/followButton/:channelID', (req, res) => {
@@ -174,8 +159,10 @@ app.post('/followButton/:channelID', (req, res) => {
     }
   }
 
+  // TODO add validation to fields available in `req.body` and return 400 if appropriate
+
   res.status(200).end();
-  updateState(req.params.channelID, req.body);
+  setStateForChannel(req.params.channelID, req.body);
 });
 
 
@@ -195,8 +182,13 @@ if (config.ssl) {
 }
 
 // enable periodic state broadcast to all clients
-setInterval(() => {
-  for (const channelID of channelStates.keys()) {
-    broadcastStateForChannel(channelID);
-  }
-}, 1000);
+function broadcastToAll() {
+  console.time('broadcastToAll');
+  Promise.all(
+    Object.keys(channelStates).map((channelID) => broadcastStateForChannel(channelID))
+  ).then(() => {
+    console.timeEnd('broadcastToAll');
+    setTimeout(broadcastToAll, 1000);
+  });
+}
+setTimeout(broadcastToAll, 1000);

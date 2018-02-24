@@ -11,6 +11,6 @@
     "jsonwebtoken": "^8.1.0"
   },
   "scripts": {
-    "start": "node ./index.js"
+    "start": "node --max_old_space_size=400 ./index.js"
   }
 }
