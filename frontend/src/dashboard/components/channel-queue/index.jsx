@@ -1,4 +1,4 @@
-import style from './style';
+import styles from './style';
 import { Component } from 'preact';
 import { getUsername } from '../../../utils';
 import { ChannelInput } from '../channel-input';
@@ -15,17 +15,17 @@ export class ChannelQueue extends Component {
             nextChannel = queue[nextIndex];
         }
         return (
-            <div className={style.ChannelQueue}>
+            <div>
                 <ChannelInput onAdd={this.addChannel} onActivate={this.props.onChange} />
-                <div className={style.ChannelList}>
+                <div className={styles.channelList}>
                     {!!channelName && <button onClick={onClear}>Clear current</button>}
                     <button disabled={!nextChannel} onClick={this.onCueNext}>Cue next</button>
-                    {nextChannel && <span> => {getUsername(nextChannel.channelName, nextChannel.displayName)}</span>}
+                    {nextChannel && <span> {getUsername(nextChannel.channelName, nextChannel.displayName)}</span>}
                     <ol>
                         {queue.map((queuedChannel, i) => (
-                            <li key={i}>
+                            <li className={styles.queuedChannel} key={i}>
                                 {getUsername(queuedChannel.channelName, queuedChannel.displayName)}
-                                <div data-channel-index={i}>
+                                <div className={styles.queueItemActions} data-channel-index={i}>
                                     <button onClick={this.onCueClick}>Display</button>
                                     <button onClick={this.onDeleteClick}>Remove</button>
                                 </div>

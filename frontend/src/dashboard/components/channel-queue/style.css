@@ -1,8 +1,12 @@
-.ChannelQueue {
-
-}
-
-.ChannelList {
+.channelList {
     margin-top: 0.5rem;
     /* border-top: 1px solid grey; */
+}
+
+.queuedChannel {
+    margin: 0.5em 0;
+}
+
+.queueItemActions {
+    margin-top: 0.2em;
 }
