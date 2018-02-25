@@ -80,7 +80,7 @@ function setStateForChannel(channelID, newState) {
 }
 
 function clearStateForChannel(channelID) {
-  if (channelStates[channelID]) {
+  if (!channelStates[channelID]) {
     return;
   }
   delete channelStates[channelID];
