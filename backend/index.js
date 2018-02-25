@@ -122,8 +122,8 @@ function broadcastStateForChannel(channelID) {
       headers: {
         'Client-Id': config.twitch.clientID,
         'Authorization': 'Bearer ' + signedToken,
-        'Content-Type': 'application/json',
-        'Content-Length': body.length,
+        'Content-Type': 'application/json; charset=utf-8',
+        'Content-Length': Buffer.byteLength(body, 'utf8'),
       },
       timeout: 1000,
     }, (res) => {
@@ -138,7 +138,7 @@ function broadcastStateForChannel(channelID) {
       console.error('problem broadcasting state', { channelID, err });
       resolve();
     });
-    req.write(body);
+    req.write(body, 'utf8');
     req.end();
   });
 }
