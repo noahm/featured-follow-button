@@ -1,5 +1,6 @@
 import styles from './style';
 import { Component } from 'preact';
+import { twitchClientID } from '../../../utils';
 
 const LOGIN_REGEX = /^[a-zA-Z0-9]\w{0,23}$/;
 const remoteCheckCache = {};
@@ -151,7 +152,7 @@ export class ChannelInput extends Component {
       });
       const remoteCheck = fetch('https://api.twitch.tv/helix/users?login='+channelName, {
         headers: {
-          'Client-ID': 'ecn1xrhilrx2wzw8gey8nhcna06vsb',
+          'Client-ID': twitchClientID,
         },
       })
       .then(r => r.json())
