@@ -5,11 +5,14 @@ import { backendHost } from '../utils';
 import { Status } from './components/status';
 import { ChannelQueue } from './components/channel-queue';
 
+const ERROR_DISPLAY_PERIOD = 15000;
+
 class App extends Component {
 	state = {
 		auth: null,
 		channelName: '',
 		displayName: '',
+		requestErrored: false,
 	};
 
 	componentWillMount() {
@@ -31,6 +34,7 @@ class App extends Component {
 				<Status
 					channelName={this.state.channelName}
 					displayName={this.state.displayName}
+					isErrored={this.state.requestErrored}
 				/>
 				<ChannelQueue
 					channelName={this.state.channelName}
@@ -70,8 +74,24 @@ class App extends Component {
 				'Content-Type': 'application/json',
 				'X-Extension-JWT': this.state.auth ? this.state.auth.token : '',
 			},
+		}).then(() => {
+			this.clearErrorState();
 		}).catch(() => {
+			if (!this.state.requestErrored) {
+				this.setState({
+					requestErrored: true,
+				}, () => {
+					// clear error state after some time
+					setTimeout(this.clearErrorState, ERROR_DISPLAY_PERIOD);
+				});
+			}
 		});
+	}
+
+	clearErrorState = () => {
+		if (this.state.requestErrored) {
+			this.setState({ requestErrored: false });
+		}
 	}
 
 	clearChannel = () => {

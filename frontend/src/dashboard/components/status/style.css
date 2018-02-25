@@ -1,3 +1,7 @@
 .Status {
     margin-bottom: 1rem;
 }
+
+.error {
+    color: orangered;
+}
