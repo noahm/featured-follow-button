@@ -18,7 +18,7 @@ button {
 button:hover {
   background-color: rgb(126, 86, 165);
 }
-button:disabled {
+button:disabled, input:disabled {
   opacity: 0.6;
   cursor: default;
 }

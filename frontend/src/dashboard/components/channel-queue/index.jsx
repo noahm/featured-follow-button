@@ -26,8 +26,8 @@ export class ChannelQueue extends Component {
                             <li key={i}>
                                 {getUsername(queuedChannel.channelName, queuedChannel.displayName)}
                                 <div data-channel-index={i}>
-                                    <button onClick={this.onCueClick}>Activate</button>
-                                    <button onClick={this.onDeleteClick}>Delete</button>
+                                    <button onClick={this.onCueClick}>Display</button>
+                                    <button onClick={this.onDeleteClick}>Remove</button>
                                 </div>
                             </li>
                         ))}
