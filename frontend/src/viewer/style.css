@@ -13,7 +13,7 @@ main {
   overflow: hidden;
 }
 
-.lower-third {
+.lowerThird {
   transform-origin: top right;
   position: absolute;
   right: 4rem;

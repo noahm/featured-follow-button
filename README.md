@@ -8,7 +8,6 @@ https://www.twitch.tv/ext/ih4ptg04wzw6nf4qms0612b8uj0tbh
 This repo currently only contains the code for the front-end components.
 
 ### Build config TODO
- * !! Add HTTPS to dev server
  * Automate zip for submission
 
 ## Frontend

@@ -1,12 +1,16 @@
 import '../common-styles';
-import './style';
-import { Component } from 'preact';
+import classNames from 'classnames';
+import styles from './style';
+import { Component, render } from 'preact';
 import { getUsername } from '../utils';
+
+const knownFollows = new Set();
 
 class App extends Component {
 	state = {
 		auth: null,
 		animateOut: false,
+		buttonHidden: false,
 		channelName: '',
 		displayName: '',
 		followUiOpen: false,
@@ -29,7 +33,7 @@ class App extends Component {
 
 		return (
 			<main>
-				<div className="lower-third">
+				<div className={styles.lowerThird}>
 					{this.renderButton()}
 				</div>
 			</main>
@@ -37,17 +41,17 @@ class App extends Component {
 	}
 
 	renderButton() {
-		const { animateOut, channelName, displayName } = this.state;
+		const { animateOut, buttonHidden, channelName, displayName } = this.state;
 
-		if (!channelName || !animateOut) {
+		if (!channelName || buttonHidden) {
 			return null;
 		}
 
 		return (
-			<div key={channelName} onAnimationEnd={this.animationEnded} className={'animation animationShow ' + (animateOut ? 'animationHide' : '')}>
-				<div className="animationSlide">
-					<button disabled={this.state.followUiOpen} className="button" onClick={this.onFollowClick}>
-						<span className="buttonText">
+			<div key={channelName} onAnimationEnd={this.animationEnded} className={classNames(styles.animation, styles.animationShow, { [styles.animationHide]: animateOut })}>
+				<div className={styles.animationSlide}>
+					<button disabled={this.state.followUiOpen} className={styles.button} onClick={this.onFollowClick}>
+						<span className={styles.buttonText}>
 							<svg width="16px" height="16px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
 								<path clipRule="evenodd" d="M8,14L1,7V4l2-2h3l2,2l2-2h3l2,2v3L8,14z" fillRule="evenodd" />
 							</svg>
@@ -80,22 +84,27 @@ class App extends Component {
 	animationEnded = () => {
 		if (this.state.animateOut) {
 			this.setState({
-				channelName: '',
-				displayName: '',
+				buttonHidden: true,
 			});
 		}
 	}
 
-	updateChannel(channel) {
-		if (this.state.channelName && !channel.channelName && !this.state.animateOut) {
+	updateChannel(newState) {
+		if (this.state.channelName && !newState.channelName && !this.state.animateOut) {
 			this.setState({
 				animateOut: true,
 			});
-		} else {
+		} else if (
+			(
+				this.state.channelName !== newState.channelName
+				|| this.state.displayName !== newState.displayName
+			) && !knownFollows.has(newState.channelName)
+		) {
 			this.setState({
 				animateOut: false,
-				channelName: channel.channelName,
-				displayName: channel.displayName,
+				buttonHidden: false,
+				channelName: newState.channelName,
+				displayName: newState.displayName,
 			});
 		}
 	}
@@ -110,9 +119,13 @@ class App extends Component {
 		});
 	}
 
-	onFollowUiClosed = () => {
+	onFollowUiClosed = (didFollow, channelName) => {
+		if (didFollow) {
+			knownFollows.add(channelName);
+		}
 		this.setState({
 			followUiOpen: false,
+			animateOut: true,
 		});
 	}
 }

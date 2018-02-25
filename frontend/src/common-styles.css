@@ -6,9 +6,6 @@ body {
 div {
   margin: 0px;
 }
-.hidden {
-  display: none;
-}
 button {
   background-color: rebeccapurple;
   border-radius: 0;
