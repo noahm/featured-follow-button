@@ -16,6 +16,8 @@ const datastore = config.google ? new Datastore({
 }) : null;
 const entityKind = 'Channel';
 
+const BROADCAST_COOLDOWN = 5000;
+
 // shape in google storage
 // interface ChannelData {
 //   liveButton: {
@@ -77,6 +79,7 @@ function setStateForChannel(channelID, newState) {
       console.error('Google cloud error:', err);
     });
   }
+  broadcastStateForChannel(channelID);
 }
 
 function clearStateForChannel(channelID) {
@@ -94,7 +97,7 @@ function clearStateForChannel(channelID) {
 }
 
 const extensionSecret = Buffer.from(config.twitch.extensionSecret, 'base64');
-function broadcastStateForChannel(channelID) {
+function broadcastStateForChannel(channelID, autoClear) {
   const token = {
     exp: Date.now() + 1000,
     channel_id: channelID,
@@ -128,7 +131,7 @@ function broadcastStateForChannel(channelID) {
       timeout: 1000,
     }, (res) => {
       if (res.statusCode < 300) {
-        if (!channelState.channelName) {
+        if (!channelState.channelName && autoClear) {
           clearStateForChannel(channelID);
         }
       }
@@ -185,10 +188,10 @@ if (config.ssl) {
 function broadcastToAll() {
   console.time('broadcastToAll');
   Promise.all(
-    Object.keys(channelStates).map((channelID) => broadcastStateForChannel(channelID))
+    Object.keys(channelStates).map((channelID) => broadcastStateForChannel(channelID, true))
   ).then(() => {
     console.timeEnd('broadcastToAll');
-    setTimeout(broadcastToAll, 1000);
+    setTimeout(broadcastToAll, BROADCAST_COOLDOWN);
   });
 }
-setTimeout(broadcastToAll, 1000);
+setTimeout(broadcastToAll, BROADCAST_COOLDOWN);
