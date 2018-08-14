@@ -2,7 +2,6 @@ import '../common-styles';
 import classNames from 'classnames';
 import styles from './style';
 import { Component, render } from 'preact';
-import { getUsername } from '../utils';
 
 const knownFollows = new Set();
 

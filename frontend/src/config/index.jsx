@@ -1,11 +1,12 @@
-import '../common-styles';
+import '../common-styles.css';
+import { applyThemeClass } from '../common-styles';
 import { Component, render } from 'preact';
 
 class App extends Component {
 	render() {
 		return (
 			<div style={{ maxWidth: '37em' }}>
-				<h1>No configuration required!</h1>
+				<h2>No configuration required!</h2>
 				<p>
 					Go to your live dashboard to control follow buttons in real-time.
 					Queue up buttons for known channels to be able to quickly display
@@ -23,3 +24,4 @@ class App extends Component {
 const appNode = document.createElement('div');
 document.body.appendChild(appNode);
 render(<App />, appNode);
+applyThemeClass();

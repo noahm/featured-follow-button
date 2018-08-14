@@ -1,5 +1,6 @@
-import '../common-styles';
+import '../common-styles.css';
 import './style';
+import { applyThemeClass } from '../common-styles';
 import { Component, render } from 'preact';
 import { backendHost } from '../utils';
 import { Status } from './components/status';
@@ -102,3 +103,4 @@ class App extends Component {
 const appNode = document.createElement('div');
 document.body.appendChild(appNode);
 render(<App />, appNode);
+applyThemeClass();
