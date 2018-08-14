@@ -4,7 +4,7 @@ const { readFileSync } = require('fs');
 const autoprefixer = require('autoprefixer');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 function readJson(file) {
   if (file in readJson.cache) {
@@ -26,6 +26,7 @@ module.exports = function(env = {}, argv = {}) {
   const pkg = readJson(resolve(__dirname, './package.json')) || {};
 
   return {
+    mode: 'none',
     devtool: isProd ? false : 'cheap-module-eval-source-map',
     devServer: !serve ? undefined : {
       contentBase: './dist',
@@ -69,26 +70,24 @@ module.exports = function(env = {}, argv = {}) {
         {
           test: /\.css$/,
           exclude: /node_modules/,
-          loader: ExtractTextPlugin.extract({
-            fallback: 'style-loader',
-            use: [
-              {
-                loader: 'css-loader',
-                options: {
-                  modules: true,
-                  localIdentName: '[local]__[hash:base64:5]',
-                  importLoaders: 1,
-                },
+          use: [
+            isProd ? MiniCssExtractPlugin.loader : 'style-loader',
+            {
+              loader: 'css-loader',
+              options: {
+                modules: true,
+                localIdentName: '[local]__[hash:base64:5]',
+                importLoaders: 1,
               },
-              {
-                loader: 'postcss-loader',
-                options: {
-                  ident: 'postcss',
-                  plugins: [autoprefixer()],
-                },
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                ident: 'postcss',
+                plugins: [autoprefixer()],
               },
-            ],
-          }),
+            },
+          ],
         },
         {
           test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif|mp4|mov|ogg|webm)(\?.*)?$/i,
@@ -101,7 +100,7 @@ module.exports = function(env = {}, argv = {}) {
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': isProd ? 'production' : 'development',
       }),
-      new ExtractTextPlugin({
+      new MiniCssExtractPlugin({
         filename: '[name]-styles.css',
       }),
       new HtmlWebpackPlugin({
