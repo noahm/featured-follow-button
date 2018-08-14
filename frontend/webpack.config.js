@@ -5,6 +5,7 @@ const autoprefixer = require('autoprefixer');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ZipPlugin = require('zip-webpack-plugin');
 
 function readJson(file) {
   if (file in readJson.cache) {
@@ -23,6 +24,7 @@ readJson.cache = {};
 module.exports = function(env = {}, argv = {}) {
   const isProd = !env.dev;
   const serve = !!env.dev;
+  const zip = !!env.zip;
   const pkg = readJson(resolve(__dirname, './package.json')) || {};
 
   return {
@@ -121,6 +123,9 @@ module.exports = function(env = {}, argv = {}) {
         template: './src/template.html',
         chunks: ['config'],
       }),
-    ],
+    ].concat(zip ? [new ZipPlugin({
+      path: '../',
+      filename: `${pkg.name}-${pkg.version}.zip`
+    })] : []),
   };
 };

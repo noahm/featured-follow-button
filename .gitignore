@@ -1,4 +1,5 @@
 node_modules
 /frontend/dist
+/frontend/*.zip
 /backend/config.js
 /backend/gcp-key.json
