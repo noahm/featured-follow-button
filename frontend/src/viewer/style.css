@@ -10,6 +10,13 @@ main {
   overflow: hidden;
 }
 
+.componentMode {
+  transform-origin: top right;
+  position: absolute;
+  right: 0vw;
+  bottom: 0vw;
+}
+
 .lowerThird {
   transform-origin: top right;
   position: absolute;
@@ -42,6 +49,10 @@ svg {
   vertical-align: middle;
   cursor: pointer;
   user-select: none;
+}
+
+.componentMode .button {
+  font-size: 26vh;
 }
 
 .buttonText {

@@ -1,5 +1,6 @@
 import '../common-styles';
 import classNames from 'classnames';
+import { parse } from 'querystringify';
 import styles from './style';
 import { Component, render } from 'preact';
 
@@ -13,9 +14,15 @@ class App extends Component {
 		channelName: '',
 		displayName: '',
 		followUiOpen: false,
+		componentMode: false,
 	};
 
 	componentWillMount() {
+		if (parse(window.location.search).anchor === 'component') {
+			this.setState({
+				componentMode: true,
+			});
+		}
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
 			Twitch.ext.onAuthorized((auth) => {
 				this.setState({ auth });
@@ -32,7 +39,7 @@ class App extends Component {
 
 		return (
 			<main>
-				<div className={styles.lowerThird}>
+				<div className={this.state.componentMode ? styles.componentMode : styles.lowerThird}>
 					{this.renderButton()}
 				</div>
 			</main>
