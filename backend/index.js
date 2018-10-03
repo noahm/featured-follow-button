@@ -11,9 +11,9 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-const datastore = config.google ? new Datastore({
-  keyFilename: path.resolve(config.google.cloudPlatformKeyFile),
-}) : null;
+const datastore = fs.existsSync('gcp-key.json') ? new Datastore({
+  keyFilename: path.resolve('gcp-key.json'),
+}) : new Datastore();
 const entityKind = 'Channel';
 
 const BROADCAST_COOLDOWN = 5000;
@@ -147,7 +147,7 @@ function broadcastStateForChannel(channelID, autoClear) {
 }
 
 app.post('/followButton/:channelID', (req, res) => {
-  if (config.ssl) {
+  if (process.env.NODE_ENV === 'production') {
     try {
       const token = jwt.verify(req.header('x-extension-jwt'), new Buffer(config.twitch.extensionSecret, 'base64'));
       if (!token || token.role !== 'broadcaster' || token.channel_id !== req.params.channelID) {
@@ -168,30 +168,11 @@ app.post('/followButton/:channelID', (req, res) => {
   setStateForChannel(req.params.channelID, req.body);
 });
 
+app.get('/', (req, res) => {
+  res.status(200).send('Go away').end();
+});
 
-if (config.ssl) {
-  const options = {
-    key: fs.readFileSync(config.ssl.key),
-    cert: fs.readFileSync(config.ssl.cert),
-  };
-  https.createServer(options, app).listen(config.port, function () {
-    console.log(`Extension backend service running on https`, config.port);
-  });
-} else {
-  const http = require('http');
-  http.createServer(app).listen(config.port, function() {
-    console.log(`Extension backend service running on http`, config.port);
-  });
-}
-
-// enable periodic state broadcast to all clients
-function broadcastToAll() {
-  console.time('broadcastToAll');
-  Promise.all(
-    Object.keys(channelStates).map((channelID) => broadcastStateForChannel(channelID, true))
-  ).then(() => {
-    console.timeEnd('broadcastToAll');
-    setTimeout(broadcastToAll, BROADCAST_COOLDOWN);
-  });
-}
-setTimeout(broadcastToAll, BROADCAST_COOLDOWN);
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Extension backend service running on http`, PORT);
+});
