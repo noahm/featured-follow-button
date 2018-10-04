@@ -1,6 +1,5 @@
-export const twitchClientID = 'ih4ptg04wzw6nf4qms0612b8uj0tbh';
-export const backendHost = 'https://follow-btn.manneschmidt.net:4430';
-// export const backendHost = 'http://localhost:4430';
+export const backendHost = 'https://lively-nimbus-195718.appspot.com';
+// export const backendHost = 'http://localhost:8080';
 
 export function getUsername(channelName, displayName) {
     if (!channelName) {
@@ -10,4 +9,8 @@ export function getUsername(channelName, displayName) {
         return channelName;
     }
     return displayName + ' (' + channelName + ')';
+}
+
+export function getInitialState(channelID) {
+    return fetch(backendHost + '/state/' + encodeURIComponent(channelID)).then(r => r.json());
 }

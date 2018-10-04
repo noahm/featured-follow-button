@@ -32,6 +32,7 @@ module.exports = function(env = {}, argv = {}) {
     devtool: isProd ? false : 'cheap-module-eval-source-map',
     devServer: !serve ? undefined : {
       contentBase: './dist',
+      port: 8090,
     },
     entry: {
       config: './src/config/index.jsx',

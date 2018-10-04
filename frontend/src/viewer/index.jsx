@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { parse } from 'querystringify';
 import styles from './style';
 import { Component, render } from 'preact';
+import { getInitialState } from '../utils';
 
 const knownFollows = new Set();
 
@@ -17,7 +18,7 @@ class App extends Component {
 		componentMode: false,
 	};
 
-	componentWillMount() {
+	componentDidMount() {
 		if (parse(window.location.search).anchor === 'component') {
 			this.setState({
 				componentMode: true,
@@ -28,6 +29,15 @@ class App extends Component {
 				this.setState({ auth });
 				Twitch.ext.listen('broadcast', this.onExtensionBroadcast);
 				Twitch.ext.actions.onFollow(this.onFollowUiClosed);
+			});
+		}
+	}
+
+	componentWillUpdate(nextProps, nextState) {
+		if (nextState.auth && !this.state.auth) {
+			// TODO: potentially add random jitter here to help buffer F5 storms
+			getInitialState(nextState.auth.channelId).then((state) => {
+				this.updateChannel(state);
 			});
 		}
 	}

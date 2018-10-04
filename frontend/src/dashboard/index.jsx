@@ -2,7 +2,7 @@ import '../common-styles.css';
 import './style';
 import { applyThemeClass } from '../common-styles';
 import { Component, render } from 'preact';
-import { backendHost } from '../utils';
+import { backendHost, getInitialState } from '../utils';
 import { Status } from './components/status';
 import { ChannelQueue } from './components/channel-queue';
 
@@ -16,11 +16,22 @@ class App extends Component {
 		requestErrored: false,
 	};
 
-	componentWillMount() {
+	componentDidMount() {
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
 			Twitch.ext.onAuthorized((auth) => {
 				this.setState({ auth });
 				Twitch.ext.listen('broadcast', this.onExtensionBroadcast);
+			});
+		}
+	}
+
+	componentWillUpdate(nextProps, nextState) {
+		if (nextState.auth && !this.state.auth) {
+			getInitialState(nextState.auth.channelId).then((state) => {
+				this.setState({
+					channelName: state.channelName,
+					displayName: state.displayName,
+				});
 			});
 		}
 	}
@@ -41,6 +52,7 @@ class App extends Component {
 					channelName={this.state.channelName}
 					onChange={this.updateChannel}
 					onClear={this.clearChannel}
+					clientID={this.state.auth && this.state.auth.clientId}
 				/>
 			</div>
 		);
@@ -65,7 +77,7 @@ class App extends Component {
 	updateChannel = (channelName = '', displayName = '') => {
 		this.setState({ channelName, displayName });
 		const currentChannel = this.state.auth ? this.state.auth.channelId : 0;
-		fetch(backendHost + '/followButton/' + currentChannel, {
+		fetch(backendHost + '/state/' + currentChannel, {
 			method: 'POST',
 			body: JSON.stringify({
 				channelName,

@@ -9,14 +9,14 @@ export class ChannelQueue extends Component {
         queue: [],
     };
 
-    render({ channelName, onClear }, { nextIndex, queue }) {
+    render({ channelName, onClear, clientID }, { nextIndex, queue }) {
         let nextChannel = null;
         if (queue.length && queue[nextIndex]) {
             nextChannel = queue[nextIndex];
         }
         return (
             <div>
-                <ChannelInput onAdd={this.addChannel} onActivate={this.props.onChange} />
+                <ChannelInput onAdd={this.addChannel} onActivate={this.props.onChange} clientID={clientID} />
                 <div className={styles.channelList}>
                     {!!channelName && <button onClick={onClear}>Clear current</button>}
                     <button disabled={!nextChannel} onClick={this.onCueNext}>Cue next</button>
