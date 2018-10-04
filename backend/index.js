@@ -14,9 +14,6 @@ const app = express();
 const datastore = fs.existsSync('gcp-key.json') ? new Datastore({
   keyFilename: path.resolve('gcp-key.json'),
 }) : new Datastore();
-const entityKind = 'Channel';
-
-const BROADCAST_COOLDOWN = 5000;
 
 // shape in google storage
 // interface ChannelData {
@@ -26,9 +23,14 @@ const BROADCAST_COOLDOWN = 5000;
 //   };
 // }
 
+const entityKind = 'Channel';
+function keyForChannel(channelID) {
+  return datastore.key([entityKind, channelID]);
+}
+
 function buildEntityForGoogle(channelID, liveButton) {
   return {
-    key: datastore.key([entityKind, channelID]),
+    key: keyForChannel(channelID),
     data: {
       liveButton,
     },
@@ -38,7 +40,6 @@ function buildEntityForGoogle(channelID, liveButton) {
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
-  // console.log('Got request', req.path, req.method);
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-Extension-JWT');
   res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -50,45 +51,43 @@ const initialState = {
   displayName: '',
 };
 
-// Record<channelID: string, ChannelData.liveButton>
-const channelStates = {};
-
-// Optionally restore state from google
-if (datastore) {
-  // query for all channels, add them to channelStates map
-  let query = datastore.createQuery(entityKind);
-  datastore.runQuery(query).then(results => {
-    const channels = results[0];
-    channels.forEach(channel => {
-      channelStates[channel[datastore.KEY].name] = channel.liveButton;
+/**
+ * @param {string} channelID
+ * @return {{ channelName: null | string; displayName: null | string } | null}
+ */
+async function getStateForChannel(channelID) {
+  try {
+    const results = await datastore.get(keyForChannel(channelID));
+    if (results && results[0]) {
+      return results[0].liveButton;
+    } else {
+      return initialState;
+    }
+  } catch (err) {
+    console.warn('Exception during channel state lookup', {
+      channelID,
+      err,
     });
-    console.log(`Restored state for ${channels.length} channels from google`);
-  });
-}
-
-function getStateForChannel(channelID) {
-  return channelStates[channelID] || initialState;
+  }
+  return null;
 }
 
 function setStateForChannel(channelID, newState) {
-  channelStates[channelID] = newState;
-  if (datastore) {
+  if (!newState || !newState.channelName) {
+    clearStateForChannel(channelID);
+  } else {
     datastore.save(buildEntityForGoogle(channelID, newState)).then(() => {
       console.log('Saved channel to google:', channelID);
     }).catch(err => {
       console.error('Google cloud error:', err);
     });
   }
-  broadcastStateForChannel(channelID);
+  broadcastStateForChannel(channelID, newState);
 }
 
 function clearStateForChannel(channelID) {
-  if (!channelStates[channelID]) {
-    return;
-  }
-  delete channelStates[channelID];
   if (datastore) {
-    datastore.delete(datastore.key([entityKind, channelID])).then(() => {
+    datastore.delete(keyForChannel(channelID)).then(() => {
       console.log('Cleared entity from google:', channelID)
     }).catch(err => {
       console.error('Google cloud error:', err);
@@ -97,7 +96,7 @@ function clearStateForChannel(channelID) {
 }
 
 const extensionSecret = Buffer.from(config.twitch.extensionSecret, 'base64');
-function broadcastStateForChannel(channelID, autoClear) {
+function broadcastStateForChannel(channelID, channelState) {
   const token = {
     exp: Date.now() + 1000,
     channel_id: channelID,
@@ -107,8 +106,6 @@ function broadcastStateForChannel(channelID, autoClear) {
     },
     user_id: config.twitch.extensionOwnerID,
   };
-
-  const channelState = getStateForChannel(channelID);
 
   const body = JSON.stringify({
     content_type: 'application/json',
@@ -129,14 +126,7 @@ function broadcastStateForChannel(channelID, autoClear) {
         'Content-Length': Buffer.byteLength(body, 'utf8'),
       },
       timeout: 1000,
-    }, (res) => {
-      if (res.statusCode < 300) {
-        if (!channelState.channelName && autoClear) {
-          clearStateForChannel(channelID);
-        }
-      }
-      resolve();
-    });
+    }, resolve);
     req.on('error', (err) => {
       console.error('problem broadcasting state', { channelID, err });
       resolve();
@@ -146,7 +136,7 @@ function broadcastStateForChannel(channelID, autoClear) {
   });
 }
 
-app.post('/followButton/:channelID', (req, res) => {
+app.post('/state/:channelID', (req, res) => {
   if (process.env.NODE_ENV === 'production') {
     try {
       const token = jwt.verify(req.header('x-extension-jwt'), new Buffer(config.twitch.extensionSecret, 'base64'));
@@ -168,11 +158,19 @@ app.post('/followButton/:channelID', (req, res) => {
   setStateForChannel(req.params.channelID, req.body);
 });
 
+app.get('/state/:channelID', async (req, res) => {
+  const state = await getStateForChannel(req.params.channelID);
+  res.setHeader('Pragma', 'Public');
+  res.setHeader('Cache-Control', 'public, max-age=90');
+  res.status(200).send(state || {});
+  res.end();
+});
+
 app.get('/', (req, res) => {
   res.status(200).send('Go away').end();
 });
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`Extension backend service running on http`, PORT);
+  console.log(`Extension backend service running on`, PORT);
 });

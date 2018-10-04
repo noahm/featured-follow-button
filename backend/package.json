@@ -11,6 +11,7 @@
     "jsonwebtoken": "^8.3.0"
   },
   "scripts": {
-    "start": "node --max_old_space_size=400 ./index.js"
+    "start": "node ./index.js",
+    "start:debug": "node --inspect ./index.js"
   }
 }
