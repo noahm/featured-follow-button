@@ -1,7 +1,8 @@
 import '../common-styles.css';
 import './style';
 import { applyThemeClass } from '../common-styles';
-import { Component, render } from 'preact';
+import { Component } from 'react';
+import { render } from 'react-dom';
 import { backendHost, getInitialState } from '../utils';
 import { Status } from './components/status';
 import { ChannelQueue } from './components/channel-queue';

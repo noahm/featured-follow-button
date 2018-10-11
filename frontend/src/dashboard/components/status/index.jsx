@@ -1,5 +1,5 @@
 import style from './style';
-import { Component } from 'preact';
+import { Component } from 'react';
 import { getUsername } from '../../../utils';
 
 export class Status extends Component {

@@ -2,7 +2,8 @@ import '../common-styles';
 import classNames from 'classnames';
 import { parse } from 'querystringify';
 import styles from './style';
-import { Component, render } from 'preact';
+import { Component } from 'react';
+import { render } from 'react-dom';
 import { getInitialState } from '../utils';
 
 const knownFollows = new Set();

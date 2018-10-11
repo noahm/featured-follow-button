@@ -1,5 +1,5 @@
 import styles from './style';
-import { Component } from 'preact';
+import { Component } from 'react';
 import { getUsername } from '../../../utils';
 import { ChannelInput } from '../channel-input';
 

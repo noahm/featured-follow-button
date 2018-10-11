@@ -1,5 +1,5 @@
 import styles from './style';
-import { Component } from 'preact';
+import { Component } from 'react';
 
 const LOGIN_REGEX = /^[a-zA-Z0-9]\w{0,23}$/;
 const remoteCheckCache = {};

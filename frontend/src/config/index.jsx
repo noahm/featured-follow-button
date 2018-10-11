@@ -1,6 +1,7 @@
 import '../common-styles.css';
 import { applyThemeClass } from '../common-styles';
-import { Component, render } from 'preact';
+import { Component } from 'react';
+import { render } from 'react-dom';
 
 class App extends Component {
 	render() {

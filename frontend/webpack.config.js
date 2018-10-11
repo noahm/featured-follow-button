@@ -21,7 +21,7 @@ function readJson(file) {
 }
 readJson.cache = {};
 
-module.exports = function(env = {}, argv = {}) {
+module.exports = function(env = {}) {
   const isProd = !env.dev;
   const serve = !!env.dev;
   const zip = !!env.zip;
@@ -62,8 +62,8 @@ module.exports = function(env = {}, argv = {}) {
                 require('babel-plugin-transform-class-properties'),
                 [require('babel-plugin-transform-react-jsx'), { pragma: 'h' }],
                 [require('babel-plugin-jsx-pragmatic'), {
-                  module: 'preact',
-                  export: 'h',
+                  module: 'react',
+                  export: 'createElement',
                   import: 'h',
                 }],
               ],
@@ -101,7 +101,7 @@ module.exports = function(env = {}, argv = {}) {
     plugins: [
       new webpack.NoEmitOnErrorsPlugin(),
       new webpack.DefinePlugin({
-        'process.env.NODE_ENV': isProd ? 'production' : 'development',
+        'process.env.NODE_ENV': isProd ? '"production"' : '"development"',
       }),
       new MiniCssExtractPlugin({
         filename: '[name]-styles.css',
