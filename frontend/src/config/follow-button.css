@@ -1,0 +1,54 @@
+svg {
+  fill: currentColor;
+  vertical-align: text-top;
+  margin-right: 0.3em;
+  height: 1.2em;
+  width: 1.2em;
+}
+
+.buttonText {
+  position: relative;
+  flex-grow: 1;
+  padding: 0.4em 0.7em;
+  text-align: center;
+}
+
+.button {
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: #6441a4;
+  color: #fff;
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  font-size: 3.5vh;
+  line-height: 1.5em;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  pointer-events: none;
+  box-shadow: grey 0 0 3px;
+}
+
+.button:hover {
+  border-color: #7d5bbe;
+  background: #7d5bbe;
+  color: #fff;
+}
+
+.button:focus {
+  border-color: #9a7fcc;
+  background: #7d5bbe;
+  color: #fff;
+  box-shadow: 0 0 6px 0 #7d5bbe;
+}
+
+.button:active {
+  border-color: #7d5bbe;
+  background: #6441a4;
+  color: #fff;
+  box-shadow: 0 0 6px 0 #7d5bbe;
+}

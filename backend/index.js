@@ -15,13 +15,39 @@ const datastore = fs.existsSync('gcp-key.json') ? new Datastore({
   keyFilename: path.resolve('gcp-key.json'),
 }) : new Datastore();
 
-// shape in google storage
-// interface ChannelData {
-//   liveButton: {
-//     channelName: null | string;
-//     displayName: null | string;
-//   };
-// }
+/** @typedef {{ channelName?: string, displayName?: string }} LiveButton */
+
+/**
+ * @typedef {object} PositionedButton
+ * @property {'left' | 'right'} xReference - used to define alignment for component mode
+ * @property {'top' | 'bottom' =} yReference - only used in overlay layouts
+ * @property {number=} x - percentage from edge, 0 - 50
+ * @property {number=} y - percentage from edge
+ * @property {string=} channelName
+ * @property {string=} displayName
+ */
+
+/**
+ * @typedef {object} LiveState
+ * @property {Array<PositionedButton>} layoutItems
+ * @property {string=} channelName
+ * @property {string=} displayName
+ */
+
+ /**
+  * @typedef {object} Settings
+  * @property {any} queue
+  * @property {'left' | 'right'} componentAlign
+  * @property {any} overlayLayout
+  */
+
+/**
+ * shape in google storage
+ * @typedef {object} ChannelData
+ * @property {LiveButton} liveButton - Legacy live data
+ * @property {LiveState} liveState - Modern live data
+ * @property {Settings} settings
+*/
 
 const entityKind = 'Channel';
 function keyForChannel(channelID) {
@@ -136,20 +162,25 @@ function broadcastStateForChannel(channelID, channelState) {
   });
 }
 
-app.post('/state/:channelID', (req, res) => {
-  if (process.env.NODE_ENV === 'production') {
-    try {
-      const token = jwt.verify(req.header('x-extension-jwt'), new Buffer(config.twitch.extensionSecret, 'base64'));
-      if (!token || token.role !== 'broadcaster' || token.channel_id !== req.params.channelID) {
-        console.log('Deny request from unauthorized role', { channel_id: req.params.channelID, token });
-        res.status(403).end();
-        return;
-      }
-    } catch (e) {
-      console.log('could not verify jwt token');
-      res.status(400).end();
-      return;
+function verifyJWD(req, res) {
+  try {
+    const token = jwt.verify(req.header('x-extension-jwt'), new Buffer(config.twitch.extensionSecret, 'base64'));
+    if (!token || token.role !== 'broadcaster' || token.channel_id !== req.params.channelID) {
+      console.log('Deny request from unauthorized role', { channel_id: req.params.channelID, token });
+      res.status(403).end();
+      return false;
     }
+  } catch (e) {
+    console.log('could not verify jwt token');
+    res.status(400).end();
+    return false;
+  }
+  return true;
+}
+
+app.post('/state/:channelID', (req, res) => {
+  if (process.env.NODE_ENV === 'production' && !verifyJWD(req, res)) {
+    return;
   }
 
   // TODO add validation to fields available in `req.body` and return 400 if appropriate
