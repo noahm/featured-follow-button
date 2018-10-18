@@ -11,8 +11,8 @@ export class LayoutEditor extends Component {
   state = {
     background: undefined,
     layout: [
-      { type: 'button', id: getRandomID(), top: 25, left: 25 },
-      { type: 'zone', id: getRandomID(), top: 50, left: 50, height: 25, width: 25 },
+      { type: 'button', id: getRandomID(), top: 5, left: 5 },
+      { type: 'zone', id: getRandomID(), top: 75, left: 75, height: 10, width: 10 },
     ],
   };
 
@@ -36,10 +36,12 @@ export class LayoutEditor extends Component {
             <div className={styles.layoutArea}>
               {this.state.layout.map((item, i) => {
                 const label = String.fromCharCode(startingCharCode + i);
+                const defaultPosition = { top: item.top, left: item.left };
                 if (item.type === 'button') {
-                  return <DraggableButton key={item.id}>{label}</DraggableButton>;
+                  return <DraggableButton key={item.id} defaultPosition={defaultPosition}>{label}</DraggableButton>;
                 } else {
-                  return <FollowZone key={item.id}>{label}</FollowZone>;
+                  const defaultSize = { height: item.height, width: item.width };
+                  return <FollowZone key={item.id} defaultPosition={defaultPosition} defaultSize={defaultSize}>{label}</FollowZone>;
                 }
               })}
             </div>

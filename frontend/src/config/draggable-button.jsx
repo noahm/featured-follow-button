@@ -5,8 +5,8 @@ import styles from './draggable-button.css';
 export class DraggableButton extends Component {
   root = createRef()
   state = {
-    top: 25,
-    left: 25,
+    top: this.props.defaultPosition ? this.props.defaultPosition.top : 25,
+    left: this.props.defaultPosition ? this.props.defaultPosition.left : 25,
     dragging: false,
   };
 

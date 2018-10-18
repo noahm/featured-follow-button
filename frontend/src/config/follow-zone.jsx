@@ -4,10 +4,10 @@ import styles from './follow-zone.css';
 
 export class FollowZone extends Component {
   state = {
-    height: 25,
-    width: 25,
-    top: 50,
-    left: 50,
+    height: this.props.defaultSize ? this.props.defaultSize.height : 25,
+    width: this.props.defaultSize ? this.props.defaultSize.width : 25,
+    top: this.props.defaultPosition ? this.props.defaultPosition.top : 50,
+    left: this.props.defaultPosition ? this.props.defaultPosition.left : 50,
     dragging: false,
   };
   /** @type {RefObject<HTMLDivElement>} */
@@ -23,7 +23,7 @@ export class FollowZone extends Component {
     };
     return (
       <div className={classNames(styles.followZone, { [styles.dragging]: this.state.dragging })} style={style} ref={this.root} onMouseDown={this.onMoveStart}>
-        Click here to follow {this.props.children}
+        Click to follow {this.props.children}
         <div className={styles.resizeHandle} onMouseDown={this.onResizeStart} />
       </div>
     );
