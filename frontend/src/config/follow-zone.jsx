@@ -21,7 +21,7 @@ export class FollowZone extends Component {
     };
     return (
       <div className={styles.followZone} style={style} ref={this.root} onMouseDown={this.onMoveStart}>
-        Click here to follow John
+        Click here to follow {this.props.children}
         <div className={styles.resizeHandle} onMouseDown={this.onResizeStart} />
       </div>
     );

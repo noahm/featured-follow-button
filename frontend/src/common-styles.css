@@ -16,16 +16,19 @@ div {
   margin: 0px;
 }
 button {
-  background-color: rebeccapurple;
+  background-color: #6441a4;
   border-radius: 0;
-  border: none;
+  border: 1px solid transparent;
   outline: none;
   color: white;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  margin: 0.5em;
+  padding: 0.5em 1rem;
 }
 button:hover {
-  background-color: rgb(126, 86, 165);
+  background-color: #7d5bbe;
+  border-color: #7d5bbe;
 }
 button:disabled, input:disabled {
   opacity: 0.6;

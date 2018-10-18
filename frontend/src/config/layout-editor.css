@@ -1,6 +1,11 @@
 .draggable {
   display: inline-block;
+  position: absolute;
   cursor: grab;
+}
+
+.draggable:hover {
+  box-shadow: 0px 0px 4px grey;
 }
 
 .dragging {
