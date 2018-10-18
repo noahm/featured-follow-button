@@ -1,8 +1,8 @@
 .draggable {
   display: inline-block;
-  cursor: grab !important;
+  cursor: grab;
 }
 
 .dragging {
-  cursor: grabbing !important;
+  cursor: grabbing;
 }

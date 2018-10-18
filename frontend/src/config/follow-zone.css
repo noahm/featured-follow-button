@@ -1,0 +1,31 @@
+.followZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed lightslategray;
+  border-radius: 2px;
+  position: absolute;
+  user-select: none;
+  cursor: grab;
+  text-align: center;
+}
+
+.followZone:hover {
+  box-shadow: 0px 0px 4px grey;
+}
+
+.resizeHandle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  border-width: 0 3px 3px 0;
+  border-style: double;
+  border-color: darkslategray;
+  cursor: nwse-resize;
+  height: 10px;
+  width: 10px;
+}
+
+.dragging {
+  cursor: grabbing;
+}

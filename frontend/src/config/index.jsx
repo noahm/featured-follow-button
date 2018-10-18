@@ -6,6 +6,7 @@ import { Component, CSSProperties } from 'react';
 import { render } from 'react-dom';
 import Dropzone from 'react-dropzone';
 import Draggable from 'react-draggable';
+import { FollowZone } from './follow-zone';
 
 class App extends Component {
 	state = {};
@@ -31,8 +32,9 @@ class App extends Component {
 							{this.state.background ? <img src={this.state.background} style={{ height: '100%' }} /> : <div>Drop an image of your stream layout here</div>}
 							<div style={{ position: "absolute", height: '100%', width: '100%' }}>
 								<Draggable bounds="parent" defaultClassName={styles.draggable} defaultClassNameDragging={styles.dragging}>
-									<div style={{ display: 'inline-block', cursor: 'grab' }}><FollowButton>Me</FollowButton></div>
+									<div><FollowButton>Me</FollowButton></div>
 								</Draggable>
+								<FollowZone />
 							</div>
 						</div>
 					</Dropzone>
