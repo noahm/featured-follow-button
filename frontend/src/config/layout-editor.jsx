@@ -1,48 +1,45 @@
 import { Component, CSSProperties, ChangeEvent } from 'react';
 import Dropzone from 'react-dropzone';
-import Draggable from 'react-draggable';
 import { FollowZone } from './follow-zone';
-import { FollowButton } from './follow-button';
+import { DraggableButton } from './draggable-button';
 import styles from './layout-editor.css';
+import { getRandomID } from '../utils';
+
+const startingCharCode = 'A'.charCodeAt(0);
 
 export class LayoutEditor extends Component {
   state = {
     background: undefined,
     layout: [
-      { type: 'button', top: 0, left: 0 },
-      { type: 'zone', top: 50, left: 50, height: 25, width: 25 },
+      { type: 'button', id: getRandomID(), top: 25, left: 25 },
+      { type: 'zone', id: getRandomID(), top: 50, left: 50, height: 25, width: 25 },
     ],
   };
-  startingCharCode = 'A'.charCodeAt(0);
 
   render() {
     return (
       <div>
-        <div>
+        <div className={styles.toolbar}>
           <button onClick={this.addButton}>Add Button</button>
           <button onClick={this.addZone}>Add Zone</button>
           <select value="initial" onChange={this.handleDelete}>
             <option value="initial" disabled>Delete...</option>
             {this.state.layout.map((item, i) => {
-              const label = String.fromCharCode(this.startingCharCode + i);
-              return <option key={label} value={i}>{label}</option>
+              const label = String.fromCharCode(startingCharCode + i);
+              return <option key={item.id} value={i}>{label}</option>
             })}
           </select>
         </div>
         <Dropzone accept="image/*" disableClick multiple={false} onDrop={this.onDrop} style={this.getDropzoneStyles()}>
-          <div style={{ height: '720px', width: '1280px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div className={styles.layoutContainer}>
             {this.state.background ? <img src={this.state.background} style={{ height: '100%' }} /> : <div>Drop an image of your stream layout here</div>}
-            <div style={{ position: "absolute", height: '100%', width: '100%' }}>
+            <div className={styles.layoutArea}>
               {this.state.layout.map((item, i) => {
-                const label = String.fromCharCode(this.startingCharCode + i);
+                const label = String.fromCharCode(startingCharCode + i);
                 if (item.type === 'button') {
-                  return (
-                    <Draggable key={label} bounds="parent" defaultClassName={styles.draggable} defaultClassNameDragging={styles.dragging} defaultPosition={{ x: item.left, y: item.top }}>
-                      <div><FollowButton>{label}</FollowButton></div>
-                    </Draggable>
-                  );
+                  return <DraggableButton key={item.id}>{label}</DraggableButton>;
                 } else {
-                  return <FollowZone key={label}>{label}</FollowZone>;
+                  return <FollowZone key={item.id}>{label}</FollowZone>;
                 }
               })}
             </div>
@@ -72,7 +69,7 @@ export class LayoutEditor extends Component {
   addButton = () => {
     this.setState((s) => {
       const layout = s.layout.slice();
-      layout.push({ type: 'button', top: 0, left: 0 });
+      layout.push({ type: 'button', id: getRandomID(), top: 0, left: 0 });
       return {
         layout,
       };
@@ -82,7 +79,7 @@ export class LayoutEditor extends Component {
   addZone = () => {
     this.setState((s) => {
       const layout = s.layout.slice();
-      layout.push({ type: 'zone', top: 0, left: 0, height: 25, width: 25 });
+      layout.push({ type: 'zone', id: getRandomID(), top: 0, left: 0, height: 25, width: 25 });
       return {
         layout,
       };

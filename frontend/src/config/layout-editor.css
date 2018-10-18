@@ -1,3 +1,24 @@
+.toolbar {
+  margin-bottom: 0.25em;
+  padding-top: 0.25em;
+  border-top: 1px solid lightgrey;
+}
+
+.layoutContainer {
+  height: 720px;
+  width: 1280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.layoutArea {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
 .draggable {
   display: inline-block;
   position: absolute;

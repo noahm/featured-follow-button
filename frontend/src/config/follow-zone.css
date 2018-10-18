@@ -4,10 +4,11 @@
   justify-content: center;
   border: 2px dashed lightslategray;
   border-radius: 2px;
-  position: absolute;
   user-select: none;
+  position: absolute;
   cursor: grab;
   text-align: center;
+  background-color: rgba(128, 128, 128, 0.2);
 }
 
 .followZone:hover {

@@ -19,7 +19,6 @@ svg {
   background: #6441a4;
   color: #fff;
   display: inline-flex;
-  position: relative;
   align-items: center;
   justify-content: center;
   outline: none;
@@ -29,18 +28,24 @@ svg {
   white-space: nowrap;
   vertical-align: middle;
   user-select: none;
-  pointer-events: none;
   box-shadow: grey 0 0 3px;
   margin: 0;
   padding: 0;
+  position: absolute;
+  cursor: grab;
 }
+
+.dragging {
+  cursor: grabbing;
+}
+
 
 .button:hover {
   border-color: #7d5bbe;
   background: #7d5bbe;
   color: #fff;
 }
-
+/* 
 .button:focus {
   border-color: #9a7fcc;
   background: #7d5bbe;
@@ -53,4 +58,4 @@ svg {
   background: #6441a4;
   color: #fff;
   box-shadow: 0 0 6px 0 #7d5bbe;
-}
+} */

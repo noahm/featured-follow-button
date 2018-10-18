@@ -14,3 +14,7 @@ export function getUsername(channelName, displayName) {
 export function getInitialState(channelID) {
     return fetch(backendHost + '/state/' + encodeURIComponent(channelID)).then(r => r.json());
 }
+
+export function getRandomID() {
+    return Math.floor(100000 * Math.random());
+}

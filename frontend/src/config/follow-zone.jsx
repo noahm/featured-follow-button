@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { Component, CSSProperties, MouseEvent, createRef, RefObject } from 'react';
 import styles from './follow-zone.css';
 
@@ -7,6 +8,7 @@ export class FollowZone extends Component {
     width: 25,
     top: 50,
     left: 50,
+    dragging: false,
   };
   /** @type {RefObject<HTMLDivElement>} */
   root = createRef();
@@ -20,7 +22,7 @@ export class FollowZone extends Component {
       width: `${this.state.width}%`,
     };
     return (
-      <div className={styles.followZone} style={style} ref={this.root} onMouseDown={this.onMoveStart}>
+      <div className={classNames(styles.followZone, { [styles.dragging]: this.state.dragging })} style={style} ref={this.root} onMouseDown={this.onMoveStart}>
         Click here to follow {this.props.children}
         <div className={styles.resizeHandle} onMouseDown={this.onResizeStart} />
       </div>
@@ -46,6 +48,7 @@ export class FollowZone extends Component {
       top: this.state.top,
       left: this.state.left,
     };
+    this.setState({ dragging: true });
   }
 
   /**
@@ -67,6 +70,7 @@ export class FollowZone extends Component {
   endMove = () => {
     this.root.current.parentElement.removeEventListener('mousemove', this.onDragMove);
     document.removeEventListener('mouseup', this.endMove);
+    this.setState({ dragging: false });
   }
 
   /**
