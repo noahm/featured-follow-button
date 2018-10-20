@@ -3,7 +3,7 @@ import './style';
 import { applyThemeClass } from '../common-styles';
 import { Component } from 'react';
 import { render } from 'react-dom';
-import { backendHost, getInitialState } from '../utils';
+import { Config } from '../config';
 import { Status } from './components/status';
 import { ChannelQueue } from './components/channel-queue';
 
@@ -16,23 +16,21 @@ class App extends Component {
 		displayName: '',
 		requestErrored: false,
 	};
+	/** @type {Config} */
+	config;
 
 	componentDidMount() {
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
-			Twitch.ext.onAuthorized((auth) => {
-				this.setState({ auth });
-				Twitch.ext.listen('broadcast', this.onExtensionBroadcast);
-			});
-		}
-	}
-
-	componentWillUpdate(nextProps, nextState) {
-		if (nextState.auth && !this.state.auth) {
-			getInitialState(nextState.auth.channelId).then((state) => {
+			this.config = new Config(() => {
+				const state = this.config.liveState;
 				this.setState({
 					channelName: state.channelName,
 					displayName: state.displayName,
 				});
+			});
+			Twitch.ext.onAuthorized((auth) => {
+				this.setState({ auth });
+				Twitch.ext.listen('broadcast', this.onExtensionBroadcast);
 			});
 		}
 	}
@@ -77,20 +75,11 @@ class App extends Component {
 
 	updateChannel = (channelName = '', displayName = '') => {
 		this.setState({ channelName, displayName });
-		const currentChannel = this.state.auth ? this.state.auth.channelId : 0;
-		fetch(backendHost + '/state/' + currentChannel, {
-			method: 'POST',
-			body: JSON.stringify({
-				channelName,
-				displayName,
-			}),
-			headers: {
-				'Content-Type': 'application/json',
-				'X-Extension-JWT': this.state.auth ? this.state.auth.token : '',
-			},
-		}).then(() => {
+
+		try {
+			this.config.setLiveState(channelName, displayName);
 			this.clearErrorState();
-		}).catch(() => {
+		} catch (error) {
 			if (!this.state.requestErrored) {
 				this.setState({
 					requestErrored: true,
@@ -99,7 +88,7 @@ class App extends Component {
 					setTimeout(this.clearErrorState, ERROR_DISPLAY_PERIOD);
 				});
 			}
-		});
+		}
 	}
 
 	clearErrorState = () => {

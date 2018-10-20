@@ -4,7 +4,7 @@ import { parse } from 'querystringify';
 import styles from './style';
 import { Component } from 'react';
 import { render } from 'react-dom';
-import { getInitialState } from '../utils';
+import { Config } from '../config';
 
 const knownFollows = new Set();
 
@@ -18,6 +18,8 @@ class App extends Component {
 		followUiOpen: false,
 		componentMode: false,
 	};
+	/** @type {Config} */
+	config;
 
 	componentDidMount() {
 		if (parse(window.location.search).anchor === 'component') {
@@ -26,19 +28,13 @@ class App extends Component {
 			});
 		}
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
+			this.config = new Config(() => {
+				this.updateChannel(this.config.liveState);
+			});
 			Twitch.ext.onAuthorized((auth) => {
 				this.setState({ auth });
 				Twitch.ext.listen('broadcast', this.onExtensionBroadcast);
 				Twitch.ext.actions.onFollow(this.onFollowUiClosed);
-			});
-		}
-	}
-
-	componentWillUpdate(nextProps, nextState) {
-		if (nextState.auth && !this.state.auth) {
-			// TODO: potentially add random jitter here to help buffer F5 storms
-			getInitialState(nextState.auth.channelId).then((state) => {
-				this.updateChannel(state);
 			});
 		}
 	}
