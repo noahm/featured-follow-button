@@ -108,7 +108,7 @@ class App extends Component {
 				animateOut: true,
 			});
 		} else if (
-			(
+			this.state.buttonHidden || (
 				this.state.channelName !== newState.channelName
 				|| this.state.displayName !== newState.displayName
 			) && !knownFollows.has(newState.channelName)
