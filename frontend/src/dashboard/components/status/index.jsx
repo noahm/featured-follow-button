@@ -3,7 +3,8 @@ import { Component } from 'react';
 import { getUsername } from '../../../utils';
 
 export class Status extends Component {
-  render({ channelName, displayName, isErrored }) {
+  render() {
+    const { channelName, displayName, isErrored } = this.props;
     let statusLine = <span>Follow button is not active</span>;
     if (channelName) {
       statusLine = <span>Follow button is visible for {getUsername(channelName, displayName)}</span>;

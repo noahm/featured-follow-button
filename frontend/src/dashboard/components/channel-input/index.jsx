@@ -23,7 +23,8 @@ export class ChannelInput extends Component {
     }
   }
 
-  render(props, { isValidating, pendingChannelName, useRemoteDisplayName }) {
+  render() {
+    const { isValidating, pendingChannelName, useRemoteDisplayName } = this.state;
     return (
       <form disabled={isValidating} onSubmit={this.onSubmit}>
         <input
@@ -31,7 +32,7 @@ export class ChannelInput extends Component {
           placeholder="Channel Login"
           ref={this.saveInputRef}
           value={pendingChannelName}
-          onKeyUp={this.setChannelName}
+          onChange={this.setChannelName}
         />
         <span className={styles.error}> {this.renderError()}</span>
         <br />

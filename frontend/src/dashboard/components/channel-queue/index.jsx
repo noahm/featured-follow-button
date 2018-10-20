@@ -9,7 +9,9 @@ export class ChannelQueue extends Component {
         queue: [],
     };
 
-    render({ channelName, onClear, clientID }, { nextIndex, queue }) {
+    render() {
+        const { channelName, onClear, clientID } = this.props;
+        const { nextIndex, queue } = this.state;
         let nextChannel = null;
         if (queue.length && queue[nextIndex]) {
             nextChannel = queue[nextIndex];
