@@ -27,18 +27,31 @@ module.exports = function(env = {}) {
   const zip = !!env.zip;
   const pkg = readJson(resolve(__dirname, './package.json')) || {};
 
+  // Each of these folders under src/ will be an entry point
+  const entryFolders = [
+    'config',
+    'dashboard',
+    'viewer',
+  ];
+
   return {
     mode: 'none',
     devtool: isProd ? false : 'cheap-module-eval-source-map',
     devServer: !serve ? undefined : {
       contentBase: './dist',
-      port: 8090,
+      port: 8080,
+      allowedHosts: [
+        'localhost.rig.twitch.tv',
+      ],
     },
-    entry: {
-      config: './src/config/index.jsx',
-      dashboard: './src/dashboard/index.jsx',
-      viewer: './src/viewer/index.jsx',
-    },
+    entry: entryFolders.reduce((config, entry) => {
+      const entryPoints = [`./src/${entry}/index.jsx`];
+      // if (env.dev) {
+      //   entryPoints.unshift('react-devtools');
+      // }
+      config[entry] = entryPoints;
+      return config;
+    }, {}),
     output: {
       filename: '[name].bundle.js',
       path: resolve(__dirname, './dist'),
@@ -101,7 +114,7 @@ module.exports = function(env = {}) {
     plugins: [
       new webpack.NoEmitOnErrorsPlugin(),
       new webpack.DefinePlugin({
-        'process.env.NODE_ENV': isProd ? '"production"' : '"development"',
+        'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
       }),
       new MiniCssExtractPlugin({
         filename: '[name]-styles.css',
