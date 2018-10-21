@@ -39,13 +39,14 @@ export class Config {
    * @private
    */
   getConfiguration() {
+    let ret = defaultConfig;
     try {
       if (Twitch.ext.configuration.broadcaster.version === CONFIG_VERSION) {
         console.log('received valid config');
-        return JSON.parse(Twitch.ext.configuration.broadcaster.content);
+        ret = JSON.parse(Twitch.ext.configuration.broadcaster.content);
       }
     } finally {
-      return defaultConfig;
+      return ret;
     }
   }
 
@@ -61,7 +62,7 @@ export class Config {
     const newConfiguration = Object.assign({}, this.config);
     newConfiguration.liveButton = newState;
     // set configuration
-    Twitch.ext.configuration.set('broadcaster', newConfiguration, CONFIG_VERSION);
+    Twitch.ext.configuration.set('broadcaster', CONFIG_VERSION, JSON.stringify(newConfiguration));
     // broadcast to pubsub
     Twitch.ext.send('broadcast', 'application/json', newState);
   }
