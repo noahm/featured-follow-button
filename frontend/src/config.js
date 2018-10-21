@@ -17,11 +17,12 @@ export class Config {
 
   /**
    * 
-   * @param {() => void} onUpdate
+   * @param {() => void} onFirstUpdate
    */
-  constructor(onUpdate) {
-    if (!Twitch || !Twitch.ext) {
-      throw new Error('Twitch ext not present. Config not available.');
+  constructor(onFirstUpdate) {
+    if (typeof Twitch === 'undefined' || !Twitch.ext) {
+      console.error('Twitch ext not present. Config not available.');
+      return;
     }
     Twitch.ext.configuration.onChanged(() => {
       let notify = false;
@@ -30,7 +31,7 @@ export class Config {
       }
       this.config = this.getConfiguration();
       if (notify && this.config) {
-        onUpdate();
+        onFirstUpdate();
       }
     });
   }
