@@ -59,8 +59,8 @@ export class FollowZone extends Component {
     const parent = parentElement.getBoundingClientRect();
     const deltaX = e.clientX - this.dragGrabLocation.x;
     const deltaY = e.clientY - this.dragGrabLocation.y;
-    const newLeft = Math.max(Math.min(95, deltaX / parent.width * 100 + this.dragGrabLocation.left), 0);
-    const newTop = Math.max(Math.min(95, deltaY / parent.height * 100 + this.dragGrabLocation.top), 0);
+    const newLeft = Math.max(Math.min(100 - this.state.width, deltaX / parent.width * 100 + this.dragGrabLocation.left), 0);
+    const newTop = Math.max(Math.min(100 - this.state.height, deltaY / parent.height * 100 + this.dragGrabLocation.top), 0);
     this.setState({
       top: newTop,
       left: newLeft,
@@ -90,8 +90,8 @@ export class FollowZone extends Component {
     const parent = parentElement.getBoundingClientRect();
     const domainX = e.clientX - parent.left;
     const domainY = e.clientY - parent.top;
-    const newWidth = Math.max(Math.min(100, domainX / parent.width * 100 - this.state.left), 5);
-    const newHeight = Math.max(Math.min(100, domainY / parent.height * 100 - this.state.top), 5);
+    const newWidth = Math.max(Math.min(100 - this.state.left, domainX / parent.width * 100 - this.state.left), 5);
+    const newHeight = Math.max(Math.min(100 - this.state.top, domainY / parent.height * 100 - this.state.top), 5);
     // console.log({ newWidth, newHeight });
     this.setState({
       height: newHeight,

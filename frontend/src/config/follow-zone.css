@@ -9,6 +9,9 @@
   cursor: grab;
   text-align: center;
   background-color: rgba(128, 128, 128, 0.2);
+  text-shadow: 0 0 4px white;
+  padding: 0.5rem;
+  box-sizing: border-box;
 }
 
 .followZone:hover {
