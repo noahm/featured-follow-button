@@ -46,10 +46,11 @@ class App extends Component {
 			return null;
 		}
 
+		// TODO only render one in component mode
 		return (
 			<main>
 				<div className={this.state.componentMode ? styles.componentMode : styles.lowerThird}>
-					{this.renderButton()}
+					{this.state.liveItems.map(this.renderItem)}
 				</div>
 			</main>
 		);
@@ -66,10 +67,11 @@ class App extends Component {
 			return null;
 		}
 
+		// TODO render positions from here?
 		if (item.type === 'button') {
 			return (
 				<FollowButton
-					key={item.channelName}
+					key={item.id}
 					animateOut={animateOut}
 					disabled={followUiOpen}
 					onClick={() => this.onFollowClick(item.channelName)}
@@ -129,8 +131,8 @@ class App extends Component {
 			this.setState({
 				animateOut: false,
 				buttonHidden: false,
-				channelName: newState.channelName,
-				displayName: newState.displayName,
+				// TODO replace this
+				liveItems: newState,
 			});
 		}
 	}
@@ -151,6 +153,7 @@ class App extends Component {
 		}
 		this.setState({
 			followUiOpen: false,
+			// TODO handle closing just the clicked button? or drop this behavior entirely?
 			animateOut: true,
 		});
 	}

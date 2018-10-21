@@ -4,6 +4,7 @@
 /**
  * @typedef {object} PositionedButton
  * @property {'button'} type
+ * @property {number} id
  * @property {number=} top - percentage from edge, 0 - 100
  * @property {number=} left - percentage from edge, 0 - 100
  */
@@ -12,6 +13,7 @@
  * @exports
  * @typedef {object} PositionedZone
  * @property {'zone'} type
+ * @property {number} id
  * @property {number=} top - percentage from edge, 0 - 100
  * @property {number=} left - percentage from edge, 0 - 100
  * @property {number=} height - percentage of player height, 0 - 100
