@@ -10,6 +10,16 @@ export class DraggableButton extends Component {
     dragging: false,
   };
 
+  componentDidUpdate(pProps, pState) {
+    if (pState !== this.state && !this.state.dragging) {
+      this.props.onChange({
+        ...this.props.item,
+        top: this.state.top,
+        left: this.state.left,
+      });
+    }
+  }
+
   render() {
     /** @type {CSSProperties} */
     const style = {

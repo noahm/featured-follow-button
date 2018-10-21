@@ -3,24 +3,69 @@ import { applyThemeClass } from '../common-styles';
 import { Component } from 'react';
 import { render } from 'react-dom';
 import { LayoutEditor } from './layout-editor';
+import { getAnchorMode } from '../utils';
 
 class App extends Component {
+	state = {
+		anchor: getAnchorMode(),
+	};
+
 	render() {
+		switch (this.state.anchor) {
+			case 'video_overlay':
+				return this.renderOverlay();
+			case 'component':
+				return this.renderComponentMode();
+			default:
+				return this.unactivated();
+		}
+	}
+
+	unactivated() {
 		return (
 			<div style={{ fontSize: '200%' }}>
 				<div style={{ maxWidth: '37em' }}>
-					<h2>No configuration required!</h2>
+					<h2>Activate me first!</h2>
 					<p>
-						Go to your live dashboard to control follow buttons in real-time.
-						Queue up buttons for known channels to be able to quickly display
-						them on demand, or display them immediately as the need arises.
+						You have yet to activate this extension anywhere.
+						Activate it as a component for a simple 1-button setup,
+						or as an overlay to build a custom layout with multiple
+						buttons or transparent zones.
 					</p>
+				</div>
+			</div>
+		);
+	}
+
+	renderOverlay() {
+		return (
+			<div style={{ fontSize: '200%' }}>
+				<div style={{ maxWidth: '37em' }}>
+					<h2>Overlay Builder</h2>
 					<p>
-						Use auto display name to use a channel's current display name
-						on the button, or manually input your own.
+						You have this extension activated as an overlay,
+						so you can configure a custom layout below. Think
+						of the buttons and zones as "slots" that can be
+						filled or left unused and invisible during a stream.
+						Don't forget to save when you're done editing!
 					</p>
 				</div>
 				<LayoutEditor />
+			</div>
+		);
+	}
+
+	renderComponentMode() {
+		return (
+			<div style={{ fontSize: '200%' }}>
+				<div style={{ maxWidth: '37em' }}>
+					<h2>Component Mode</h2>
+					<p>
+						You have this extension activated as a component.
+						This mode needs no configuration, so simply activate
+						your button from your live dashboard now!
+					</p>
+				</div>
 			</div>
 		);
 	}

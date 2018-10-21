@@ -1,5 +1,5 @@
 // @ts-check
-import * as iassign from 'immutable-assign';
+import iassign from 'immutable-assign';
 import '../../models';
 
 const CONFIG_VERSION = '1.0';
@@ -49,11 +49,21 @@ export class Config {
     let ret = defaultConfig;
     try {
       if (Twitch.ext.configuration.broadcaster.version === CONFIG_VERSION) {
-        ret = JSON.parse(Twitch.ext.configuration.broadcaster.content);
+        ret = {
+          ...defaultConfig,
+          ...JSON.parse(Twitch.ext.configuration.broadcaster.content),
+        };
       }
     } finally {
       return ret;
     }
+  }
+
+  /**
+   * @private
+   */
+  save() {
+    Twitch.ext.configuration.set('broadcaster', CONFIG_VERSION, JSON.stringify(this.config));
   }
 
   /**
@@ -78,8 +88,20 @@ export class Config {
       return config;
     });
     // set configuration
-    Twitch.ext.configuration.set('broadcaster', CONFIG_VERSION, JSON.stringify(this.config));
+    this.save();
     // broadcast to pubsub
     Twitch.ext.send('broadcast', 'application/json', newState);
+  }
+
+  /**
+   * 
+   * @param {Layout} layout
+   */
+  saveLayout(layout) {
+    this.config = iassign(this.config, (config) => config.settings, (settings) => {
+      settings.configuredLayouts = [layout];
+      return settings;
+    });
+    this.save();
   }
 }

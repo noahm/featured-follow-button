@@ -14,6 +14,9 @@
   font-size: 1rem;
   font-weight: bold;
   box-sizing: border-box;
+  color: black;
+  font-weight: bold;
+  background-color: rgba(128, 128, 128, 0.5);
 }
 
 .followZone:hover {

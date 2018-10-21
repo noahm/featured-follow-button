@@ -1,9 +1,9 @@
 import '../common-styles';
-import { parse } from 'querystringify';
 import { Component } from 'react';
 import { render } from 'react-dom';
 import styles from './style.css';
 import { Config } from '../config';
+import { getAnchorMode } from '../utils';
 import { FollowButton } from './follow-button';
 import { FollowZone } from './follow-zone';
 
@@ -12,9 +12,15 @@ class App extends Component {
 		animateOut: false,
 		itemsHidden: false,
 		/** @type {LiveItems} */
-		liveItems: [],
+		liveItems: [{
+			type: 'button',
+			id: -1,
+			channelName: 'me',
+			top: 5,
+			left: 5,
+		}],
 		followUiOpen: false,
-		componentMode: parse(window.location.search).anchor === 'component',
+		componentMode: getAnchorMode() === 'component',
 	};
 
 	/** @type {Config} */

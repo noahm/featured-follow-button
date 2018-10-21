@@ -2,21 +2,40 @@
   margin-bottom: 0.25em;
   padding-top: 0.25em;
   border-top: 1px solid lightgrey;
+  display: flex;
+  justify-content: space-between;
+}
+
+.dropzone {
+  display: inline-block;
+  width: 100%;
+  background-color: lightgray;
+  position: relative;
 }
 
 .layoutContainer {
-  height: 720px;
-  width: 1280px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  border: 2px #666 dotted;
+  height: 0;
+  width: 100%;
+  padding-top: 56.25%;
+  box-sizing: border-box;
 }
 
 .layoutArea {
   position: absolute;
   height: 100%;
   width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.backgroundPrompt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  text-shadow: 0 0 2px black;
+  color: #dad8de;
 }
 
 .draggable {

@@ -13,6 +13,18 @@ export class FollowZone extends Component {
   /** @type {RefObject<HTMLDivElement>} */
   root = createRef();
 
+  componentDidUpdate(pProps, pState) {
+    if (pState !== this.state && !this.state.dragging) {
+      this.props.onChange({
+        ...this.props.item,
+        height: this.state.height,
+        width: this.state.width,
+        top: this.state.top,
+        left: this.state.left,
+      });
+    }
+  }
+
   render() {
     /** @type {CSSProperties} */
     const style = {

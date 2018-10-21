@@ -39,7 +39,9 @@ module.exports = function(env = {}) {
     devtool: isProd ? false : 'cheap-module-eval-source-map',
     devServer: !serve ? undefined : {
       contentBase: './dist',
+      https: true,
       port: 8080,
+      public: 'localhost.rig.twitch.tv:8080',
       allowedHosts: [
         'localhost.rig.twitch.tv',
       ],
@@ -70,6 +72,7 @@ module.exports = function(env = {}) {
             options: {
               presets: [
                 require('babel-preset-env'),
+                require('babel-preset-stage-3'),
               ],
               plugins: [
                 require('babel-plugin-transform-class-properties'),

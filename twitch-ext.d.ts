@@ -53,7 +53,7 @@ declare namespace Twitch {
     playbackMode: 'video' | 'audio' | 'remote' | 'chat-only';
     theme: 'light' | 'dark';
     videoResolution: string;
-    vollume: number;
+    volume: number;
   }
 
   type PubsubCallback = (target: string, contentType: string, message: string) => void;

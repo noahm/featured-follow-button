@@ -1,5 +1,5 @@
 
-/** @typedef {{ channelName?: string, displayName?: string }} LiveButton */
+/** @typedef {{ channelName?: string, displayName?: string }} LiveButton info for a live follow item */
 
 /**
  * @typedef {object} PositionedButton
@@ -10,7 +10,6 @@
  */
 
 /**
- * @exports
  * @typedef {object} PositionedZone
  * @property {'zone'} type
  * @property {number} id
@@ -20,8 +19,8 @@
  * @property {number=} width - percentage of player width, 0 - 100
  */
 
-/** @typedef {(PositionedButton | PositionedZone)} LayoutItem */
-/** @typedef {(PositionedButton | PositionedZone) & { channelName?: string; displayName?: string }} LiveLayoutItem */
+/** @typedef {PositionedButton | PositionedZone} LayoutItem */
+/** @typedef {LayoutItem & LiveButton} LiveLayoutItem */
 /** @typedef {Array<LiveLayoutItem>} LiveItems */
 
 /**
@@ -38,10 +37,10 @@
  */
 
 /**
-* @typedef {object} Settings
-* @property {Array<LiveButton>} queue
-* @property {Array<Layout>} configuredLayouts
-*/
+ * @typedef {object} Settings
+ * @property {Array<LiveButton>} queue
+ * @property {Array<Layout>} configuredLayouts
+ */
 
 /**
  * shape in twitch configuration
