@@ -19,10 +19,20 @@ const datastore = fs.existsSync('gcp-key.json') ? new Datastore({
 
 /**
  * @typedef {object} PositionedButton
- * @property {'left' | 'right'} xReference - used to define alignment for component mode
- * @property {'top' | 'bottom' =} yReference - only used in overlay layouts
- * @property {number=} x - percentage from edge, 0 - 50
- * @property {number=} y - percentage from edge
+ * @property {'button'} type
+ * @property {number=} top - percentage from edge, 0 - 100
+ * @property {number=} left - percentage from edge, 0 - 100
+ * @property {string=} channelName
+ * @property {string=} displayName
+ */
+
+/**
+ * @typedef {object} PositionedZone
+ * @property {'zone'} type
+ * @property {number=} top - percentage from edge, 0 - 100
+ * @property {number=} left - percentage from edge, 0 - 100
+ * @property {number=} height - percentage of player height, 0 - 100
+ * @property {number=} width - percentage of player width, 0 - 100
  * @property {string=} channelName
  * @property {string=} displayName
  */

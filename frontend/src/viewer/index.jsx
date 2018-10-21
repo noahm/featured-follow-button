@@ -1,20 +1,21 @@
 import '../common-styles';
-import classNames from 'classnames';
 import { parse } from 'querystringify';
-import styles from './style';
 import { Component } from 'react';
 import { render } from 'react-dom';
+import styles from './style.css';
 import { Config } from '../config';
+import { FollowButton } from './follow-button';
 
 const knownFollows = new Set();
 
 class App extends Component {
 	state = {
+		/** @type {AuthCallback} */
 		auth: null,
 		animateOut: false,
 		buttonHidden: false,
-		channelName: '',
-		displayName: '',
+		/** @type {LiveItems} */
+		liveItems: [],
 		followUiOpen: false,
 		componentMode: false,
 	};
@@ -27,6 +28,7 @@ class App extends Component {
 				componentMode: true,
 			});
 		}
+
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
 			this.config = new Config(() => {
 				this.updateChannel(this.config.liveState);
@@ -53,31 +55,40 @@ class App extends Component {
 		);
 	}
 
-	renderButton() {
-		const { animateOut, buttonHidden, channelName, displayName } = this.state;
+	/**
+	 * 
+	 * @param {LiveLayoutItem} item 
+	 */
+	renderItem(item) {
+		const { animateOut, buttonHidden, followUiOpen, componentMode } = this.state;
 
-		if (!channelName || buttonHidden) {
+		if (!item.channelName || buttonHidden) {
 			return null;
 		}
 
-		return (
-			<div key={channelName} onAnimationEnd={this.animationEnded} className={classNames(styles.animation, styles.animationShow, { [styles.animationHide]: animateOut })}>
-				<div className={styles.animationSlide}>
-					<button disabled={this.state.followUiOpen} className={styles.button} onClick={this.onFollowClick}>
-						<span className={styles.buttonText}>
-							<svg width="16px" height="16px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
-								<path clipRule="evenodd" d="M8,14L1,7V4l2-2h3l2,2l2-2h3l2,2v3L8,14z" fillRule="evenodd" />
-							</svg>
-							Follow {displayName || channelName}
-						</span>
-					</button>
-				</div>
-			</div>
-		);
+		if (item.type === 'button') {
+			return (
+				<FollowButton
+					key={item.channelName}
+					animateOut={animateOut}
+					disabled={followUiOpen}
+					onClick={() => this.onFollowClick(item.channelName)}
+					onAnimationEnd={this.animationEnded}
+					channelName={item.channelName}
+					displayName={item.displayName}
+					componentMode={componentMode}
+				/>
+			);
+		} else {
+			return (
+				null
+			);
+		}
 	}
 
 	onExtensionBroadcast = (target, contentType, message) => {
 		try {
+			/** @type {LiveState} */
 			const decodedMessage = JSON.parse(message);
 			if (decodedMessage && (
 				// update if this gives us any channel while not displaying
@@ -87,7 +98,6 @@ class App extends Component {
 					decodedMessage.channelName !== this.state.channelName
 					|| decodedMessage.displayName !== this.state.displayName
 				)
-				
 			)) {
 				this.updateChannel(decodedMessage);
 			}
@@ -95,13 +105,16 @@ class App extends Component {
 	}
 
 	animationEnded = () => {
-		if (this.state.animateOut) {
+		if (this.state.animateOut && !this.state.butt) {
 			this.setState({
 				buttonHidden: true,
 			});
 		}
 	}
 
+	/**
+	 * @param {LiveState} newState
+	 */
 	updateChannel(newState) {
 		if (this.state.channelName && !newState.channelName && !this.state.animateOut) {
 			this.setState({
@@ -122,11 +135,11 @@ class App extends Component {
 		}
 	}
 
-	onFollowClick = () => {
+	onFollowClick = (channelName) => {
 		if (!this.state.channelName) {
 			return;
 		}
-		Twitch.ext.actions.followChannel(this.state.channelName);
+		Twitch.ext.actions.followChannel(channelName);
 		this.setState({
 			followUiOpen: true,
 		});

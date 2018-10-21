@@ -1,19 +1,25 @@
+// @ts-check
+import * as iassign from 'immutable-assign';
+import '../../models';
+
 const CONFIG_VERSION = '1.0';
 
+/** @type {ChannelData} */
 const defaultConfig = {
-  liveButton: {
-    channelName: '',
-    displayName: '',
+  liveButton: {},
+  liveState: {},
+  settings: {
+    queue: [],
+    configuredLayouts: [],
   },
 };
 
 export class Config {
   /**
    * @private
-   * @type {typeof defaultConfig}
+   * @type {ChannelData}
    */
   config;
-
 
   /**
    * 
@@ -43,7 +49,6 @@ export class Config {
     let ret = defaultConfig;
     try {
       if (Twitch.ext.configuration.broadcaster.version === CONFIG_VERSION) {
-        console.log('received valid config');
         ret = JSON.parse(Twitch.ext.configuration.broadcaster.content);
       }
     } finally {
@@ -51,19 +56,29 @@ export class Config {
     }
   }
 
+  /**
+   * @return {LiveState}
+   */
   get liveState() {
-    return this.config.liveButton;
+    return this.config.liveState || this.config.liveButton;
   }
 
-  setLiveState(channelName, displayName) {
-    const newState = {
-      channelName,
-      displayName,
-    };
-    const newConfiguration = Object.assign({}, this.config);
-    newConfiguration.liveButton = newState;
+  get settings() {
+    return this.config.settings;
+  }
+
+  /**
+   * 
+   * @param {LiveItems} liveItems
+   */
+  setLiveState(liveItems) {
+    const newState = { liveItems };
+    this.config = iassign(this.config, (config) => {
+      config.liveState = newState;
+      return config;
+    });
     // set configuration
-    Twitch.ext.configuration.set('broadcaster', CONFIG_VERSION, JSON.stringify(newConfiguration));
+    Twitch.ext.configuration.set('broadcaster', CONFIG_VERSION, JSON.stringify(this.config));
     // broadcast to pubsub
     Twitch.ext.send('broadcast', 'application/json', newState);
   }

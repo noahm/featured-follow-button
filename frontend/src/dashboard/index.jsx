@@ -1,5 +1,6 @@
+// @ts-check
 import '../common-styles.css';
-import './style';
+import './style.css';
 import { applyThemeClass } from '../common-styles';
 import { Component } from 'react';
 import { render } from 'react-dom';
@@ -11,6 +12,7 @@ const ERROR_DISPLAY_PERIOD = 15000;
 
 class App extends Component {
 	state = {
+		/** @type {AuthCallback} */
 		auth: null,
 		channelName: '',
 		displayName: '',
