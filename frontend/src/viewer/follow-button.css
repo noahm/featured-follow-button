@@ -23,6 +23,8 @@ svg {
   vertical-align: middle;
   cursor: pointer;
   user-select: none;
+  margin: 0;
+  padding: 0;
 }
 
 .componentMode {
@@ -58,7 +60,7 @@ svg {
 
 .animation {
   overflow: hidden;
-  height: 100%;
+  position: absolute;
 }
 .animationSlide {
   transform: translate3d(0, 100%, 0);

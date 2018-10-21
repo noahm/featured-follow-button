@@ -1,0 +1,22 @@
+.followZone {
+  position: absolute;
+  cursor: pointer;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 2px dashed lightslategray;
+  border-radius: 2px;
+  user-select: none;
+  text-shadow: 0 0 4px white;
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.followZone:hover {
+  opacity: 0.9;
+  border-color: darkslategray;
+  box-shadow: 0px 0px 4px white;
+}

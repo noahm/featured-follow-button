@@ -5,36 +5,27 @@ import { render } from 'react-dom';
 import styles from './style.css';
 import { Config } from '../config';
 import { FollowButton } from './follow-button';
-
-const knownFollows = new Set();
+import { FollowZone } from './follow-zone';
 
 class App extends Component {
 	state = {
-		/** @type {AuthCallback} */
-		auth: null,
 		animateOut: false,
-		buttonHidden: false,
+		itemsHidden: false,
 		/** @type {LiveItems} */
 		liveItems: [],
 		followUiOpen: false,
-		componentMode: false,
+		componentMode: parse(window.location.search).anchor === 'component',
 	};
+
 	/** @type {Config} */
 	config;
 
 	componentDidMount() {
-		if (parse(window.location.search).anchor === 'component') {
-			this.setState({
-				componentMode: true,
-			});
-		}
-
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
 			this.config = new Config(() => {
 				this.updateChannel(this.config.liveState);
 			});
 			Twitch.ext.onAuthorized((auth) => {
-				this.setState({ auth });
 				Twitch.ext.listen('broadcast', this.onExtensionBroadcast);
 				Twitch.ext.actions.onFollow(this.onFollowUiClosed);
 			});
@@ -42,28 +33,35 @@ class App extends Component {
 	}
 
 	render() {
-		if (!this.state.auth) {
+		if (!this.state.liveItems.length) {
 			return null;
+		}
+
+		if (this.state.componentMode) {
+			return (
+				<main>
+					<div className={styles.componentMode}>
+						{this.renderItem(this.state.liveItems.find(i => i.type === 'button'))}
+					</div>
+				</main>
+			);
 		}
 
 		// TODO only render one in component mode
 		return (
 			<main>
-				<div className={this.state.componentMode ? styles.componentMode : styles.lowerThird}>
-					{this.state.liveItems.map(this.renderItem)}
-				</div>
+				{this.state.liveItems.map(this.renderItem)}
 			</main>
 		);
 	}
 
 	/**
-	 * 
 	 * @param {LiveLayoutItem} item 
 	 */
-	renderItem(item) {
-		const { animateOut, buttonHidden, followUiOpen, componentMode } = this.state;
+	renderItem = (item) => {
+		const { animateOut, itemsHidden, followUiOpen, componentMode } = this.state;
 
-		if (!item.channelName || buttonHidden) {
+		if (itemsHidden || !item || !item.channelName) {
 			return null;
 		}
 
@@ -74,16 +72,20 @@ class App extends Component {
 					key={item.id}
 					animateOut={animateOut}
 					disabled={followUiOpen}
-					onClick={() => this.onFollowClick(item.channelName)}
+					onClick={() => this.onFollowClick(item)}
 					onAnimationEnd={this.animationEnded}
-					channelName={item.channelName}
-					displayName={item.displayName}
+					item={item}
 					componentMode={componentMode}
 				/>
 			);
-		} else {
+		} else if (!animateOut) {
 			return (
-				null
+				<FollowZone
+					key={item.id}
+					disabled={followUiOpen}
+					onClick={() => this.onFollowClick(item)}
+					item={item}
+				/>
 			);
 		}
 	}
@@ -118,16 +120,23 @@ class App extends Component {
 	 * @param {LiveState} newState
 	 */
 	updateChannel(newState) {
-		if (this.state.channelName && !newState.channelName && !this.state.animateOut) {
+		const newItems = newState.liveItems || newState.channelName ? [{
+			channelName: newState.channelName,
+			displayName: newState.displayName,
+			id: -1,
+			top: 75,
+			left: 70,
+		}] : [];
+		const currentID = this.state.liveItems.reduce((id, item) => id + ':' + item.id, '');
+		const nextID = newItems.reduce((id, item) => id + ':' + item.id, '');
+
+		if (currentID && !nextID && !this.state.animateOut) {
 			this.setState({
 				animateOut: true,
 			});
-		} else if (
-			this.state.buttonHidden || (
-				this.state.channelName !== newState.channelName
-				|| this.state.displayName !== newState.displayName
-			) && !knownFollows.has(newState.channelName)
-		) {
+			return;
+		}
+		if (this.state.itemsHidden || nextID !== currentID) {
 			this.setState({
 				animateOut: false,
 				buttonHidden: false,
@@ -137,24 +146,22 @@ class App extends Component {
 		}
 	}
 
-	onFollowClick = (channelName) => {
-		if (!this.state.channelName) {
+	/**
+	 * @param {LiveLayoutItem} item
+	 */
+	onFollowClick = (item) => {
+		if (!item.channelName) {
 			return;
 		}
-		Twitch.ext.actions.followChannel(channelName);
+		Twitch.ext.actions.followChannel(item.channelName);
 		this.setState({
 			followUiOpen: true,
 		});
 	}
 
-	onFollowUiClosed = (didFollow, channelName) => {
-		if (didFollow) {
-			knownFollows.add(channelName);
-		}
+	onFollowUiClosed = () => {
 		this.setState({
 			followUiOpen: false,
-			// TODO handle closing just the clicked button? or drop this behavior entirely?
-			animateOut: true,
 		});
 	}
 }
