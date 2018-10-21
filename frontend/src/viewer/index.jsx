@@ -47,7 +47,6 @@ class App extends Component {
 			);
 		}
 
-		// TODO only render one in component mode
 		return (
 			<main>
 				{this.state.liveItems.map(this.renderItem)}
@@ -65,7 +64,6 @@ class App extends Component {
 			return null;
 		}
 
-		// TODO render positions from here?
 		if (item.type === 'button') {
 			return (
 				<FollowButton
@@ -120,13 +118,13 @@ class App extends Component {
 	 * @param {LiveState} newState
 	 */
 	updateChannel(newState) {
-		const newItems = newState.liveItems || newState.channelName ? [{
+		const newItems = newState.liveItems || (newState.channelName ? [{
 			channelName: newState.channelName,
 			displayName: newState.displayName,
 			id: -1,
 			top: 75,
 			left: 70,
-		}] : [];
+		}] : []);
 		const currentID = this.state.liveItems.reduce((id, item) => id + ':' + item.id, '');
 		const nextID = newItems.reduce((id, item) => id + ':' + item.id, '');
 
@@ -140,8 +138,7 @@ class App extends Component {
 			this.setState({
 				animateOut: false,
 				buttonHidden: false,
-				// TODO replace this
-				liveItems: newState,
+				liveItems: newItems,
 			});
 		}
 	}
