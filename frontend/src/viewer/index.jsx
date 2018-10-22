@@ -31,7 +31,7 @@ class App extends Component {
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
 			this.config = new Config();
 			this.config.configAvailable.then(() => {
-				this.updateChannel(this.config.liveState);
+				this.applyLiveState(this.config.liveState);
 			});
 			Twitch.ext.onAuthorized((auth) => {
 				Twitch.ext.listen('broadcast', this.onExtensionBroadcast);
@@ -100,17 +100,8 @@ class App extends Component {
 		try {
 			/** @type {LiveState} */
 			const decodedMessage = JSON.parse(message);
-			// TODO update logic to stop using legacy data format
-			if (decodedMessage && (
-				// update if this gives us any channel while not displaying
-				(decodedMessage.channelName && this.state.animateOut)
-				// or update if the values are changing while displaying
-				|| !this.state.animateOut && (
-					decodedMessage.channelName !== this.state.channelName
-					|| decodedMessage.displayName !== this.state.displayName
-				)
-			)) {
-				this.updateChannel(decodedMessage);
+			if (decodedMessage) {
+				this.applyLiveState(decodedMessage);
 			}
 		} catch (_) { }
 	}
@@ -126,7 +117,7 @@ class App extends Component {
 	/**
 	 * @param {LiveState} newState
 	 */
-	updateChannel(newState) {
+	applyLiveState(newState) {
 		const currentID = this.state.liveItems.reduce((id, item) => id + ':' + item.id, '');
 		const nextID = newState.newItems.reduce((id, item) => id + ':' + item.id, '');
 
