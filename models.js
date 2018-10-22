@@ -36,7 +36,7 @@
 
 /**
  * @typedef {object} Settings
- * @property {Array<LiveButton>} queue
+ * @property {Array<LiveButton>} favorites
  * @property {Array<Layout>} configuredLayouts
  */
 

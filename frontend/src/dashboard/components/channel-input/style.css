@@ -1,6 +1,10 @@
 label {
   /* display: block; */
   margin: 0.5rem 0;
+  cursor: pointer;
+}
+input[type="checkbox"] {
+  cursor: pointer;
 }
 
 .error {

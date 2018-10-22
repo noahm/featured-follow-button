@@ -48,8 +48,8 @@ export class ChannelInput extends Component {
           {' Auto'}
         </label>
         <br />
-        <button disabled={isValidating} onClick={this.onClickAdd}>Queue</button>
-        <button disabled={isValidating} onClick={this.onClickActivate}>Display</button>
+        <button disabled={isValidating} onClick={this.onClickActivate}>Activate</button>
+        <button disabled={isValidating} onClick={this.onClickFavorite}>Favorite</button>
       </form>
     );
   }
@@ -94,12 +94,12 @@ export class ChannelInput extends Component {
     e.preventDefault();
   }
 
-  onClickAdd = () => {
+  onClickFavorite = () => {
     this.checkValidRemote().then((isValid) => {
       if (!isValid) {
         return;
       }
-      this.props.onAdd(this.state.pendingChannelName, this.pendingDisplayName);
+      this.props.onAddFavorite(this.state.pendingChannelName, this.pendingDisplayName);
       this.pendingDisplayName = '';
       this.setState({
         pendingChannelName: '',

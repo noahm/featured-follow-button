@@ -11,7 +11,7 @@ const defaultConfig = {
     liveItems: [],
   },
   settings: {
-    queue: [],
+    favorites: [],
     configuredLayouts: [],
   },
 };
@@ -23,40 +23,38 @@ export class Config {
    */
   config;
 
+
   /**
-   * 
-   * @param {() => void} onFirstUpdate
+   * @readonly
+   * @type {Promise<void>}
    */
-  constructor(onFirstUpdate) {
+  configAvailable;
+
+  constructor() {
     if (typeof Twitch === 'undefined' || !Twitch.ext) {
       console.error('Twitch ext not present. Config not available.');
       return;
     }
 
-    Twitch.ext.configuration.onChanged(() => {
-      let notify = false;
-      if (!this.config) {
-        notify = true;
-      }
-      this.config = this.getConfiguration();
-      if (notify && this.config) {
-        onFirstUpdate();
+    this.configAvailable = new Promise(resolve => {
+      Twitch.ext.configuration.onChanged(() => {
+        this.config = this.getConfiguration();
+        resolve();
+      });
+
+      const availableConfig = this.getConfiguration();
+      if (availableConfig !== defaultConfig) {
+        this.config = availableConfig;
+        resolve();
       }
     });
-
-    const availableConfig = this.getConfiguration();
-    if (availableConfig !== defaultConfig) {
-      console.log('have config already available');
-      this.config = availableConfig;
-      onFirstUpdate();
-    }
   }
 
   /**
    * @private
    */
   getConfiguration() {
-    return defaultConfig;
+    // return defaultConfig;
     let ret = defaultConfig;
     try {
       if (Twitch.ext.configuration.broadcaster.version === CONFIG_VERSION) {
@@ -77,9 +75,6 @@ export class Config {
     Twitch.ext.configuration.set('broadcaster', CONFIG_VERSION, JSON.stringify(this.config));
   }
 
-  /**
-   * @return {LiveState}
-   */
   get liveState() {
     return this.config.liveState;
   }
@@ -111,6 +106,24 @@ export class Config {
   saveLayout(layout) {
     this.config = iassign(this.config, (config) => config.settings, (settings) => {
       settings.configuredLayouts = [layout];
+      return settings;
+    });
+    const availableSlots = new Set(this.config.settings.configuredLayouts[0].positions.map(item => item.id));
+    const validLiveItems = this.config.liveState.liveItems.filter(item => availableSlots.has(item.id));
+    // check if we deleted a slot with an active button
+    if (validLiveItems.length < this.config.liveState.liveItems.length) {
+      this.setLiveState(validLiveItems);
+    } else {
+      this.save();
+    }
+  }
+
+  /**
+   * @param {Array<LiveButton>} favorites
+   */
+  saveFavorites(favorites) {
+    this.config = iassign(this.config, (config) => config.settings, (settings) => {
+      settings.favorites = favorites.slice();
       return settings;
     });
     this.save();

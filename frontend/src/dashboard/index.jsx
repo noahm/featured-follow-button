@@ -1,6 +1,5 @@
-// @ts-check
 import '../common-styles.css';
-import './style.css';
+import styles from './style.css';
 import { applyThemeClass } from '../common-styles';
 import iassign from 'immutable-assign'
 import { Component } from 'react';
@@ -25,12 +24,14 @@ class App extends Component {
 	/** @type {Config} */
 	config;
 
-	componentDidMount() {
+	constructor(props) {
+		super(props);
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
 			Twitch.ext.onAuthorized((auth) => {
 				this.setState({ auth });
 			});
-			this.config = new Config(() => {
+			this.config = new Config();
+			this.config.configAvailable.then(() => {
 				const liveItems = {};
 				for (const item of this.config.liveState.liveItems) {
 					liveItems[item.id] = item;
@@ -44,34 +45,57 @@ class App extends Component {
 	}
 
 	render() {
-		// TODO render slot select
-		// TODO render current state of slot
-		// TOOD rename/migrate queue into saved list of favorite channels
-		const layoutItem = this.state.layout.positions[this.state.editingPosition];
-		/** @type {LiveButton} */
-		const liveItem = (layoutItem && this.state.liveItems[layoutItem.id]) || {};
 		return (
 			<div>
-				{this.state.layout.positions.length > 1 && <select value={this.state.editingPosition}>
-					{this.state.layout.positions.map((item, i) => {
-						const label = String.fromCharCode(startingCharCode + i);
-						return (
-							<option key={item.id} value={i}>{item.type + ' ' + label}</option>
-						);
-					})}
-				</select>}
-				<Status
-					channelName={liveItem.channelName}
-					displayName={liveItem.displayName}
-				/>
+				{this.renderStatus()}
 				<ChannelQueue
-					channelName={this.state.channelName}
+					config={this.config}
 					onChange={this.updateChannel}
-					onClear={this.clearChannel}
 					clientID={this.state.auth && this.state.auth.clientId}
 				/>
 			</div>
 		);
+	}
+
+	renderStatus() {
+		const layoutItem = this.state.layout.positions[this.state.editingPosition];
+		/** @type {LiveButton} */
+		const liveItem = (layoutItem && this.state.liveItems[layoutItem.id]) || {};
+
+		if (this.state.layout.positions.length > 1) {
+			return (
+				<div className={styles.slotSelect}>
+					{'Editing position: '}
+					<select value={this.state.editingPosition} onChange={this.updateEditingPosition}>
+						{this.state.layout.positions.map((item, i) => {
+							const label = String.fromCharCode(startingCharCode + i);
+							const channel = this.state.liveItems[item.id];
+							return (
+								<option key={item.id} value={i}>{item.type + ' ' + label} - {channel ? channel.channelName : '(inactive)'}</option>
+							);
+						})}
+					</select>
+					{liveItem.channelName && <button onClick={this.clearChannel}>Clear</button>}
+				</div>
+			);
+		}
+
+		return (
+			<Status
+				channelName={liveItem.channelName}
+				displayName={liveItem.displayName}
+				onClear={this.clearChannel}
+			/>
+		);
+	}
+
+	updateEditingPosition = (e) => {
+		const newPosition = +e.currentTarget.value;
+		if (Number.isInteger(newPosition)) {
+			this.setState({
+				editingPosition: newPosition,
+			});
+		}
 	}
 
 	/**

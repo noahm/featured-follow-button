@@ -26,9 +26,11 @@ class App extends Component {
 	/** @type {Config} */
 	config;
 
-	componentDidMount() {
+	constructor(props) {
+		super(props);
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
-			this.config = new Config(() => {
+			this.config = new Config();
+			this.config.configAvailable.then(() => {
 				this.updateChannel(this.config.liveState);
 			});
 			Twitch.ext.onAuthorized((auth) => {

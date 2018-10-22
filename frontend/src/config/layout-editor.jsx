@@ -25,12 +25,14 @@ export class LayoutEditor extends Component {
   /** @type {Layout} */
   dirtyLayout;
 
-  componentDidMount() {
-    this.config = new Config(() => {
+  constructor(props) {
+    super(props);
+    this.config = new Config();
+    this.config.configAvailable.then(() => {
       this.setState({
         layout: this.config.settings.configuredLayouts.length ? this.config.settings.configuredLayouts[0] : defaultLayout,
       });
-    })
+    });
   }
 
   render() {
