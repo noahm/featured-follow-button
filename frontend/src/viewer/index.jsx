@@ -112,22 +112,17 @@ class App extends Component {
 	 * @param {LiveState} newState
 	 */
 	applyLiveState(newState) {
-		const currentID = this.state.liveItems.reduce((id, item) => id ? id + ':' + item.id : item.id, '');
-		const nextID = newState.liveItems.reduce((id, item) => id ? id + ':' + item.id : item.id, '');
-
-		if (currentID && !nextID && !this.state.animateOut) {
+		if (this.state.liveItems.length && !newState.liveItems.length && !this.state.animateOut) {
 			this.setState({
 				animateOut: true,
 			});
 			return;
 		}
-		if (this.state.itemsHidden || nextID !== currentID) {
-			this.setState({
-				animateOut: false,
-				buttonHidden: false,
-				liveItems: newState.liveItems,
-			});
-		}
+		this.setState({
+			animateOut: false,
+			buttonHidden: false,
+			liveItems: newState.liveItems,
+		});
 	}
 
 	/**
