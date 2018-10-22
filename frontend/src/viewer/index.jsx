@@ -12,13 +12,7 @@ class App extends Component {
 		animateOut: false,
 		itemsHidden: false,
 		/** @type {LiveItems} */
-		liveItems: [{
-			type: 'button',
-			id: -1,
-			channelName: 'me',
-			top: 5,
-			left: 5,
-		}],
+		liveItems: [],
 		followUiOpen: false,
 		componentMode: getAnchorMode() === 'component',
 	};
@@ -118,8 +112,8 @@ class App extends Component {
 	 * @param {LiveState} newState
 	 */
 	applyLiveState(newState) {
-		const currentID = this.state.liveItems.reduce((id, item) => id + ':' + item.id, '');
-		const nextID = newState.newItems.reduce((id, item) => id + ':' + item.id, '');
+		const currentID = this.state.liveItems.reduce((id, item) => id ? id + ':' + item.id : item.id, '');
+		const nextID = newState.liveItems.reduce((id, item) => id ? id + ':' + item.id : item.id, '');
 
 		if (currentID && !nextID && !this.state.animateOut) {
 			this.setState({
@@ -131,7 +125,7 @@ class App extends Component {
 			this.setState({
 				animateOut: false,
 				buttonHidden: false,
-				liveItems: newState.newItems,
+				liveItems: newState.liveItems,
 			});
 		}
 	}
