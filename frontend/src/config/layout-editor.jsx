@@ -87,12 +87,18 @@ export class LayoutEditor extends Component {
       return;
     }
     this.setState((s) => {
-      const layout = s.layout.slice();
-      layout.splice(deleteIndex, 1);
+      const layout = iassign(s.layout, (l) => l.positions, (positions) => {
+        positions.splice(deleteIndex, 1);
+        return positions;
+      });
+      if (this.dirtyLayout) {
+        this.dirtyLayout.positions.splice(deleteIndex, 1);
+      }
       return {
         layout,
+        isDirty: true,
       };
-    })
+    });
   }
 
   addButton = () => {
