@@ -170,7 +170,7 @@ export class LayoutEditor extends Component {
     this.config.saveLayout(newLayout);
     this.setState({
       isDirty: false,
-      layout: this.dirtyLayout,
+      layout: newLayout,
     });
   }
 }
