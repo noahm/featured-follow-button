@@ -2,52 +2,67 @@
 import '../common-styles.css';
 import './style.css';
 import { applyThemeClass } from '../common-styles';
+import iassign from 'immutable-assign'
 import { Component } from 'react';
 import { render } from 'react-dom';
 import { Config } from '../config';
+import { defaultLayout } from '../utils';
 import { Status } from './components/status';
 import { ChannelQueue } from './components/channel-queue';
 
-const ERROR_DISPLAY_PERIOD = 15000;
+const startingCharCode = 'A'.charCodeAt(0);
 
 class App extends Component {
 	state = {
-		/** @type {AuthCallback} */
+		/** @type {Twitch.AuthCallback} */
 		auth: null,
-		channelName: '',
-		displayName: '',
-		requestErrored: false,
+		/** @type {Layout} */
+		layout: defaultLayout,
+		/** @type {Record<string, LiveLayoutItem>} */
+		liveItems: {},
+		editingPosition: 0,
 	};
 	/** @type {Config} */
 	config;
 
 	componentDidMount() {
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
-			this.config = new Config(() => {
-				const state = this.config.liveState;
-				this.setState({
-					channelName: state.channelName,
-					displayName: state.displayName,
-				});
-			});
 			Twitch.ext.onAuthorized((auth) => {
 				this.setState({ auth });
-				Twitch.ext.listen('broadcast', this.onExtensionBroadcast);
+			});
+			this.config = new Config(() => {
+				const liveItems = {};
+				for (const item of this.config.liveState.liveItems) {
+					liveItems[item.id] = item;
+				}
+				this.setState({
+					liveItems,
+					layout: this.config.settings.configuredLayouts.length ? this.config.settings.configuredLayouts[0] : defaultLayout,
+				});
 			});
 		}
 	}
 
 	render() {
-		if (!this.state.auth) {
-			return <div>waiting for twitch...</div>;
-		}
-
+		// TODO render slot select
+		// TODO render current state of slot
+		// TOOD rename/migrate queue into saved list of favorite channels
+		const layoutItem = this.state.layout.positions[this.state.editingPosition];
+		/** @type {LiveButton} */
+		const liveItem = (layoutItem && this.state.liveItems[layoutItem.id]) || {};
 		return (
 			<div>
+				{this.state.layout.positions.length > 1 && <select value={this.state.editingPosition}>
+					{this.state.layout.positions.map((item, i) => {
+						const label = String.fromCharCode(startingCharCode + i);
+						return (
+							<option key={item.id} value={i}>{item.type + ' ' + label}</option>
+						);
+					})}
+				</select>}
 				<Status
-					channelName={this.state.channelName}
-					displayName={this.state.displayName}
-					isErrored={this.state.requestErrored}
+					channelName={liveItem.channelName}
+					displayName={liveItem.displayName}
 				/>
 				<ChannelQueue
 					channelName={this.state.channelName}
@@ -59,48 +74,37 @@ class App extends Component {
 		);
 	}
 
-	onExtensionBroadcast = (target, contentType, message) => {
-		try {
-			const decodedMessage = JSON.parse(message);
-			if (decodedMessage && (
-				decodedMessage.channelName !== this.state.channelName
-				|| decodedMessage.displayName !== this.state.displayName
-			)
-			) {
-				this.setState({
-					channelName: decodedMessage.channelName,
-					displayName: decodedMessage.displayName,
-				});
-			}
-		} catch (_) { }
-	}
+	/**
+	 * @param {LiveButton} liveInfo
+	 */
+	updateChannel = (liveInfo) => {
+		const layoutItem = this.state.layout.positions[this.state.editingPosition];
+		const liveItem = {
+			...layoutItem,
+			...liveInfo,
+		};
 
-	updateChannel = (channelName = '', displayName = '') => {
-		this.setState({ channelName, displayName });
+		const liveItems = iassign(this.state.liveItems, (liveItems) => {
+			liveItems[layoutItem.id] = liveItem;
+			return liveItems;
+		});
 
-		try {
-			this.config.setLiveState(channelName, displayName);
-			this.clearErrorState();
-		} catch (error) {
-			if (!this.state.requestErrored) {
-				this.setState({
-					requestErrored: true,
-				}, () => {
-					// clear error state after some time
-					setTimeout(this.clearErrorState, ERROR_DISPLAY_PERIOD);
-				});
-			}
-		}
-	}
-
-	clearErrorState = () => {
-		if (this.state.requestErrored) {
-			this.setState({ requestErrored: false });
-		}
+		this.setState({
+			liveItems,
+		});
+		this.config.setLiveState(Object.values(liveItems));
 	}
 
 	clearChannel = () => {
-		this.updateChannel();
+		const layoutItem = this.state.layout.positions[this.state.editingPosition];
+		const liveItems = iassign(this.state.liveItems, (liveItems) => {
+			delete liveItems[layoutItem.id]
+			return liveItems;
+		});
+		this.config.setLiveState(Object.values(liveItems));
+		this.setState({
+			liveItems,
+		});
 	}
 }
 

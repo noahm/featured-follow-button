@@ -3,7 +3,7 @@ import { Component } from 'react';
 import { render } from 'react-dom';
 import styles from './style.css';
 import { Config } from '../config';
-import { getAnchorMode } from '../utils';
+import { getAnchorMode, defaultLayout } from '../utils';
 import { FollowButton } from './follow-button';
 import { FollowZone } from './follow-zone';
 
@@ -98,6 +98,7 @@ class App extends Component {
 		try {
 			/** @type {LiveState} */
 			const decodedMessage = JSON.parse(message);
+			// TODO update logic to stop using legacy data format
 			if (decodedMessage && (
 				// update if this gives us any channel while not displaying
 				(decodedMessage.channelName && this.state.animateOut)
@@ -124,15 +125,8 @@ class App extends Component {
 	 * @param {LiveState} newState
 	 */
 	updateChannel(newState) {
-		const newItems = newState.liveItems || (newState.channelName ? [{
-			channelName: newState.channelName,
-			displayName: newState.displayName,
-			id: -1,
-			top: 75,
-			left: 70,
-		}] : []);
 		const currentID = this.state.liveItems.reduce((id, item) => id + ':' + item.id, '');
-		const nextID = newItems.reduce((id, item) => id + ':' + item.id, '');
+		const nextID = newState.newItems.reduce((id, item) => id + ':' + item.id, '');
 
 		if (currentID && !nextID && !this.state.animateOut) {
 			this.setState({
@@ -144,7 +138,7 @@ class App extends Component {
 			this.setState({
 				animateOut: false,
 				buttonHidden: false,
-				liveItems: newItems,
+				liveItems: newState.newItems,
 			});
 		}
 	}

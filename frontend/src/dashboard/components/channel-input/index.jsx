@@ -112,7 +112,10 @@ export class ChannelInput extends Component {
       if (!isValid) {
         return;
       }
-      this.props.onActivate(this.state.pendingChannelName, this.pendingDisplayName);
+      this.props.onActivate({
+        channelName: this.state.pendingChannelName,
+        displayName: this.pendingDisplayName,
+      });
       this.pendingDisplayName = '';
       this.setState({
         pendingChannelName: '',
@@ -137,6 +140,10 @@ export class ChannelInput extends Component {
     }
 
     return new Promise((resolve) => {
+      if (!this.props.clientID) {
+        resolve(true);
+        return;
+      }
       if (!this.isValid()) {
         resolve(false);
         return;

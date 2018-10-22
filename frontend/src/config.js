@@ -7,7 +7,9 @@ const CONFIG_VERSION = '1.0';
 /** @type {ChannelData} */
 const defaultConfig = {
   liveButton: {},
-  liveState: {},
+  liveState: {
+    liveItems: [],
+  },
   settings: {
     queue: [],
     configuredLayouts: [],
@@ -30,6 +32,7 @@ export class Config {
       console.error('Twitch ext not present. Config not available.');
       return;
     }
+
     Twitch.ext.configuration.onChanged(() => {
       let notify = false;
       if (!this.config) {
@@ -40,12 +43,20 @@ export class Config {
         onFirstUpdate();
       }
     });
+
+    const availableConfig = this.getConfiguration();
+    if (availableConfig !== defaultConfig) {
+      console.log('have config already available');
+      this.config = availableConfig;
+      onFirstUpdate();
+    }
   }
 
   /**
    * @private
    */
   getConfiguration() {
+    return defaultConfig;
     let ret = defaultConfig;
     try {
       if (Twitch.ext.configuration.broadcaster.version === CONFIG_VERSION) {
@@ -70,7 +81,7 @@ export class Config {
    * @return {LiveState}
    */
   get liveState() {
-    return this.config.liveState || this.config.liveButton;
+    return this.config.liveState;
   }
 
   get settings() {

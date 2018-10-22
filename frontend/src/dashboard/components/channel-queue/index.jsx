@@ -41,7 +41,7 @@ export class ChannelQueue extends Component {
 
     onCueNext = () => {
         const nextChannel = this.state.queue[this.state.nextIndex];
-        this.props.onChange(nextChannel.channelName, nextChannel.displayName);
+        this.props.onChange(nextChannel);
         this.setState((state) => ({
             nextIndex: state.nextIndex + 1,
         }));
@@ -53,7 +53,7 @@ export class ChannelQueue extends Component {
         this.setState({
             nextIndex: channelIndex + 1,
         });
-        this.props.onChange(channel.channelName, channel.displayName);
+        this.props.onChange(channel);
     }
 
     onDeleteClick = (e) => {

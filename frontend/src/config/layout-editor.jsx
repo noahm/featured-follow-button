@@ -1,28 +1,29 @@
-import { Component, CSSProperties, ChangeEvent } from 'react';
+import iassign from 'immutable-assign';
+import { Component, ChangeEvent } from 'react';
 import Dropzone from 'react-dropzone';
 import { FollowZone } from './follow-zone';
 import { DraggableButton } from './draggable-button';
 import styles from './layout-editor.css';
 import { Config } from '../config';
-import { getRandomID } from '../utils';
+import { getRandomID, defaultLayout } from '../utils';
 
 const startingCharCode = 'A'.charCodeAt(0);
-/** @type {Array<LayoutItem>} */
-const defaultLayout = [{ type: 'button', id: getRandomID(), top: 75, left: 75 }];
 
 export class LayoutEditor extends Component {
   state = {
     background: undefined,
-    /** @type {Array<LayoutItem>} */
-    layout: [],
+    /** @type {Layout} */
+    layout: {
+      positions: [],
+    },
     isDirty: false,
   };
 
   /** @type {Config} */
   config;
 
-  /** @type {Array<LayoutItem>} */
-  dirtyLayout = [];
+  /** @type {Layout} */
+  dirtyLayout;
 
   componentDidMount() {
     this.config = new Config(() => {
@@ -41,9 +42,9 @@ export class LayoutEditor extends Component {
             <button onClick={this.addZone}>Add Zone</button>
             <select value="initial" onChange={this.handleDelete}>
               <option value="initial" disabled>Delete...</option>
-              {this.state.layout.map((item, i) => {
+              {this.state.layout.positions.map((item, i) => {
                 const label = String.fromCharCode(startingCharCode + i);
-                return <option key={item.id} value={i}>{label}</option>
+                return <option key={item.id} value={i}>{item.type + ' ' + label}</option>;
               })}
             </select>
           </section>
@@ -58,7 +59,7 @@ export class LayoutEditor extends Component {
           </div>}
           <div className={styles.layoutContainer}>
             <div className={styles.layoutArea}>
-              {this.state.layout.map((item, i) => {
+              {this.state.layout.positions.map((item, i) => {
                 const label = String.fromCharCode(startingCharCode + i);
                 const defaultPosition = { top: item.top, left: item.left };
                 if (item.type === 'button') {
@@ -94,11 +95,13 @@ export class LayoutEditor extends Component {
 
   addButton = () => {
     this.setState((s) => {
-      const layout = s.layout.slice();
       const newButton = { type: 'button', id: getRandomID(), top: 0, left: 0 };
-      layout.push(newButton);
-      if (s.isDirty) {
-        this.dirtyLayout.push(newButton);
+      const layout = iassign(s.layout, (l) => l.positions, (positions) => {
+        positions.push(newButton);
+        return positions;
+      });
+      if (this.dirtyLayout) {
+        this.dirtyLayout.positions.push(newButton);
       }
       return {
         layout,
@@ -109,11 +112,13 @@ export class LayoutEditor extends Component {
 
   addZone = () => {
     this.setState((s) => {
-      const layout = s.layout.slice();
       const newZone = { type: 'zone', id: getRandomID(), top: 0, left: 0, height: 25, width: 25 };
-      layout.push(newZone);
-      if (s.isDirty) {
-        this.dirtyLayout.push(newZone);
+      const layout = iassign(s.layout, (l) => l.positions, (positions) => {
+        positions.push(newZone);
+        return positions;
+      });
+      if (this.dirtyLayout) {
+        this.dirtyLayout.positions.push(newZone);
       }
       return {
         layout,
@@ -140,8 +145,11 @@ export class LayoutEditor extends Component {
    * @param {LayoutItem} newItem
    */
   updateItem = (newItem) => {
-    const layout = this.state.isDirty ? this.dirtyLayout : this.state.layout;
-    this.dirtyLayout = layout.map(item => item.id === newItem.id ? newItem : item);
+    const layout = this.state.isDirty && this.dirtyLayout ? this.dirtyLayout : this.state.layout;
+    this.dirtyLayout = iassign(layout, (layout) => {
+      layout.positions = layout.positions.map(item => item.id === newItem.id ? newItem : item);
+      return layout;
+    });
     if (!this.state.isDirty) {
       this.setState({
         isDirty: true,
@@ -150,7 +158,8 @@ export class LayoutEditor extends Component {
   }
 
   save = () => {
-    this.config.saveLayout(this.dirtyLayout);
+    const newLayout = this.dirtyLayout || this.state.layout;
+    this.config.saveLayout(newLayout);
     this.setState({
       isDirty: false,
       layout: this.dirtyLayout,

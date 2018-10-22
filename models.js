@@ -4,7 +4,7 @@
 /**
  * @typedef {object} PositionedButton
  * @property {'button'} type
- * @property {number} id
+ * @property {string} id
  * @property {number=} top - percentage from edge, 0 - 100
  * @property {number=} left - percentage from edge, 0 - 100
  */
@@ -12,7 +12,7 @@
 /**
  * @typedef {object} PositionedZone
  * @property {'zone'} type
- * @property {number} id
+ * @property {string} id
  * @property {number=} top - percentage from edge, 0 - 100
  * @property {number=} left - percentage from edge, 0 - 100
  * @property {number=} height - percentage of player height, 0 - 100
@@ -31,9 +31,7 @@
 
 /**
  * @typedef {object} LiveState
- * @property {LiveItems=} liveItems
- * @property {string=} channelName
- * @property {string=} displayName
+ * @property {LiveItems} liveItems
  */
 
 /**
