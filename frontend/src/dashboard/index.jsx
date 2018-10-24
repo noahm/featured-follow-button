@@ -140,7 +140,10 @@ class App extends Component {
 	}
 
 	getLayoutItem = () => {
-		return this.state.layout.positions.length && !this.state.componentMode ? this.state.layout.positions[this.state.editingPosition] : defaultLayout.positions[0];
+		if (this.state.componentMode) {
+			return this.state.layout.positions.find(item => item.type === 'button') || defaultLayout.positions[0]
+		}
+		return this.state.layout.positions.length ? this.state.layout.positions[this.state.editingPosition] : defaultLayout.positions[0];
 	}
 
 	/**
