@@ -19,6 +19,7 @@ class App extends Component {
 		componentMode: getAnchorMode() === 'component',
 		isBroadcaster: false,
 		globalHide: false,
+		playerUiVisible: false,
 	};
 
 	/** @type {Config} */
@@ -41,6 +42,13 @@ class App extends Component {
 				}
 				Twitch.ext.listen('broadcast', this.onExtensionBroadcast);
 				Twitch.ext.actions.onFollow(this.onFollowUiClosed);
+				Twitch.ext.onContext(context => {
+					if (context.arePlayerControlsVisible !== this.state.playerUiVisible) {
+						this.setState({
+							playerUiVisible: context.arePlayerControlsVisible,
+						});
+					}
+				});
 			});
 		}
 	}
@@ -100,6 +108,7 @@ class App extends Component {
 					disabled={followUiOpen}
 					onClick={() => this.onFollowClick(item)}
 					item={item}
+					showBorder={this.state.playerUiVisible}
 				/>
 			);
 		}

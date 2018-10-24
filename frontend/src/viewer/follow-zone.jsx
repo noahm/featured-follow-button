@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { Component } from 'react';
 import styles from './follow-zone.css';
 
@@ -6,6 +7,7 @@ export class FollowZone extends Component {
     const {
       item,
       onClick,
+      showBorder,
     } = this.props;
 
     const style = {
@@ -16,8 +18,8 @@ export class FollowZone extends Component {
     };
 
     return (
-      <div className={styles.followZone} style={style} onClick={onClick}>
-        <span>Click to follow {item.displayName || item.channelName}</span>
+      <div className={classNames(styles.followZone, { [styles.showBorder]: showBorder })} style={style} onClick={onClick}>
+        <span className={styles.text}>Click to follow {item.displayName || item.channelName}</span>
       </div>
     );
   }
