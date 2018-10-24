@@ -1,4 +1,5 @@
 import '../common-styles';
+import jwt from 'jsonwebtoken';
 import { Component } from 'react';
 import { render } from 'react-dom';
 import styles from './style.css';
@@ -15,6 +16,8 @@ class App extends Component {
 		liveItems: [],
 		followUiOpen: false,
 		componentMode: getAnchorMode() === 'component',
+		isBroadcaster: false,
+		globalHide: false,
 	};
 
 	/** @type {Config} */
@@ -28,6 +31,13 @@ class App extends Component {
 				this.applyLiveState(this.config.liveState);
 			});
 			Twitch.ext.onAuthorized((auth) => {
+				/** @type {Twitch.JwtToken} */
+				const token = jwt.decode(auth.token);
+				if (token.role === 'broadcaster') {
+					this.setState({
+						isBroadcaster: true,
+					});
+				}
 				Twitch.ext.listen('broadcast', this.onExtensionBroadcast);
 				Twitch.ext.actions.onFollow(this.onFollowUiClosed);
 			});
@@ -35,10 +45,6 @@ class App extends Component {
 	}
 
 	render() {
-		if (!this.state.liveItems.length) {
-			return null;
-		}
-
 		if (this.state.componentMode) {
 			return (
 				<main>
@@ -57,10 +63,18 @@ class App extends Component {
 	}
 
 	/**
-	 * @param {LiveLayoutItem} item 
+	 * @param {LiveLayoutItem} item
 	 */
 	renderItem = (item) => {
-		const { animateOut, itemsHidden, followUiOpen, componentMode } = this.state;
+		const { itemsHidden, followUiOpen, componentMode, isBroadcaster } = this.state;
+		let animateOut = this.state.animateOut;
+		if (this.state.globalHide) {
+			if (isBroadcaster) {
+				animateOut = false;
+			} else {
+				animateOut = true;
+			}
+		}
 
 		if (itemsHidden || !item || !item.channelName) {
 			return null;
@@ -101,7 +115,7 @@ class App extends Component {
 	}
 
 	animationEnded = () => {
-		if (this.state.animateOut && !this.state.butt) {
+		if ((this.state.animateOut || (this.state.globalHide && !this.state.isBroadcaster)) && !this.state.itemsHidden) {
 			this.setState({
 				itemsHidden: true,
 			});
@@ -112,7 +126,11 @@ class App extends Component {
 	 * @param {LiveState} newState
 	 */
 	applyLiveState(newState) {
-		if (this.state.liveItems.length && !newState.liveItems.length && !this.state.animateOut) {
+		this.setState({
+			globalHide: newState.hideAll,
+		});
+
+		if (this.state.liveItems.length && !newState.liveItems.length && !this.state.animateOut && !newState.hideAll) {
 			this.setState({
 				animateOut: true,
 			});

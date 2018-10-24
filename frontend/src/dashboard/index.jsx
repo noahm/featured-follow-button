@@ -20,6 +20,7 @@ class App extends Component {
 		/** @type {Record<string, LiveLayoutItem>} */
 		liveItems: {},
 		editingPosition: 0,
+		globalHide: false,
 	};
 	/** @type {Config} */
 	config;
@@ -38,6 +39,7 @@ class App extends Component {
 				}
 				this.setState({
 					liveItems,
+					globalHide: this.config.liveState.hideAll,
 					layout: this.config.settings.configuredLayouts.length ? this.config.settings.configuredLayouts[0] : defaultLayout,
 				});
 			});
@@ -47,6 +49,7 @@ class App extends Component {
 	render() {
 		return (
 			<div>
+				<label className={styles.hideAll}><input type="checkbox" checked={this.state.globalHide} onChange={this.toggleHide} /> Hide All</label>
 				{this.renderStatus()}
 				<ChannelQueue
 					config={this.config}
@@ -98,6 +101,13 @@ class App extends Component {
 		}
 	}
 
+	toggleHide = () => {
+		this.config.toggleHideAll();
+		this.setState({
+			globalHide: this.config.liveState.hideAll,
+		});
+	}
+
 	/**
 	 * @param {LiveButton} liveInfo
 	 */
@@ -116,7 +126,7 @@ class App extends Component {
 		this.setState({
 			liveItems,
 		});
-		this.config.setLiveState(Object.values(liveItems));
+		this.config.setLiveItems(Object.values(liveItems));
 	}
 
 	clearChannel = () => {
@@ -125,7 +135,7 @@ class App extends Component {
 			delete liveItems[layoutItem.id]
 			return liveItems;
 		});
-		this.config.setLiveState(Object.values(liveItems));
+		this.config.setLiveItems(Object.values(liveItems));
 		this.setState({
 			liveItems,
 		});

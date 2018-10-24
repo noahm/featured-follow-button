@@ -25,6 +25,7 @@
     "file-loader": "^1.1.11",
     "html-webpack-plugin": "^3.2.0",
     "immutable-assign": "^2.0.9",
+    "jsonwebtoken": "^8.3.0",
     "mini-css-extract-plugin": "^0.4.1",
     "postcss-loader": "^3.0.0",
     "querystringify": "^2.0.0",

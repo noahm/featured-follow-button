@@ -5,7 +5,7 @@ export function getUsername(channelName, displayName) {
     if (!channelName) {
         return '';
     }
-    if (!displayName) {
+    if (!displayName || displayName === channelName) {
         return channelName;
     }
     return displayName + ' (' + channelName + ')';
@@ -26,7 +26,7 @@ export function getRandomID() {
  * @returns {'component' | 'video_overlay' | undefined}
  */
 export function getAnchorMode() {
-    return parse(window.location.search).anchor;
+    return parse(window.location.search)['anchor'];
 }
 
 /** @type {Layout} */

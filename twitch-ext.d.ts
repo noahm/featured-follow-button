@@ -33,6 +33,18 @@ declare namespace Twitch {
     userId: string; // Opaque user ID.
   }
 
+  interface JwtToken {
+    channel_id: string;
+    exp: number;
+    opaque_user_id: string;
+    pubsub_perms: {
+      listen: string[];
+      send: string[];
+    };
+    role: 'broadcaster' | 'moderator' | 'viewer' | 'external';
+    user_id?: string;
+  }
+
   interface Context {
     arePlayerControlsVisible: boolean;
     bitrate: number;

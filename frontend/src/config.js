@@ -9,6 +9,7 @@ const defaultConfig = {
   liveButton: {},
   liveState: {
     liveItems: [],
+    hideAll: false,
   },
   settings: {
     favorites: [],
@@ -75,6 +76,13 @@ export class Config {
     Twitch.ext.configuration.set('broadcaster', CONFIG_VERSION, JSON.stringify(this.config));
   }
 
+  /**
+   * @private
+   */
+  publish() {
+    Twitch.ext.send('broadcast', 'application/json', this.config.liveState);
+  }
+
   get liveState() {
     return this.config.liveState;
   }
@@ -84,23 +92,29 @@ export class Config {
   }
 
   /**
-   * 
    * @param {LiveItems} liveItems
    */
-  setLiveState(liveItems) {
-    const newState = { liveItems };
-    this.config = iassign(this.config, (config) => {
-      config.liveState = newState;
-      return config;
+  setLiveItems(liveItems) {
+    this.config = iassign(this.config, (c) => c.liveState, (liveState) => {
+      liveState.liveItems = liveItems.slice();
+      return liveState;
     });
     // set configuration
     this.save();
     // broadcast to pubsub
-    Twitch.ext.send('broadcast', 'application/json', newState);
+    this.publish();
+  }
+
+  toggleHideAll() {
+    this.config = iassign(this.config, (c) => c.liveState, (liveState) => {
+      liveState.hideAll = !liveState.hideAll;
+      return liveState;
+    });
+    this.save();
+    this.publish();
   }
 
   /**
-   * 
    * @param {Layout} layout
    */
   saveLayout(layout) {
@@ -112,7 +126,7 @@ export class Config {
     const validLiveItems = this.config.liveState.liveItems.filter(item => availableSlots.has(item.id));
     // check if we deleted a slot with an active button
     if (validLiveItems.length < this.config.liveState.liveItems.length) {
-      this.setLiveState(validLiveItems);
+      this.setLiveItems(validLiveItems);
     } else {
       this.save();
     }

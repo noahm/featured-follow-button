@@ -32,6 +32,7 @@
 /**
  * @typedef {object} LiveState
  * @property {LiveItems} liveItems
+ * @property {boolean} hideAll
  */
 
 /**

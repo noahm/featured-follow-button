@@ -23,3 +23,7 @@ input:invalid {
 .slotSelect {
 	margin: 0.5em;
 }
+
+.hideAll {
+	float: right;
+}
