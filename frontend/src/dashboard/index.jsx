@@ -64,7 +64,7 @@ class App extends Component {
 		/** @type {LiveButton} */
 		const liveItem = (layoutItem && this.state.liveItems[layoutItem.id]) || {};
 
-		if (this.state.layout.positions.length > 1) {
+		if (!this.state.componentMode && this.state.layout.positions.length > 1) {
 			return (
 				<div className={styles.slotSelect}>
 					Editing position: <br />
