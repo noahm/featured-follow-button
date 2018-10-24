@@ -6,7 +6,7 @@ import { Component } from 'react';
 import { render } from 'react-dom';
 import { Auth } from '../auth';
 import { Config } from '../config';
-import { defaultLayout } from '../utils';
+import { defaultLayout, getAnchorMode } from '../utils';
 import { Status } from './components/status';
 import { ChannelQueue } from './components/channel-queue';
 
@@ -22,6 +22,7 @@ class App extends Component {
 		liveItems: {},
 		editingPosition: 0,
 		globalHide: false,
+		componentMode: getAnchorMode() === 'component',
 	};
 	/** @type {Config} */
 	config;
@@ -42,8 +43,8 @@ class App extends Component {
 				this.setState({
 					liveItems,
 					globalHide: this.config.liveState.hideAll,
-					layout: this.config.settings.configuredLayouts.length ? this.config.settings.configuredLayouts[0] : defaultLayout,
 				});
+				this.applyNewLayout(this.config.settings.configuredLayouts.length ? this.config.settings.configuredLayouts[0] : defaultLayout);
 			});
 		}
 	}
@@ -51,7 +52,7 @@ class App extends Component {
 	render() {
 		return (
 			<div>
-				<label className={styles.hideAll}><input type="checkbox" checked={!!this.state.globalHide} onChange={this.toggleHide} /> Hide All</label>
+				<label className={styles.hideAll}><input type="checkbox" checked={!!this.state.globalHide} onChange={this.toggleHide} /> Hide{this.state.componentMode ? '' : ' All'}</label>
 				{this.renderStatus()}
 				<ChannelQueue
 					config={this.config}
@@ -99,11 +100,31 @@ class App extends Component {
 			/** @type {Layout} */
 			const decodedMessage = JSON.parse(message);
 			if (decodedMessage) {
-				this.setState({
-					layout: decodedMessage,
-				});
+				this.applyNewLayout(decodedMessage);
 			}
 		} catch (_) { }
+	}
+
+	/**
+	 * 
+	 * @param {Layout} layout
+	 */
+	applyNewLayout(layout) {
+		if (!layout || !layout.positions || !layout.positions.length) {
+			layout = defaultLayout;
+		}
+		this.setState({
+			layout,
+		});
+		if (this.state.componentMode) {
+			this.setState({
+				editingPosition: layout.positions.findIndex(item => item.type === 'button'),
+			});
+		} else if (this.state.editingPosition >= layout.positions.length) {
+			this.setState({
+				editingPosition: layout.positions.length - 1,
+			});
+		}
 	}
 
 	updateEditingPosition = (e) => {
@@ -122,7 +143,9 @@ class App extends Component {
 		});
 	}
 
-	getLayoutItem = () => this.state.layout.positions.length ? this.state.layout.positions[this.state.editingPosition] : defaultLayout.positions[0];
+	getLayoutItem = () => {
+		return this.state.layout.positions.length && !this.state.componentMode ? this.state.layout.positions[this.state.editingPosition] : defaultLayout.positions[0];
+	}
 
 	/**
 	 * @param {LiveButton} liveInfo
