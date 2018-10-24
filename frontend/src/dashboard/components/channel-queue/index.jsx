@@ -18,11 +18,10 @@ export class ChannelQueue extends Component {
   }
 
   render() {
-    const { clientID } = this.props;
     const { favorites } = this.state;
     return (
       <div>
-        <ChannelInput onAddFavorite={this.addFavoriteChannel} onActivate={this.props.onChange} clientID={clientID} />
+        <ChannelInput onAddFavorite={this.addFavoriteChannel} onActivate={this.props.onChange} />
         <div className={styles.channelList}>
           {!!favorites.length && <ol className={styles.favoritesList}>
             {favorites.map((favorite, i) => (

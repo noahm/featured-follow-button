@@ -14,8 +14,6 @@ const startingCharCode = 'A'.charCodeAt(0);
 
 class App extends Component {
 	state = {
-		/** @type {string} */
-		clientID: null,
 		/** @type {Layout} */
 		layout: defaultLayout,
 		/** @type {Record<string, LiveLayoutItem>} */
@@ -31,7 +29,6 @@ class App extends Component {
 		super(props);
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
 			Auth.authAvailable.then(() => {
-				this.setState({ clientID: Auth.clientID });
 				Twitch.ext.listen(`whisper-${Auth.userID}`, this.handleLayoutBroadcast);
 			});
 			this.config = new Config();
@@ -57,7 +54,6 @@ class App extends Component {
 				<ChannelQueue
 					config={this.config}
 					onChange={this.updateChannel}
-					clientID={this.state.auth && this.state.auth.clientId}
 				/>
 			</div>
 		);

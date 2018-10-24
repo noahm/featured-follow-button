@@ -1,5 +1,6 @@
 import styles from './style';
 import { Component } from 'react';
+import { Auth } from '../../../auth';
 
 const LOGIN_REGEX = /^[a-zA-Z0-9]\w{0,23}$/;
 const remoteCheckCache = {};
@@ -142,7 +143,7 @@ export class ChannelInput extends Component {
     }
 
     return new Promise((resolve) => {
-      if (!this.props.clientID) {
+      if (!Auth.clientID) {
         resolve(true);
         return;
       }
@@ -161,7 +162,7 @@ export class ChannelInput extends Component {
       });
       const remoteCheck = fetch('https://api.twitch.tv/helix/users?login='+channelName, {
         headers: {
-          'Client-ID': this.props.clientID,
+          'Client-ID': Auth.clientID,
         },
       })
       .then(r => r.json())
@@ -169,11 +170,14 @@ export class ChannelInput extends Component {
         // fill in display name if left blank?
         if (response.data && response.data.length) {
           if (this.state.useRemoteDisplayName) {
-            this.setState({
-              pendingDisplayName: response.data[0].display_name,
+            return new Promise(res => {
+              this.setState({
+                pendingDisplayName: response.data[0].display_name,
+              }, () => res(true));
             });
+          } else {
+            return true;
           }
-          return true;
         }
         return false;
       })
