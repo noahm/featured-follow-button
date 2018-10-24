@@ -7,10 +7,10 @@ const remoteCheckCache = {};
 export class ChannelInput extends Component {
   state = {
     pendingChannelName: '',
+    pendingDisplayName: '',
     isValidating: false,
     useRemoteDisplayName: true,
   };
-  pendingDisplayName = '';
   channelInput = null;
 
   componentWillUpdate(nextProps, nextState) {
@@ -39,7 +39,7 @@ export class ChannelInput extends Component {
         <input
           width="15"
           placeholder="Display Name (optional)"
-          value={this.pendingDisplayName}
+          value={this.state.pendingDisplayName}
           onChange={this.setDisplayName}
           disabled={useRemoteDisplayName}
         />
@@ -80,12 +80,14 @@ export class ChannelInput extends Component {
   }
 
   setDisplayName = (e) => {
-    this.pendingDisplayName = e.currentTarget.value;
+    this.setState({
+      pendingDisplayName: e.currentTarget.value,
+    });
   }
 
   setRemoteDisplayName = (e) => {
-    this.pendingDisplayName = '';
     this.setState({
+      pendingDisplayName: '',
       useRemoteDisplayName: e.currentTarget.checked,
     });
   }
@@ -99,10 +101,10 @@ export class ChannelInput extends Component {
       if (!isValid) {
         return;
       }
-      this.props.onAddFavorite(this.state.pendingChannelName, this.pendingDisplayName);
-      this.pendingDisplayName = '';
+      this.props.onAddFavorite(this.state.pendingChannelName, this.state.pendingDisplayName);
       this.setState({
         pendingChannelName: '',
+        pendingDisplayName: '',
       });
     });
   }
@@ -114,11 +116,11 @@ export class ChannelInput extends Component {
       }
       this.props.onActivate({
         channelName: this.state.pendingChannelName,
-        displayName: this.pendingDisplayName,
+        displayName: this.state.pendingDisplayName,
       });
-      this.pendingDisplayName = '';
       this.setState({
         pendingChannelName: '',
+        pendingDisplayName: '',
       });
     });
   }
@@ -167,7 +169,9 @@ export class ChannelInput extends Component {
         // fill in display name if left blank?
         if (response.data && response.data.length) {
           if (this.state.useRemoteDisplayName) {
-            this.pendingDisplayName = response.data[0].display_name;
+            this.setState({
+              pendingDisplayName: response.data[0].display_name,
+            });
           }
           return true;
         }

@@ -29,7 +29,7 @@ export class ChannelQueue extends Component {
               <li className={styles.favoriteChannel} key={i}>
                 {getUsername(favorite.channelName, favorite.displayName)}
                 <div className={styles.favoriteItemActions} data-channel-index={i}>
-                  <button onClick={this.onCueClick}>Activate</button>
+                  <button onClick={this.onActivateClick}>Activate</button>
                   <button onClick={this.onDeleteClick}>Delete</button>
                 </div>
               </li>
@@ -40,7 +40,7 @@ export class ChannelQueue extends Component {
     );
   }
 
-  onCueClick = (e) => {
+  onActivateClick = (e) => {
     const channelIndex = +e.currentTarget.parentElement.dataset.channelIndex;
     const channel = this.state.favorites[channelIndex];
     this.props.onChange(channel);
@@ -48,13 +48,19 @@ export class ChannelQueue extends Component {
 
   onDeleteClick = (e) => {
     const channelIndex = +e.currentTarget.parentElement.dataset.channelIndex;
-    this.state.favorites.splice(channelIndex, 1);
-    this.forceUpdate();
+    const newFavorites = this.state.favorites.slice();
+    newFavorites.splice(channelIndex, 1);
+    this.setState({
+      favorites: newFavorites,
+    });
   }
 
   addFavoriteChannel = (channelName, displayName = '') => {
-    this.state.favorites.push({ channelName, displayName });
-    this.props.config.saveFavorites(this.state.favorites);
-    this.forceUpdate();
+    const newFavorites = this.state.favorites.slice();
+    newFavorites.push({ channelName, displayName });
+    this.props.config.saveFavorites(newFavorites);
+    this.setState({
+      favorites: newFavorites,
+    });
   }
 }
