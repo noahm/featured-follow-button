@@ -14,7 +14,9 @@ export class FollowButton extends Component {
     } = this.props;
 
     /** @type {CSSProperties} */
-    const style = {
+    const style = componentMode ? {
+      position: 'static',
+    } : {
       top: item.top + '%',
       left: item.left + '%',
     };

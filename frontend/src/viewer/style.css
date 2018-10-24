@@ -13,13 +13,10 @@ main {
 .componentMode {
   transform-origin: top right;
   position: absolute;
+  top: 0vw;
   right: 0vw;
-  bottom: 0vw;
-}
-
-.lowerThird {
-  transform-origin: top right;
-  position: absolute;
-  right: 4vw;
-  top: 70vh;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

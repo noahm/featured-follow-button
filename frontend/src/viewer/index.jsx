@@ -3,7 +3,7 @@ import { Component } from 'react';
 import { render } from 'react-dom';
 import styles from './style.css';
 import { Config } from '../config';
-import { getAnchorMode, defaultLayout } from '../utils';
+import { getAnchorMode } from '../utils';
 import { FollowButton } from './follow-button';
 import { FollowZone } from './follow-zone';
 
@@ -69,7 +69,7 @@ class App extends Component {
 		if (item.type === 'button') {
 			return (
 				<FollowButton
-					key={item.id}
+					key={item.id + ':' + item.channelName}
 					animateOut={animateOut}
 					disabled={followUiOpen}
 					onClick={() => this.onFollowClick(item)}
@@ -103,7 +103,7 @@ class App extends Component {
 	animationEnded = () => {
 		if (this.state.animateOut && !this.state.butt) {
 			this.setState({
-				buttonHidden: true,
+				itemsHidden: true,
 			});
 		}
 	}
@@ -120,7 +120,7 @@ class App extends Component {
 		}
 		this.setState({
 			animateOut: false,
-			buttonHidden: false,
+			itemsHidden: false,
 			liveItems: newState.liveItems,
 		});
 	}
