@@ -1,6 +1,7 @@
 // @ts-check
 import iassign from 'immutable-assign';
 import '../../models';
+import { Auth } from './auth';
 
 const CONFIG_VERSION = '1.0';
 
@@ -79,8 +80,18 @@ export class Config {
   /**
    * @private
    */
-  publish() {
+  publishLiveState() {
     Twitch.ext.send('broadcast', 'application/json', this.config.liveState);
+  }
+
+  /**
+   * @private
+   */
+  publishLayout() {
+    if (!Auth.userID) {
+      return;
+    }
+    Twitch.ext.send(`whisper-${Auth.userID}`, 'application/json', this.config.settings.configuredLayouts[0]);
   }
 
   get liveState() {
@@ -102,7 +113,7 @@ export class Config {
     // set configuration
     this.save();
     // broadcast to pubsub
-    this.publish();
+    this.publishLiveState();
   }
 
   toggleHideAll() {
@@ -111,7 +122,7 @@ export class Config {
       return liveState;
     });
     this.save();
-    this.publish();
+    this.publishLiveState();
   }
 
   /**
@@ -136,6 +147,7 @@ export class Config {
     } else {
       this.save();
     }
+    this.publishLayout();
   }
 
   /**

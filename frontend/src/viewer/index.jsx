@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { Component } from 'react';
 import { render } from 'react-dom';
 import styles from './style.css';
+import { Auth } from '../auth';
 import { Config } from '../config';
 import { getAnchorMode } from '../utils';
 import { FollowButton } from './follow-button';
@@ -30,9 +31,9 @@ class App extends Component {
 			this.config.configAvailable.then(() => {
 				this.applyLiveState(this.config.liveState);
 			});
-			Twitch.ext.onAuthorized((auth) => {
+			Auth.authAvailable.then(() => {
 				/** @type {Twitch.JwtToken} */
-				const token = jwt.decode(auth.token);
+				const token = jwt.decode(Auth.token);
 				if (token.role === 'broadcaster') {
 					this.setState({
 						isBroadcaster: true,

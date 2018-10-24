@@ -4,6 +4,7 @@ import { applyThemeClass } from '../common-styles';
 import iassign from 'immutable-assign'
 import { Component } from 'react';
 import { render } from 'react-dom';
+import { Auth } from '../auth';
 import { Config } from '../config';
 import { defaultLayout } from '../utils';
 import { Status } from './components/status';
@@ -13,8 +14,8 @@ const startingCharCode = 'A'.charCodeAt(0);
 
 class App extends Component {
 	state = {
-		/** @type {Twitch.AuthCallback} */
-		auth: null,
+		/** @type {string} */
+		clientID: null,
 		/** @type {Layout} */
 		layout: defaultLayout,
 		/** @type {Record<string, LiveLayoutItem>} */
@@ -28,8 +29,9 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 		if (typeof Twitch !== 'undefined' && Twitch.ext) {
-			Twitch.ext.onAuthorized((auth) => {
-				this.setState({ auth });
+			Auth.authAvailable.then(() => {
+				this.setState({ clientID: Auth.clientID });
+				Twitch.ext.listen(`whisper-${Auth.userID}`, this.handleLayoutBroadcast);
 			});
 			this.config = new Config();
 			this.config.configAvailable.then(() => {
@@ -90,6 +92,18 @@ class App extends Component {
 				onClear={this.clearChannel}
 			/>
 		);
+	}
+
+	handleLayoutBroadcast = (target, contentType, message) => {
+		try {
+			/** @type {Layout} */
+			const decodedMessage = JSON.parse(message);
+			if (decodedMessage) {
+				this.setState({
+					layout: decodedMessage,
+				});
+			}
+		} catch (_) { }
 	}
 
 	updateEditingPosition = (e) => {
