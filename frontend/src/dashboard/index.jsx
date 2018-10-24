@@ -49,7 +49,7 @@ class App extends Component {
 	render() {
 		return (
 			<div>
-				<label className={styles.hideAll}><input type="checkbox" checked={this.state.globalHide} onChange={this.toggleHide} /> Hide All</label>
+				<label className={styles.hideAll}><input type="checkbox" checked={!!this.state.globalHide} onChange={this.toggleHide} /> Hide All</label>
 				{this.renderStatus()}
 				<ChannelQueue
 					config={this.config}
@@ -61,14 +61,14 @@ class App extends Component {
 	}
 
 	renderStatus() {
-		const layoutItem = this.state.layout.positions[this.state.editingPosition];
+		const layoutItem = this.getLayoutItem();
 		/** @type {LiveButton} */
 		const liveItem = (layoutItem && this.state.liveItems[layoutItem.id]) || {};
 
 		if (this.state.layout.positions.length > 1) {
 			return (
 				<div className={styles.slotSelect}>
-					{'Editing position: '}
+					Editing position: <br />
 					<select value={this.state.editingPosition} onChange={this.updateEditingPosition}>
 						{this.state.layout.positions.map((item, i) => {
 							const label = String.fromCharCode(startingCharCode + i);
@@ -108,11 +108,13 @@ class App extends Component {
 		});
 	}
 
+	getLayoutItem = () => this.state.layout.positions.length ? this.state.layout.positions[this.state.editingPosition] : defaultLayout.positions[0];
+
 	/**
 	 * @param {LiveButton} liveInfo
 	 */
 	updateChannel = (liveInfo) => {
-		const layoutItem = this.state.layout.positions[this.state.editingPosition];
+		const layoutItem = this.getLayoutItem();
 		const liveItem = {
 			...layoutItem,
 			...liveInfo,

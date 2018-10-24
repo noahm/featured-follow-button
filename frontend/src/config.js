@@ -122,10 +122,16 @@ export class Config {
       settings.configuredLayouts = [layout];
       return settings;
     });
-    const availableSlots = new Set(this.config.settings.configuredLayouts[0].positions.map(item => item.id));
-    const validLiveItems = this.config.liveState.liveItems.filter(item => availableSlots.has(item.id));
-    // check if we deleted a slot with an active button
-    if (validLiveItems.length < this.config.liveState.liveItems.length) {
+    const availableSlots = new Map(this.config.settings.configuredLayouts[0].positions.map(/** @return {[string, LayoutItem]} */item => [item.id, item]));
+    const validLiveItems = this.config.liveState.liveItems.filter(item => availableSlots.has(item.id)).map(item => {
+      const parentSlot = availableSlots.get(item.id);
+      return {
+        ...item,
+        ...parentSlot,
+      };
+    });
+    // if we started with any live buttons, broadcast
+    if (this.config.liveState.liveItems.length) {
       this.setLiveItems(validLiveItems);
     } else {
       this.save();

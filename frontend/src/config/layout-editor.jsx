@@ -78,6 +78,36 @@ export class LayoutEditor extends Component {
     );
   }
 
+  addButton = () => {
+    this.addItem({ type: 'button', id: getRandomID(), top: 0, left: 0 });
+  }
+
+  addZone = () => {
+    this.addItem({ type: 'zone', id: getRandomID(), top: 0, left: 0, height: 25, width: 25 });
+  }
+
+  /**
+   * @param {LayoutItem} newItem
+   */
+  addItem = (newItem) => {
+    this.setState((s) => {
+      const layout = iassign(s.layout, (l) => l.positions, (positions) => {
+        positions.push(newItem);
+        return positions;
+      });
+      if (this.dirtyLayout) {
+        this.dirtyLayout = iassign(this.dirtyLayout, (l) => l.positions, (positions) => {
+          positions.push(newItem);
+          return positions;
+        });
+      }
+      return {
+        layout,
+        isDirty: true,
+      };
+    });
+  }
+
   /**
    * @param {ChangeEvent<HTMLSelectElement>} e
    */
@@ -92,41 +122,10 @@ export class LayoutEditor extends Component {
         return positions;
       });
       if (this.dirtyLayout) {
-        this.dirtyLayout.positions.splice(deleteIndex, 1);
-      }
-      return {
-        layout,
-        isDirty: true,
-      };
-    });
-  }
-
-  addButton = () => {
-    this.setState((s) => {
-      const newButton = { type: 'button', id: getRandomID(), top: 0, left: 0 };
-      const layout = iassign(s.layout, (l) => l.positions, (positions) => {
-        positions.push(newButton);
-        return positions;
-      });
-      if (this.dirtyLayout) {
-        this.dirtyLayout.positions.push(newButton);
-      }
-      return {
-        layout,
-        isDirty: true,
-      };
-    });
-  }
-
-  addZone = () => {
-    this.setState((s) => {
-      const newZone = { type: 'zone', id: getRandomID(), top: 0, left: 0, height: 25, width: 25 };
-      const layout = iassign(s.layout, (l) => l.positions, (positions) => {
-        positions.push(newZone);
-        return positions;
-      });
-      if (this.dirtyLayout) {
-        this.dirtyLayout.positions.push(newZone);
+        this.dirtyLayout = iassign(this.dirtyLayout, (l) => l.positions, (positions) => {
+          positions.splice(deleteIndex, 1);
+          return positions;
+        });
       }
       return {
         layout,
