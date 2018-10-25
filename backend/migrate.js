@@ -14,8 +14,10 @@ const datastore = fs.existsSync('gcp-key.json') ? new Datastore({
 
 const entityKind = 'Channel';
 
-datastore.runQuery(datastore.createQuery(entityKind)).then(([channels]) => {
-  let printed = 0;
+
+let success = 0;
+let failed = 0;
+datastore.runQuery(datastore.createQuery(entityKind)).then(async ([channels]) => {
   for (const channel of channels) {
     if (!channel.liveButton || !channel.liveButton.channelName) {
       console.log('skipping empty data for ', channel[datastore.KEY].name);
@@ -37,10 +39,15 @@ datastore.runQuery(datastore.createQuery(entityKind)).then(([channels]) => {
       },
     };
     console.log(channel[datastore.KEY].name, channel.liveButton);
-    saveConfiguration(channel[datastore.KEY].name, configuration).catch(() => {
+    await saveConfiguration(channel[datastore.KEY].name, configuration).then(() => {
+      success += 1;
+    }).catch(() => {
+      failed += 1;
       console.error('channel failed to set config', channel[datastore.KEY].name);
     });
   }
+}).then(() => {
+  console.log(`${success} saved, ${failed} failed (${success + failed} total)`);
 });
 
 const extensionSecret = Buffer.from(config.twitch.extensionSecret, 'base64');
