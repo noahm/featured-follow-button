@@ -44,7 +44,6 @@
 /**
  * shape in twitch configuration
  * @typedef {object} ChannelData
- * @property {LiveButton} liveButton Legacy live data
  * @property {LiveState} liveState Modern live data
  * @property {Settings} settings
  */

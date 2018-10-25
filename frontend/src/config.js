@@ -7,7 +7,6 @@ const CONFIG_VERSION = '1.0';
 
 /** @type {ChannelData} */
 const defaultConfig = {
-  liveButton: {},
   liveState: {
     liveItems: [],
     hideAll: false,

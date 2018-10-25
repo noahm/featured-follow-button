@@ -15,42 +15,6 @@ const datastore = fs.existsSync('gcp-key.json') ? new Datastore({
   keyFilename: path.resolve('gcp-key.json'),
 }) : new Datastore();
 
-/** @typedef {{ channelName?: string, displayName?: string }} LiveButton */
-
-/**
- * @typedef {object} PositionedButton
- * @property {'button'} type
- * @property {number=} top - percentage from edge, 0 - 100
- * @property {number=} left - percentage from edge, 0 - 100
- * @property {string=} channelName
- * @property {string=} displayName
- */
-
-/**
- * @typedef {object} PositionedZone
- * @property {'zone'} type
- * @property {number=} top - percentage from edge, 0 - 100
- * @property {number=} left - percentage from edge, 0 - 100
- * @property {number=} height - percentage of player height, 0 - 100
- * @property {number=} width - percentage of player width, 0 - 100
- * @property {string=} channelName
- * @property {string=} displayName
- */
-
-/**
- * @typedef {object} LiveState
- * @property {Array<PositionedButton>} layoutItems
- * @property {string=} channelName
- * @property {string=} displayName
- */
-
- /**
-  * @typedef {object} Settings
-  * @property {any} queue
-  * @property {'left' | 'right'} componentAlign
-  * @property {any} overlayLayout
-  */
-
 /**
  * shape in google storage
  * @typedef {object} ChannelData
@@ -118,6 +82,7 @@ function setStateForChannel(channelID, newState) {
       console.error('Google cloud error:', err);
     });
   }
+  saveConfiguration(channelID, newState);
   broadcastStateForChannel(channelID, newState);
 }
 
@@ -155,6 +120,62 @@ function broadcastStateForChannel(channelID, channelState) {
       hostname: 'api.twitch.tv',
       path: '/extensions/message/' + channelID,
       method: 'POST',
+      headers: {
+        'Client-Id': config.twitch.clientID,
+        'Authorization': 'Bearer ' + signedToken,
+        'Content-Type': 'application/json; charset=utf-8',
+        'Content-Length': Buffer.byteLength(body, 'utf8'),
+      },
+      timeout: 1000,
+    }, resolve);
+    req.on('error', (err) => {
+      console.error('problem broadcasting state', { channelID, err });
+      resolve();
+    });
+    req.write(body, 'utf8');
+    req.end();
+  });
+}
+
+function saveConfiguration(channelID, liveButton) {
+  const token = {
+    exp: Date.now() + 1000,
+    channel_id: channelID,
+    role: 'external',
+    user_id: config.twitch.extensionOwnerID,
+  };
+
+  const configuration = {
+    liveState: {
+      hideAll: false,
+      liveItems: [],
+    },
+    settings: {
+      favorites: [],
+      configuredLayouts: [],
+    },
+  };
+  if (liveButton && liveButton.channelName) {
+    configuration.liveState.liveItems.push({
+      type: 'button', id: '00000000', top: 75, left: 75,
+      channelName: liveButton.channelName,
+      displayName: liveButton.displayName,
+    });
+  }
+
+  const body = JSON.stringify({
+    channel_id: channelID,
+    segment: 'broadcaster',
+    version: '1.0',
+    content: JSON.stringify(configuration),
+  });
+  const signedToken = jwt.sign(token, extensionSecret);
+
+  return new Promise((resolve) => {
+    const req = https.request({
+      hostname: 'api.twitch.tv',
+      path: '/extensions/' + config.twitch.clientID + '/configurations',
+      method: 'PUT',
       headers: {
         'Client-Id': config.twitch.clientID,
         'Authorization': 'Bearer ' + signedToken,
