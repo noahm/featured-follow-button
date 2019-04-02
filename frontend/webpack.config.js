@@ -122,24 +122,12 @@ module.exports = function(env = {}) {
       new MiniCssExtractPlugin({
         filename: '[name]-styles.css',
       }),
-      new HtmlWebpackPlugin({
-        title: `${pkg.description} - Dashboard Settings`,
-        filename: 'dashboard.html',
+      ...entryFolders.map(entry => new HtmlWebpackPlugin({
+        title: `${pkg.description} - ${entry}`,
+        filename: `${entry}.html`,
         template: './src/template.html',
-        chunks: ['dashboard'],
-      }),
-      new HtmlWebpackPlugin({
-        title: `${pkg.description} - Viewer`,
-        filename: 'viewer.html',
-        template: './src/template.html',
-        chunks: ['viewer'],
-      }),
-      new HtmlWebpackPlugin({
-        title: `${pkg.description} - Config`,
-        filename: 'config.html',
-        template: './src/template.html',
-        chunks: ['config'],
-      }),
+        chunks: [entry],
+      })),
     ].concat(zip ? [new ZipPlugin({
       path: '../',
       filename: `${pkg.name}-${pkg.version}.zip`
