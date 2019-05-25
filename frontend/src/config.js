@@ -269,6 +269,7 @@ export class Config {
         return liveState;
       }
     );
+    this.publishLiveState();
     this.save();
   }
 }

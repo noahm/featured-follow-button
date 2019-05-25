@@ -5,7 +5,7 @@ import { FollowZone } from "./follow-zone";
 import { DraggableButton } from "./draggable-button";
 import styles from "./layout-editor.css";
 import { Config } from "../config";
-import { getRandomID, defaultLayout } from "../utils";
+import { getRandomID } from "../utils";
 
 const startingCharCode = "A".charCodeAt(0);
 
