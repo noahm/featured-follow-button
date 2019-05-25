@@ -10,7 +10,8 @@ const CONFIG_VERSION = "1.0";
 const defaultConfig = {
   liveState: {
     liveItems: [],
-    hideAll: false
+    hideAll: false,
+    componentAlignment: undefined
   },
   settings: {
     favorites: [],
@@ -251,6 +252,21 @@ export class Config {
       settings => {
         settings.favorites = favorites.slice();
         return settings;
+      }
+    );
+    this.save();
+  }
+
+  /**
+   * @param {number} alignment 0, 1, or 2
+   */
+  saveAlignment(alignment) {
+    this.config = iassign(
+      this.config,
+      config => config.liveState,
+      liveState => {
+        liveState.componentAlignment = alignment;
+        return liveState;
       }
     );
     this.save();

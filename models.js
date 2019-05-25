@@ -1,4 +1,3 @@
-
 /** @typedef {{ channelName?: string, displayName?: string }} LiveButton info for a live follow item */
 
 /**
@@ -33,6 +32,7 @@
  * @typedef {object} LiveState
  * @property {LiveItems} liveItems
  * @property {boolean} hideAll
+ * @property {number|undefined} componentAlignment how to align the buttons in component mode. 1 is left, 2 is right, 0 is auto
  */
 
 /**

@@ -12,11 +12,15 @@ main {
 
 .componentMode {
   transform-origin: top right;
-  position: absolute;
-  top: 0vw;
-  right: 0vw;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.componentMode.left {
+  justify-content: flex-start;
+}
+.componentMode.right {
+  justify-content: flex-end;
 }

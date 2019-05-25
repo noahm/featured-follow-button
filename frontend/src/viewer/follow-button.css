@@ -28,7 +28,7 @@ svg {
 }
 
 .componentMode {
-  font-size: 26vh;
+  font-size: 36vh;
 }
 
 .buttonText {
@@ -75,7 +75,7 @@ svg {
   left: 0;
   right: 0;
   bottom: 0;
-  background: #3C2065;
+  background: #3c2065;
   transform: translate3d(0, 0, 0);
 }
 .animationHide {

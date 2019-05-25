@@ -1,4 +1,5 @@
 import "../common-styles";
+import classNames from "classnames";
 import jwt from "jsonwebtoken";
 import { Component } from "react";
 import { render } from "react-dom";
@@ -19,7 +20,9 @@ class App extends Component {
     componentMode: getAnchorMode() === "component",
     isBroadcaster: false,
     globalHide: false,
-    playerUiVisible: false
+    playerUiVisible: false,
+    componentXpos: 0,
+    componentAlignment: 0
   };
 
   /** @type {Config} */
@@ -49,18 +52,41 @@ class App extends Component {
             });
           }
         });
+        Twitch.ext.onPositionChanged(pos => {
+          if (this.state.componentMode) {
+            this.setState({
+              componentXpos: pos.x / 100
+            });
+          }
+        });
       });
     }
   }
 
   render() {
     if (this.state.componentMode) {
+      let align = this.state.componentXpos < 25 ? styles.left : styles.right;
+      switch (this.state.componentAlignment) {
+        case 1:
+          align = styles.left;
+          break;
+        case 2:
+          align = styles.right;
+          break;
+      }
+      let liveButton = this.state.liveItems.find(i => i.type === "button");
+      try {
+        const firstSlot = this.config.settings.configuredLayouts[0].positions.find(
+          p => p.type === "button"
+        );
+        liveButton = this.state.liveItems.find(i => i.id === firstSlot.id);
+      } catch (_e) {
+        // nbd, we'll use the fallback
+      }
       return (
         <main>
-          <div className={styles.componentMode}>
-            {this.renderItem(
-              this.state.liveItems.find(i => i.type === "button")
-            )}
+          <div className={classNames(styles.componentMode, align)}>
+            {this.renderItem(liveButton)}
           </div>
         </main>
       );
@@ -132,7 +158,8 @@ class App extends Component {
   applyLiveStateFromConfig = () => {
     const newState = this.config.liveState;
     this.setState({
-      globalHide: newState.hideAll
+      globalHide: newState.hideAll,
+      componentAlignment: newState.componentAlignment
     });
 
     if (
