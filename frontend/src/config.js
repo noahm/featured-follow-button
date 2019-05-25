@@ -1,20 +1,21 @@
 // @ts-check
-import iassign from 'immutable-assign';
-import '../../models';
-import { Auth } from './auth';
+import iassign from "immutable-assign";
+import "../../models";
+import { Auth } from "./auth";
+import { defaultLayout } from "./utils";
 
-const CONFIG_VERSION = '1.0';
+const CONFIG_VERSION = "1.0";
 
 /** @type {ChannelData} */
 const defaultConfig = {
   liveState: {
     liveItems: [],
-    hideAll: false,
+    hideAll: false
   },
   settings: {
     favorites: [],
-    configuredLayouts: [],
-  },
+    configuredLayouts: []
+  }
 };
 
 export class Config {
@@ -24,16 +25,27 @@ export class Config {
    */
   config;
 
-
   /**
    * @readonly
    * @type {Promise<void>}
    */
   configAvailable;
 
+  /**
+   * @public
+   * @type {undefined | (() => void)}
+   */
+  onLayoutBroadcast;
+
+  /**
+   * @public
+   * @type {undefined | (() => void)}
+   */
+  onLiveBroadcast;
+
   constructor() {
-    if (typeof Twitch === 'undefined' || !Twitch.ext) {
-      console.error('Twitch ext not present. Config not available.');
+    if (typeof Twitch === "undefined" || !Twitch.ext) {
+      console.error("Twitch ext not present. Config not available.");
       return;
     }
 
@@ -48,8 +60,50 @@ export class Config {
         this.config = availableConfig;
         resolve();
       }
+
+      Auth.authAvailable.then(() => {
+        Twitch.ext.listen(`whisper-${Auth.userID}`, this.handleLayoutBroadcast);
+        Twitch.ext.listen("broadcast", this.handleLiveBroadcast);
+      });
     });
   }
+
+  /**
+   * @private
+   */
+  handleLayoutBroadcast = (target, contentType, message) => {
+    try {
+      /** @type {Layout} */
+      const decodedMessage = JSON.parse(message);
+      if (decodedMessage) {
+        this.saveLayout(decodedMessage, false);
+        if (this.onLayoutBroadcast) {
+          this.onLayoutBroadcast();
+        }
+      }
+    } catch (_) {}
+  };
+
+  /**
+   * @private
+   */
+  handleLiveBroadcast = (target, contentType, message) => {
+    try {
+      /** @type {LiveState} */
+      const decodedMessage = JSON.parse(message);
+      if (decodedMessage) {
+        this.config = iassign(
+          this.config,
+          c => c.liveState,
+          () => decodedMessage
+        );
+
+        if (this.onLiveBroadcast) {
+          this.onLiveBroadcast();
+        }
+      }
+    } catch (_) {}
+  };
 
   /**
    * @private
@@ -61,8 +115,11 @@ export class Config {
       if (Twitch.ext.configuration.broadcaster.version === CONFIG_VERSION) {
         ret = {
           ...defaultConfig,
-          ...JSON.parse(Twitch.ext.configuration.broadcaster.content),
+          ...JSON.parse(Twitch.ext.configuration.broadcaster.content)
         };
+        if (!ret.settings.configuredLayouts.length) {
+          ret.settings.configuredLayouts = [defaultLayout];
+        }
       }
     } finally {
       return ret;
@@ -73,14 +130,18 @@ export class Config {
    * @private
    */
   save() {
-    Twitch.ext.configuration.set('broadcaster', CONFIG_VERSION, JSON.stringify(this.config));
+    Twitch.ext.configuration.set(
+      "broadcaster",
+      CONFIG_VERSION,
+      JSON.stringify(this.config)
+    );
   }
 
   /**
    * @private
    */
   publishLiveState() {
-    Twitch.ext.send('broadcast', 'application/json', this.config.liveState);
+    Twitch.ext.send("broadcast", "application/json", this.config.liveState);
   }
 
   /**
@@ -90,7 +151,11 @@ export class Config {
     if (!Auth.userID) {
       return;
     }
-    Twitch.ext.send(`whisper-${Auth.userID}`, 'application/json', this.config.settings.configuredLayouts[0]);
+    Twitch.ext.send(
+      `whisper-${Auth.userID}`,
+      "application/json",
+      this.config.settings.configuredLayouts[0]
+    );
   }
 
   get liveState() {
@@ -103,60 +168,91 @@ export class Config {
 
   /**
    * @param {LiveItems} liveItems
+   * @param {boolean} broadcast if true, will broadcast to other clients
    */
-  setLiveItems(liveItems) {
-    this.config = iassign(this.config, (c) => c.liveState, (liveState) => {
-      liveState.liveItems = liveItems.slice();
-      return liveState;
-    });
-    // set configuration
-    this.save();
-    // broadcast to pubsub
-    this.publishLiveState();
+  setLiveItems(liveItems, broadcast = true) {
+    this.config = iassign(
+      this.config,
+      c => c.liveState,
+      liveState => {
+        liveState.liveItems = liveItems.slice();
+        return liveState;
+      }
+    );
+
+    if (broadcast) {
+      // set configuration
+      this.save();
+      // broadcast to pubsub
+      this.publishLiveState();
+    }
   }
 
   toggleHideAll() {
-    this.config = iassign(this.config, (c) => c.liveState, (liveState) => {
-      liveState.hideAll = !liveState.hideAll;
-      return liveState;
-    });
+    this.config = iassign(
+      this.config,
+      c => c.liveState,
+      liveState => {
+        liveState.hideAll = !liveState.hideAll;
+        return liveState;
+      }
+    );
     this.save();
     this.publishLiveState();
   }
 
   /**
    * @param {Layout} layout
+   * @param {boolean} broadcast if true, will broadcast to other clients
    */
-  saveLayout(layout) {
-    this.config = iassign(this.config, (config) => config.settings, (settings) => {
-      settings.configuredLayouts = [layout];
-      return settings;
-    });
-    const availableSlots = new Map(this.config.settings.configuredLayouts[0].positions.map(/** @return {[string, LayoutItem]} */item => [item.id, item]));
-    const validLiveItems = this.config.liveState.liveItems.filter(item => availableSlots.has(item.id)).map(item => {
-      const parentSlot = availableSlots.get(item.id);
-      return {
-        ...item,
-        ...parentSlot,
-      };
-    });
-    // if we started with any live buttons, broadcast
+  saveLayout(layout, broadcast = true) {
+    this.config = iassign(
+      this.config,
+      config => config.settings,
+      settings => {
+        settings.configuredLayouts = [layout];
+        return settings;
+      }
+    );
+    const availableSlots = new Map(
+      this.config.settings.configuredLayouts[0].positions.map(
+        /** @return {[string, LayoutItem]} */ item => [item.id, item]
+      )
+    );
+    const validLiveItems = this.config.liveState.liveItems
+      .filter(item => availableSlots.has(item.id))
+      .map(item => {
+        const parentSlot = availableSlots.get(item.id);
+        return {
+          ...item,
+          ...parentSlot
+        };
+      });
+
+    // if we had any live buttons to begin with, update them
     if (this.config.liveState.liveItems.length) {
-      this.setLiveItems(validLiveItems);
-    } else {
+      this.setLiveItems(validLiveItems, broadcast);
+    } else if (broadcast) {
       this.save();
     }
-    this.publishLayout();
+
+    if (broadcast) {
+      this.publishLayout();
+    }
   }
 
   /**
    * @param {Array<LiveButton>} favorites
    */
   saveFavorites(favorites) {
-    this.config = iassign(this.config, (config) => config.settings, (settings) => {
-      settings.favorites = favorites.slice();
-      return settings;
-    });
+    this.config = iassign(
+      this.config,
+      config => config.settings,
+      settings => {
+        settings.favorites = favorites.slice();
+        return settings;
+      }
+    );
     this.save();
   }
 }
