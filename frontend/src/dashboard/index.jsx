@@ -40,7 +40,10 @@ class App extends Component {
   render() {
     return (
       <div>
-        <label className={styles.hideAll}>
+        <label
+          className={styles.hideAll}
+          title="Hides buttons from viewers (but not you, the broadcaster)"
+        >
           <input
             type="checkbox"
             checked={!!this.state.globalHide}
