@@ -30,7 +30,7 @@ export class ChannelInput extends Component {
       <form disabled={isValidating} onSubmit={this.onSubmit}>
         <input
           width="15"
-          placeholder="Channel Login"
+          placeholder="Channel Username"
           ref={this.saveInputRef}
           value={pendingChannelName}
           onChange={this.setChannelName}
