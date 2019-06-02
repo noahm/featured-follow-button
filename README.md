@@ -28,7 +28,3 @@ npm run build
 
 Upload the output zip file to twitch.
 Tag with the version once released. `git tag -a -m "v1.0.0" v1.0.0 && git push --tags`
-
-## Backend
-
-No longer needed! Code will be deleted soon. :)
