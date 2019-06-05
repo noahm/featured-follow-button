@@ -32,7 +32,8 @@
  * @typedef {object} LiveState
  * @property {LiveItems} liveItems
  * @property {boolean} hideAll
- * @property {number|undefined} componentAlignment how to align the buttons in component mode. 1 is left, 2 is right, 0 is auto
+ * @property {number|undefined} componentAlignment how to horizontally align the buttons in component mode. 1 is left, 2 is right, 0 is auto
+ * @property {number|undefined} componentVAlignment how to vertically align the buttons in component mode. 1 is top, 2 is bottom, 0 is auto
  */
 
 /**

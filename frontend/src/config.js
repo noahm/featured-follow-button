@@ -11,7 +11,8 @@ const defaultConfig = {
   liveState: {
     liveItems: [],
     hideAll: false,
-    componentAlignment: undefined
+    componentAlignment: undefined,
+    componentVAlignment: undefined
   },
   settings: {
     favorites: [],
@@ -260,12 +261,28 @@ export class Config {
   /**
    * @param {number} alignment 0, 1, or 2
    */
-  saveAlignment(alignment) {
+  saveHAlignment(alignment) {
     this.config = iassign(
       this.config,
       config => config.liveState,
       liveState => {
         liveState.componentAlignment = alignment;
+        return liveState;
+      }
+    );
+    this.publishLiveState();
+    this.save();
+  }
+
+  /**
+   * @param {number} alignment 0, 1, or 2
+   */
+  saveVAlignment(alignment) {
+    this.config = iassign(
+      this.config,
+      config => config.liveState,
+      liveState => {
+        liveState.componentVAlignment = alignment;
         return liveState;
       }
     );

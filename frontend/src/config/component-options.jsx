@@ -3,7 +3,8 @@ import { Config } from "../config";
 
 export class ComponentOptions extends Component {
   state = {
-    alignment: null
+    hAlign: null,
+    vAlign: null
   };
 
   /** @type {Config} */
@@ -14,38 +15,62 @@ export class ComponentOptions extends Component {
     this.config = new Config();
     this.config.configAvailable.then(() => {
       this.setState({
-        alignment: this.config.liveState.componentAlignment
+        hAlign: this.config.liveState.componentAlignment,
+        vAlign: this.config.liveState.componentVAlignment
       });
     });
   }
 
   render() {
-    if (this.state.alignment === null) {
+    if (this.state.hAlign === null) {
       return null;
     }
 
     return (
-      <p>
-        <label>
-          Align button&nbsp;
-          <select
-            value={(this.state.alignment || 0).toString()}
-            onChange={this.handleAlignChange}
-          >
-            <option value={0}>Auto</option>
-            <option value={1}>Left</option>
-            <option value={2}>Right</option>
-          </select>
-        </label>
-      </p>
+      <React.Fragment>
+        <p>
+          <label>
+            Horizontal Alignment&nbsp;
+            <select
+              value={(this.state.hAlign || 0).toString()}
+              onChange={this.handleHAlignChange}
+            >
+              <option value={0}>Auto</option>
+              <option value={1}>Left</option>
+              <option value={2}>Right</option>
+            </select>
+          </label>
+        </p>
+        <p>
+          <label>
+            Vertical Alignment&nbsp;
+            <select
+              value={(this.state.vAlign || 0).toString()}
+              onChange={this.handleVAlignChange}
+            >
+              <option value={0}>Auto</option>
+              <option value={1}>Top</option>
+              <option value={2}>Bottom</option>
+            </select>
+          </label>
+        </p>
+      </React.Fragment>
     );
   }
 
-  handleAlignChange = e => {
+  handleHAlignChange = e => {
     const newValue = +e.currentTarget.value;
     this.setState({
-      alignment: newValue
+      hAlign: newValue
     });
-    this.config.saveAlignment(newValue);
+    this.config.saveHAlignment(newValue);
+  };
+
+  handleVAlignChange = e => {
+    const newValue = +e.currentTarget.value;
+    this.setState({
+      vAlign: newValue
+    });
+    this.config.saveVAlignment(newValue);
   };
 }
