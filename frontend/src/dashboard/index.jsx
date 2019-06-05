@@ -18,8 +18,7 @@ class App extends Component {
     /** @type {Record<string, LiveLayoutItem>} */
     liveItems: {},
     editingPosition: 0,
-    globalHide: false,
-    componentMode: getAnchorMode() === "component"
+    globalHide: false
   };
   /** @type {Config} */
   config;
@@ -49,7 +48,7 @@ class App extends Component {
             checked={!!this.state.globalHide}
             onChange={this.toggleHide}
           />{" "}
-          Hide{this.state.componentMode ? "" : " All"}
+          Hide All
         </label>
         {this.renderStatus()}
         <ChannelQueue config={this.config} onChange={this.updateChannel} />
@@ -62,7 +61,7 @@ class App extends Component {
     /** @type {LiveButton} */
     const liveItem = (layoutItem && this.state.liveItems[layoutItem.id]) || {};
 
-    if (!this.state.componentMode && this.state.layout.positions.length > 1) {
+    if (this.state.layout.positions.length > 1) {
       return (
         <div className={styles.slotSelect}>
           Editing position: <br />
@@ -105,13 +104,7 @@ class App extends Component {
     this.setState({
       layout
     });
-    if (this.state.componentMode) {
-      this.setState({
-        editingPosition: layout.positions.findIndex(
-          item => item.type === "button"
-        )
-      });
-    } else if (this.state.editingPosition >= layout.positions.length) {
+    if (this.state.editingPosition >= layout.positions.length) {
       this.setState({
         editingPosition: layout.positions.length - 1
       });
@@ -146,12 +139,6 @@ class App extends Component {
   };
 
   getLayoutItem = () => {
-    if (this.state.componentMode) {
-      return (
-        this.state.layout.positions.find(item => item.type === "button") ||
-        defaultLayout.positions[0]
-      );
-    }
     return this.state.layout.positions.length
       ? this.state.layout.positions[this.state.editingPosition]
       : defaultLayout.positions[0];

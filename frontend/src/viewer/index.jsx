@@ -22,7 +22,9 @@ class App extends Component {
     globalHide: false,
     playerUiVisible: false,
     componentXpos: 0,
-    componentAlignment: 0
+    componentYpos: 0,
+    componentHAlignment: 0,
+    componentVAlignment: 0
   };
 
   /** @type {Config} */
@@ -55,7 +57,8 @@ class App extends Component {
         Twitch.ext.onPositionChanged(pos => {
           if (this.state.componentMode) {
             this.setState({
-              componentXpos: pos.x / 100
+              componentXpos: pos.x / 100,
+              componentYpos: pos.y / 100
             });
           }
         });
@@ -65,28 +68,48 @@ class App extends Component {
 
   render() {
     if (this.state.componentMode) {
-      let align = this.state.componentXpos < 25 ? styles.left : styles.right;
-      switch (this.state.componentAlignment) {
+      let hAlign = this.state.componentXpos < 25 ? styles.left : styles.right;
+      switch (this.state.componentHAlignment) {
         case 1:
-          align = styles.left;
+          hAlign = styles.left;
           break;
         case 2:
-          align = styles.right;
+          hAlign = styles.right;
           break;
       }
-      let liveButton = this.state.liveItems.find(i => i.type === "button");
+
+      let vAlign = this.state.componentYpos < 25 ? styles.top : styles.bottom;
+      switch (this.state.componentVAlignment) {
+        case 1:
+          vAlign = styles.top;
+          break;
+        case 2:
+          vAlign = styles.bottom;
+          break;
+      }
+
+      const buttons = [];
       try {
-        const firstSlot = this.config.settings.configuredLayouts[0].positions.find(
-          p => p.type === "button"
-        );
-        liveButton = this.state.liveItems.find(i => i.id === firstSlot.id);
+        for (const position of this.config.settings.configuredLayouts[0]
+          .positions) {
+          if (position.type !== "button") {
+            continue;
+          }
+          let button = this.state.liveItems.find(i => i.id === position.id);
+          if (button) {
+            buttons.push(button);
+          }
+        }
       } catch (_e) {
         // nbd, we'll use the fallback
       }
+      if (!buttons.length) {
+        buttons.push(this.state.liveItems.find(i => i.type === "button"));
+      }
       return (
         <main>
-          <div className={classNames(styles.componentMode, align)}>
-            {this.renderItem(liveButton)}
+          <div className={classNames(styles.componentMode, hAlign, vAlign)}>
+            {buttons.slice(0, 5).map(this.renderItem)}
           </div>
         </main>
       );
@@ -159,7 +182,8 @@ class App extends Component {
     const newState = this.config.liveState;
     this.setState({
       globalHide: newState.hideAll,
-      componentAlignment: newState.componentAlignment
+      componentHAlignment: newState.componentHAlignment,
+      componentVAlignment: newState.componentVAlignment
     });
 
     if (

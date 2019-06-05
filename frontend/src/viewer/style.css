@@ -16,11 +16,18 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
-.componentMode.left {
+.componentMode.top {
   justify-content: flex-start;
 }
-.componentMode.right {
+.componentMode.bottom {
   justify-content: flex-end;
+}
+.componentMode.left {
+  align-items: flex-start;
+}
+.componentMode.right {
+  align-items: flex-end;
 }
