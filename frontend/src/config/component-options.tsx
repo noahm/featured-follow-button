@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component, ChangeEvent } from "react";
 import { Config } from "../config";
 
 export class ComponentOptions extends Component {
@@ -7,10 +7,9 @@ export class ComponentOptions extends Component {
     vAlign: null
   };
 
-  /** @type {Config} */
-  config;
+  config: Config;
 
-  constructor(props) {
+  constructor(props: {}) {
     super(props);
     this.config = new Config();
     this.config.configAvailable.then(() => {
@@ -27,7 +26,7 @@ export class ComponentOptions extends Component {
     }
 
     return (
-      <React.Fragment>
+      <>
         <p>
           <label>
             Horizontal Alignment&nbsp;
@@ -54,11 +53,11 @@ export class ComponentOptions extends Component {
             </select>
           </label>
         </p>
-      </React.Fragment>
+      </>
     );
   }
 
-  handleHAlignChange = e => {
+  handleHAlignChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const newValue = +e.currentTarget.value;
     this.setState({
       hAlign: newValue
@@ -66,7 +65,7 @@ export class ComponentOptions extends Component {
     this.config.saveHAlignment(newValue);
   };
 
-  handleVAlignChange = e => {
+  handleVAlignChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const newValue = +e.currentTarget.value;
     this.setState({
       vAlign: newValue

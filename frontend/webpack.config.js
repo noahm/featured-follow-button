@@ -3,6 +3,7 @@ const { readFileSync } = require('fs');
 
 const autoprefixer = require('autoprefixer');
 const webpack = require('webpack');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ZipPlugin = require('zip-webpack-plugin');
@@ -36,6 +37,7 @@ module.exports = function(env = {}) {
 
   return {
     mode: 'none',
+    stats: 'minimal',
     devtool: isProd ? false : 'cheap-module-eval-source-map',
     devServer: !serve ? undefined : {
       contentBase: './dist',
@@ -47,7 +49,7 @@ module.exports = function(env = {}) {
       ],
     },
     entry: entryFolders.reduce((config, entry) => {
-      const entryPoints = [`./src/${entry}/index.jsx`];
+      const entryPoints = [`./src/${entry}/index.tsx`];
       // if (env.dev) {
       //   entryPoints.unshift('react-devtools');
       // }
@@ -65,18 +67,20 @@ module.exports = function(env = {}) {
       rules: [
         {
           enforce: 'pre',
-          test: /\.jsx?$/,
+          test: /\.tsx?$/,
           exclude: /node_modules/,
           use: {
             loader: 'babel-loader?cacheDirectory',
             options: {
               presets: [
-                require('babel-preset-env'),
-                require('babel-preset-stage-3'),
+                require('@babel/preset-env'),
+                require('@babel/preset-typescript'),
+                [require('@babel/preset-react'), {
+                  pragma: 'h'
+                }]
               ],
               plugins: [
-                require('babel-plugin-transform-class-properties'),
-                [require('babel-plugin-transform-react-jsx'), { pragma: 'h' }],
+                require('@babel/plugin-proposal-class-properties'),
                 [require('babel-plugin-jsx-pragmatic'), {
                   module: 'react',
                   export: 'createElement',
@@ -119,6 +123,7 @@ module.exports = function(env = {}) {
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
       }),
+      new ForkTsCheckerWebpackPlugin(),
       new MiniCssExtractPlugin({
         filename: '[name]-styles.css',
       }),

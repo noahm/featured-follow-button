@@ -1,16 +1,32 @@
 import classNames from 'classnames';
-import { Component, MouseEvent, createRef } from 'react';
+import { Component, MouseEvent as ReactMouseEvent, createRef, CSSProperties } from 'react';
 import styles from './draggable-button.css';
+import { PositionedButton } from '../models';
 
-export class DraggableButton extends Component {
-  root = createRef()
-  state = {
+interface Props {
+  item: PositionedButton;
+  defaultPosition: {
+    top: number;
+    left: number;
+  };
+  onChange: (item: PositionedButton) => void;
+}
+
+interface State {
+  top: number;
+  left: number;
+  dragging: boolean;
+}
+
+export class DraggableButton extends Component<Props, State> {
+  root = createRef<HTMLButtonElement>()
+  state: State = {
     top: this.props.defaultPosition ? this.props.defaultPosition.top : 25,
     left: this.props.defaultPosition ? this.props.defaultPosition.left : 25,
     dragging: false,
   };
 
-  componentDidUpdate(pProps, pState) {
+  componentDidUpdate(pProps: Props, pState: State) {
     if (pState !== this.state && !this.state.dragging) {
       this.props.onChange({
         ...this.props.item,
@@ -21,8 +37,7 @@ export class DraggableButton extends Component {
   }
 
   render() {
-    /** @type {CSSProperties} */
-    const style = {
+    const style: CSSProperties = {
       top: `${this.state.top}%`,
       left: `${this.state.left}%`,
     };
@@ -45,11 +60,8 @@ export class DraggableButton extends Component {
     left: this.state.left,
   };
 
-  /**
-   * @param {MouseEvent<HTMLElement>} e
-   */
-  onMoveStart = (e) => {
-    this.root.current.parentElement.addEventListener('mousemove', this.onDragMove);
+  onMoveStart = (e: ReactMouseEvent) => {
+    this.root.current!.parentElement!.addEventListener('mousemove', this.onDragMove);
     document.addEventListener('mouseup', this.endMove);
     this.dragGrabLocation = {
       x: e.clientX,
@@ -60,11 +72,8 @@ export class DraggableButton extends Component {
     this.setState({ dragging: true });
   }
 
-  /**
-   * @param {MouseEvent<HTMLElement>} e
-   */
-  onDragMove = (e) => {
-    const parentElement = this.root.current.parentElement;
+  onDragMove = (e: MouseEvent) => {
+    const parentElement = this.root.current!.parentElement!;
     const parent = parentElement.getBoundingClientRect();
     const deltaX = e.clientX - this.dragGrabLocation.x;
     const deltaY = e.clientY - this.dragGrabLocation.y;
@@ -77,7 +86,7 @@ export class DraggableButton extends Component {
   }
 
   endMove = () => {
-    this.root.current.parentElement.removeEventListener('mousemove', this.onDragMove);
+    this.root.current!.parentElement!.removeEventListener('mousemove', this.onDragMove);
     document.removeEventListener('mouseup', this.endMove);
     this.setState({ dragging: false });
   }

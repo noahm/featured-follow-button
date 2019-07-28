@@ -1,13 +1,11 @@
-// @ts-check
 import iassign from "immutable-assign";
-import "../../models";
 import { Auth } from "./auth";
 import { defaultLayout } from "./utils";
+import { ChannelData, LiveItems, LiveButton, Layout, LiveState } from "./models";
 
 const CONFIG_VERSION = "1.0";
 
-/** @type {ChannelData} */
-const defaultConfig = {
+const defaultConfig: ChannelData = {
   liveState: {
     liveItems: [],
     hideAll: false,
@@ -21,37 +19,20 @@ const defaultConfig = {
 };
 
 export class Config {
-  /**
-   * @private
-   * @type {ChannelData}
-   */
-  config;
+  private config: ChannelData = defaultConfig;
 
-  /**
-   * @readonly
-   * @type {Promise<void>}
-   */
-  configAvailable;
+  readonly configAvailable: Promise<void>;
 
-  /**
-   * @public
-   * @type {undefined | (() => void)}
-   */
-  onLayoutBroadcast;
+  onLayoutBroadcast: undefined | (() => void);
+  onLiveBroadcast: undefined | (() => void);
 
-  /**
-   * @public
-   * @type {undefined | (() => void)}
-   */
-  onLiveBroadcast;
-
-  constructor() {
-    if (typeof Twitch === "undefined" || !Twitch.ext) {
-      console.error("Twitch ext not present. Config not available.");
-      return;
-    }
-
+    constructor() {
     this.configAvailable = new Promise(resolve => {
+      if (typeof Twitch === "undefined" || !Twitch.ext) {
+        console.error("Twitch ext not present. Config not available.");
+        return;
+      }
+
       Twitch.ext.configuration.onChanged(() => {
         this.config = this.getConfiguration();
         resolve();
@@ -64,16 +45,13 @@ export class Config {
       }
 
       Auth.authAvailable.then(() => {
-        Twitch.ext.listen(`whisper-${Auth.userID}`, this.handleLayoutBroadcast);
-        Twitch.ext.listen("broadcast", this.handleLiveBroadcast);
+        Twitch.ext!.listen(`whisper-${Auth.userID}`, this.handleLayoutBroadcast);
+        Twitch.ext!.listen("broadcast", this.handleLiveBroadcast);
       });
     });
   }
 
-  /**
-   * @private
-   */
-  handleLayoutBroadcast = (target, contentType, message) => {
+  private handleLayoutBroadcast: Twitch.PubsubCallback = (target, contentType, message) => {
     try {
       /** @type {Layout} */
       const decodedMessage = JSON.parse(message);
@@ -86,13 +64,9 @@ export class Config {
     } catch (_) {}
   };
 
-  /**
-   * @private
-   */
-  handleLiveBroadcast = (target, contentType, message) => {
+  private handleLiveBroadcast: Twitch.PubsubCallback = (target, contentType, message) => {
     try {
-      /** @type {LiveState} */
-      const decodedMessage = JSON.parse(message);
+      const decodedMessage: LiveState = JSON.parse(message);
       if (decodedMessage) {
         this.config = iassign(
           this.config,
@@ -107,17 +81,14 @@ export class Config {
     } catch (_) {}
   };
 
-  /**
-   * @private
-   */
-  getConfiguration() {
+  private getConfiguration() {
     // return defaultConfig;
     let ret = defaultConfig;
     try {
-      if (Twitch.ext.configuration.broadcaster.version === CONFIG_VERSION) {
+      if (Twitch.ext!.configuration.broadcaster!.version === CONFIG_VERSION) {
         ret = {
           ...defaultConfig,
-          ...JSON.parse(Twitch.ext.configuration.broadcaster.content)
+          ...JSON.parse(Twitch.ext!.configuration.broadcaster!.content || '{}')
         };
         if (!ret.settings.configuredLayouts.length) {
           ret.settings.configuredLayouts = [defaultLayout];
@@ -128,32 +99,23 @@ export class Config {
     }
   }
 
-  /**
-   * @private
-   */
-  save() {
-    Twitch.ext.configuration.set(
+  private save() {
+    Twitch.ext!.configuration.set(
       "broadcaster",
       CONFIG_VERSION,
       JSON.stringify(this.config)
     );
   }
 
-  /**
-   * @private
-   */
-  publishLiveState() {
-    Twitch.ext.send("broadcast", "application/json", this.config.liveState);
+  private publishLiveState() {
+    Twitch.ext!.send("broadcast", "application/json", this.config.liveState);
   }
 
-  /**
-   * @private
-   */
-  publishLayout() {
+  private publishLayout() {
     if (!Auth.userID) {
       return;
     }
-    Twitch.ext.send(
+    Twitch.ext!.send(
       `whisper-${Auth.userID}`,
       "application/json",
       this.config.settings.configuredLayouts[0]
@@ -168,11 +130,7 @@ export class Config {
     return this.config.settings;
   }
 
-  /**
-   * @param {LiveItems} liveItems
-   * @param {boolean} broadcast if true, will broadcast to other clients
-   */
-  setLiveItems(liveItems, broadcast = true) {
+  setLiveItems(liveItems: LiveItems, broadcast = true) {
     this.config = iassign(
       this.config,
       c => c.liveState,
@@ -207,7 +165,7 @@ export class Config {
    * @param {Layout} layout
    * @param {boolean} broadcast if true, will broadcast to other clients
    */
-  saveLayout(layout, broadcast = true) {
+  saveLayout(layout: Layout, broadcast = true) {
     this.config = iassign(
       this.config,
       config => config.settings,
@@ -243,10 +201,7 @@ export class Config {
     }
   }
 
-  /**
-   * @param {Array<LiveButton>} favorites
-   */
-  saveFavorites(favorites) {
+  saveFavorites(favorites: Array<LiveButton>) {
     this.config = iassign(
       this.config,
       config => config.settings,
@@ -259,9 +214,9 @@ export class Config {
   }
 
   /**
-   * @param {number} alignment 0, 1, or 2
+   * @param alignment must be 0 | 1 | 2
    */
-  saveHAlignment(alignment) {
+  saveHAlignment(alignment: number) {
     this.config = iassign(
       this.config,
       config => config.liveState,
@@ -275,9 +230,9 @@ export class Config {
   }
 
   /**
-   * @param {number} alignment 0, 1, or 2
+   * @param alignment must be 0 | 1 | 2
    */
-  saveVAlignment(alignment) {
+  saveVAlignment(alignment: number) {
     this.config = iassign(
       this.config,
       config => config.liveState,

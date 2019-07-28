@@ -9,12 +9,27 @@ import { Config } from "../config";
 import { getAnchorMode } from "../utils";
 import { FollowButton } from "./follow-button";
 import { FollowZone } from "./follow-zone";
+import { LiveItems, LiveLayoutItem } from "../models";
 
-class App extends Component {
-  state = {
+interface State {
+  animateOut: boolean;
+  itemsHidden: boolean;
+  liveItems: LiveItems;
+  followUiOpen: boolean;
+  componentMode: boolean;
+  isBroadcaster: boolean;
+  globalHide: boolean;
+  playerUiVisible: boolean;
+  componentXpos: number;
+  componentYpos: number;
+  componentHAlignment: number;
+  componentVAlignment: number;
+}
+
+class App extends Component<{}, State> {
+  state: State = {
     animateOut: false,
     itemsHidden: false,
-    /** @type {LiveItems} */
     liveItems: [],
     followUiOpen: false,
     componentMode: getAnchorMode() === "component",
@@ -27,43 +42,39 @@ class App extends Component {
     componentVAlignment: 0
   };
 
-  /** @type {Config} */
-  config;
+  config: Config;
 
-  constructor(props) {
+  constructor(props: {}) {
     super(props);
-    if (typeof Twitch !== "undefined" && Twitch.ext) {
-      this.config = new Config();
-      this.config.configAvailable.then(() => {
-        this.applyLiveStateFromConfig();
-      });
-      this.config.onLiveBroadcast = this.applyLiveStateFromConfig;
-      Auth.authAvailable.then(() => {
-        /** @type {Twitch.JwtToken} */
-        const token = jwt.decode(Auth.token);
-        if (token.role === "broadcaster") {
+    this.config = new Config();
+    this.config.configAvailable.then(() => {
+      this.applyLiveStateFromConfig();
+    });
+    this.config.onLiveBroadcast = this.applyLiveStateFromConfig;
+    Auth.authAvailable.then(() => {
+      const token = jwt.decode(Auth.token!) as null | Twitch.JwtToken;
+      if (token && token.role === "broadcaster") {
+        this.setState({
+          isBroadcaster: true
+        });
+      }
+      Twitch.ext!.actions.onFollow(this.onFollowUiClosed);
+      Twitch.ext!.onContext(context => {
+        if (context.arePlayerControlsVisible !== this.state.playerUiVisible) {
           this.setState({
-            isBroadcaster: true
+            playerUiVisible: context.arePlayerControlsVisible
           });
         }
-        Twitch.ext.actions.onFollow(this.onFollowUiClosed);
-        Twitch.ext.onContext(context => {
-          if (context.arePlayerControlsVisible !== this.state.playerUiVisible) {
-            this.setState({
-              playerUiVisible: context.arePlayerControlsVisible
-            });
-          }
-        });
-        Twitch.ext.onPositionChanged(pos => {
-          if (this.state.componentMode) {
-            this.setState({
-              componentXpos: pos.x / 100,
-              componentYpos: pos.y / 100
-            });
-          }
-        });
       });
-    }
+      Twitch.ext!.onPositionChanged(pos => {
+        if (this.state.componentMode) {
+          this.setState({
+            componentXpos: pos.x / 100,
+            componentYpos: pos.y / 100
+          });
+        }
+      });
+    });
   }
 
   render() {
@@ -118,10 +129,7 @@ class App extends Component {
     return <main>{this.state.liveItems.map(this.renderItem)}</main>;
   }
 
-  /**
-   * @param {LiveLayoutItem} item
-   */
-  renderItem = item => {
+  renderItem = (item?: LiveLayoutItem) => {
     const {
       itemsHidden,
       followUiOpen,
@@ -182,8 +190,8 @@ class App extends Component {
     const newState = this.config.liveState;
     this.setState({
       globalHide: newState.hideAll,
-      componentHAlignment: newState.componentHAlignment,
-      componentVAlignment: newState.componentVAlignment
+      componentHAlignment: newState.componentAlignment || 0,
+      componentVAlignment: newState.componentVAlignment || 0
     });
 
     if (
@@ -204,14 +212,11 @@ class App extends Component {
     });
   };
 
-  /**
-   * @param {LiveLayoutItem} item
-   */
-  onFollowClick = item => {
+  onFollowClick = (item: LiveLayoutItem) => {
     if (!item.channelName) {
       return;
     }
-    Twitch.ext.actions.followChannel(item.channelName);
+    Twitch.ext!.actions.followChannel(item.channelName);
     this.setState({
       followUiOpen: true
     });

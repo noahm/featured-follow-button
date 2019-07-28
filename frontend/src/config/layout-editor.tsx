@@ -6,26 +6,30 @@ import { DraggableButton } from "./draggable-button";
 import styles from "./layout-editor.css";
 import { Config } from "../config";
 import { getRandomID } from "../utils";
+import { Layout, LayoutItem } from "../models";
 
 const startingCharCode = "A".charCodeAt(0);
 
-export class LayoutEditor extends Component {
-  state = {
+interface State {
+  background: string | undefined;
+  layout: Layout;
+  isDirty: boolean;
+}
+
+export class LayoutEditor extends Component<{}, State> {
+  state: State = {
     background: undefined,
-    /** @type {Layout} */
     layout: {
-      positions: []
+      positions: [],
+      name: ""
     },
     isDirty: false
   };
 
-  /** @type {Config} */
-  config;
+  config: Config;
+  dirtyLayout: Layout | undefined;
 
-  /** @type {Layout} */
-  dirtyLayout;
-
-  constructor(props) {
+  constructor(props: {}) {
     super(props);
     this.config = new Config();
     this.config.configAvailable.then(() => {
@@ -131,10 +135,7 @@ export class LayoutEditor extends Component {
     });
   };
 
-  /**
-   * @param {LayoutItem} newItem
-   */
-  addItem = newItem => {
+  addItem = (newItem: LayoutItem) => {
     this.setState(s => {
       const layout = iassign(
         s.layout,
@@ -161,10 +162,7 @@ export class LayoutEditor extends Component {
     });
   };
 
-  /**
-   * @param {ChangeEvent<HTMLSelectElement>} e
-   */
-  handleDelete = e => {
+  handleDelete = (e: ChangeEvent<HTMLSelectElement>) => {
     const deleteIndex = +e.currentTarget.value;
     if (!Number.isInteger(deleteIndex)) {
       return;
@@ -195,7 +193,7 @@ export class LayoutEditor extends Component {
     });
   };
 
-  onDrop = files => {
+  onDrop = (files: Blob[]) => {
     if (!files || !files.length) {
       return;
     }
@@ -203,16 +201,13 @@ export class LayoutEditor extends Component {
     const reader = new FileReader();
     reader.onload = () => {
       this.setState({
-        background: reader.result
+        background: reader.result as string
       });
     };
     reader.readAsDataURL(file);
   };
 
-  /**
-   * @param {LayoutItem} newItem
-   */
-  updateItem = newItem => {
+  updateItem = (newItem: LayoutItem) => {
     const layout =
       this.state.isDirty && this.dirtyLayout
         ? this.dirtyLayout

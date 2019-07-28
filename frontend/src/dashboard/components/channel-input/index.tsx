@@ -1,37 +1,50 @@
-import styles from './style';
-import { Component } from 'react';
+import styles from './style.css';
+import { Component, createRef, FormEvent, ChangeEvent } from 'react';
 import { Auth } from '../../../auth';
+import { LiveButton } from '../../../models';
 
 const LOGIN_REGEX = /^[a-zA-Z0-9]\w{0,23}$/;
-const remoteCheckCache = {};
+const remoteCheckCache: Record<string, boolean> = {};
 
-export class ChannelInput extends Component {
-  state = {
+interface Props {
+  onAddFavorite: (channelName: string, displayName: string) => void;
+  onActivate: (item: LiveButton) => void;
+}
+
+interface State {
+  pendingChannelName: string;
+  pendingDisplayName: string;
+  isValidating: boolean;
+  useRemoteDisplayName: boolean;
+}
+
+export class ChannelInput extends Component<Props, State> {
+  state: State = {
     pendingChannelName: '',
     pendingDisplayName: '',
     isValidating: false,
     useRemoteDisplayName: true,
   };
-  channelInput = null;
+  channelInput = createRef<HTMLInputElement>();
 
-  componentWillUpdate(nextProps, nextState) {
+  componentWillUpdate(nextProps: Props, nextState: State) {
     if (!this.isValid(nextState.pendingChannelName)) {
-      this.channelInput.setCustomValidity('No spaces or special characters');
+      this.channelInput.current!.setCustomValidity('No spaces or special characters');
     } else if (this.isKnownBad(nextState.pendingChannelName)) {
-      this.channelInput.setCustomValidity('Not a twitch channel');
+      this.channelInput.current!.setCustomValidity('Not a twitch channel');
     } else {
-      this.channelInput.setCustomValidity('');
+      this.channelInput.current!.setCustomValidity('');
     }
   }
 
   render() {
     const { isValidating, pendingChannelName, useRemoteDisplayName } = this.state;
     return (
-      <form disabled={isValidating} onSubmit={this.onSubmit}>
+      <form onSubmit={this.onSubmit}>
         <input
           width="15"
           placeholder="Channel Username"
-          ref={this.saveInputRef}
+          ref={this.channelInput}
           value={pendingChannelName}
           onChange={this.setChannelName}
         />
@@ -55,10 +68,6 @@ export class ChannelInput extends Component {
     );
   }
 
-  saveInputRef = (element) => {
-    this.channelInput = element;
-  }
-
   renderError() {
     if (this.isKnownBad()) {
       return 'Not a Twitch channel';
@@ -68,7 +77,7 @@ export class ChannelInput extends Component {
     }
   }
 
-  setChannelName = (e) => {
+  setChannelName = (e: ChangeEvent<HTMLInputElement>) => {
     let channelName = e.currentTarget.value.toLowerCase();
     e.currentTarget.value = channelName;
     channelName = channelName.trim();
@@ -80,20 +89,20 @@ export class ChannelInput extends Component {
     });
   }
 
-  setDisplayName = (e) => {
+  setDisplayName = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       pendingDisplayName: e.currentTarget.value,
     });
   }
 
-  setRemoteDisplayName = (e) => {
+  setRemoteDisplayName = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       pendingDisplayName: '',
       useRemoteDisplayName: e.currentTarget.checked,
     });
   }
 
-  onSubmit = (e) => {
+  onSubmit = (e: FormEvent) => {
     e.preventDefault();
   }
 
@@ -142,7 +151,7 @@ export class ChannelInput extends Component {
       return Promise.resolve(false);
     }
 
-    return new Promise((resolve) => {
+    return new Promise<boolean>((resolve) => {
       if (!Auth.clientID) {
         resolve(true);
         return;
@@ -166,11 +175,11 @@ export class ChannelInput extends Component {
         },
       })
       .then(r => r.json())
-      .then((response) => {
+      .then((response: { data: Array<{ display_name: string }>}) => {
         // fill in display name if left blank?
         if (response.data && response.data.length) {
           if (this.state.useRemoteDisplayName) {
-            return new Promise(res => {
+            return new Promise<boolean>(res => {
               this.setState({
                 pendingDisplayName: response.data[0].display_name,
               }, () => res(true));

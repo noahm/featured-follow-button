@@ -1,14 +1,25 @@
-import styles from './style';
-import { Component } from 'react';
+import styles from './style.css';
+import { Component, MouseEvent } from 'react';
 import { getUsername } from '../../../utils';
 import { ChannelInput } from '../channel-input';
+import { LiveButton } from '../../../models';
+import { Config } from '../../../config';
 
-export class ChannelQueue extends Component {
-  state = {
+interface Props {
+  config: Config;
+  onChange: (item: LiveButton) => void;
+}
+
+interface State {
+  favorites: Array<LiveButton>;
+}
+
+export class ChannelQueue extends Component<Props, State> {
+  state: State = {
     favorites: [],
   };
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.props.config.configAvailable.then(() => {
       this.setState({
@@ -39,14 +50,14 @@ export class ChannelQueue extends Component {
     );
   }
 
-  onActivateClick = (e) => {
-    const channelIndex = +e.currentTarget.parentElement.dataset.channelIndex;
+  onActivateClick = (e: MouseEvent<HTMLButtonElement>) => {
+    const channelIndex = +e.currentTarget.parentElement!.dataset.channelIndex!;
     const channel = this.state.favorites[channelIndex];
     this.props.onChange(channel);
   }
 
-  onDeleteClick = (e) => {
-    const channelIndex = +e.currentTarget.parentElement.dataset.channelIndex;
+  onDeleteClick = (e: MouseEvent<HTMLButtonElement>) => {
+    const channelIndex = +e.currentTarget.parentElement!.dataset.channelIndex!;
     const newFavorites = this.state.favorites.slice();
     newFavorites.splice(channelIndex, 1);
     this.setState({
@@ -54,7 +65,7 @@ export class ChannelQueue extends Component {
     });
   }
 
-  addFavoriteChannel = (channelName, displayName = '') => {
+  addFavoriteChannel = (channelName: string, displayName = '') => {
     const newFavorites = this.state.favorites.slice();
     newFavorites.push({ channelName, displayName });
     this.props.config.saveFavorites(newFavorites);

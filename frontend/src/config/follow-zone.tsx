@@ -1,19 +1,40 @@
 import classNames from 'classnames';
-import { Component, CSSProperties, MouseEvent, createRef, RefObject } from 'react';
+import { Component, CSSProperties, createRef, MouseEvent as ReactMouseEvent } from 'react';
 import styles from './follow-zone.css';
+import { PositionedZone } from '../models';
 
-export class FollowZone extends Component {
-  state = {
+interface Props {
+  item: PositionedZone;
+  defaultPosition: {
+    top: number;
+    left: number;
+  };
+  defaultSize: {
+    height: number;
+    width: number;
+  };
+  onChange: (item: PositionedZone) => void;
+}
+
+interface State {
+  height: number;
+  width: number;
+  top: number;
+  left: number;
+  dragging: boolean;
+}
+
+export class FollowZone extends Component<Props, State> {
+  state: State = {
     height: this.props.defaultSize ? this.props.defaultSize.height : 25,
     width: this.props.defaultSize ? this.props.defaultSize.width : 25,
     top: this.props.defaultPosition ? this.props.defaultPosition.top : 50,
     left: this.props.defaultPosition ? this.props.defaultPosition.left : 50,
     dragging: false,
   };
-  /** @type {RefObject<HTMLDivElement>} */
-  root = createRef();
+  root = createRef<HTMLDivElement>();
 
-  componentDidUpdate(pProps, pState) {
+  componentDidUpdate(pProps: Props, pState: State) {
     if (pState !== this.state && !this.state.dragging) {
       this.props.onChange({
         ...this.props.item,
@@ -26,8 +47,7 @@ export class FollowZone extends Component {
   }
 
   render() {
-    /** @type {CSSProperties} */
-    const style = {
+    const style: CSSProperties = {
       top: `${this.state.top}%`,
       left: `${this.state.left}%`,
       height: `${this.state.height}%`,
@@ -48,11 +68,8 @@ export class FollowZone extends Component {
     left: this.state.left,
   };
 
-  /**
-   * @param {MouseEvent<HTMLElement>} e
-   */
-  onMoveStart = (e) => {
-    this.root.current.parentElement.addEventListener('mousemove', this.onDragMove);
+  onMoveStart = (e: ReactMouseEvent) => {
+    this.root.current!.parentElement!.addEventListener('mousemove', this.onDragMove);
     document.addEventListener('mouseup', this.endMove);
     this.dragGrabLocation = {
       x: e.clientX,
@@ -63,11 +80,8 @@ export class FollowZone extends Component {
     this.setState({ dragging: true });
   }
 
-  /**
-   * @param {MouseEvent<HTMLElement>} e
-   */
-  onDragMove = (e) => {
-    const parentElement = this.root.current.parentElement;
+  onDragMove = (e: MouseEvent) => {
+    const parentElement = this.root.current!.parentElement!;
     const parent = parentElement.getBoundingClientRect();
     const deltaX = e.clientX - this.dragGrabLocation.x;
     const deltaY = e.clientY - this.dragGrabLocation.y;
@@ -80,25 +94,19 @@ export class FollowZone extends Component {
   }
 
   endMove = () => {
-    this.root.current.parentElement.removeEventListener('mousemove', this.onDragMove);
+    this.root.current!.parentElement!.removeEventListener('mousemove', this.onDragMove);
     document.removeEventListener('mouseup', this.endMove);
     this.setState({ dragging: false });
   }
 
-  /**
-   * @param {MouseEvent<HTMLElement>} e
-   */
-  onResizeStart = (e) => {
-    this.root.current.parentElement.addEventListener('mousemove', this.onDragResize);
+  onResizeStart = (e: ReactMouseEvent) => {
+    this.root.current!.parentElement!.addEventListener('mousemove', this.onDragResize);
     document.addEventListener('mouseup', this.endDrag);
     e.stopPropagation();
   }
 
-  /**
-   * @param {MouseEvent<HTMLElement>} e
-   */
-  onDragResize = (e) => {
-    const parentElement = this.root.current.parentElement;
+  onDragResize = (e: MouseEvent) => {
+    const parentElement = this.root.current!.parentElement!;
     const parent = parentElement.getBoundingClientRect();
     const domainX = e.clientX - parent.left;
     const domainY = e.clientY - parent.top;
@@ -112,7 +120,7 @@ export class FollowZone extends Component {
   }
 
   endDrag = () => {
-    this.root.current.parentElement.removeEventListener('mousemove', this.onDragResize);
+    this.root.current!.parentElement!.removeEventListener('mousemove', this.onDragResize);
     document.removeEventListener('mouseup', this.endDrag);
   }
 }

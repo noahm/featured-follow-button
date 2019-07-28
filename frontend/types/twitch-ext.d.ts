@@ -1,8 +1,8 @@
 declare namespace Twitch {
   interface Actions {
-    followChannel(channelName: string);
+    followChannel(channelName: string): void;
     minimize(): void;
-    onFollow(cb: (didFollow: boolean, channelName: string) => void);
+    onFollow(cb: (didFollow: boolean, channelName: string) => void): void;
     requestIdShare(): void;
   }
 
@@ -11,7 +11,7 @@ declare namespace Twitch {
       broadcaster?: Segment;
       developer?: Segment;
       global?: Segment;
-      onChanged(cb: () => void);
+      onChanged(cb: () => void): void;
       set(segment: 'broadcaster', version: string, content: string): void;
     }
 
@@ -75,15 +75,15 @@ declare namespace Twitch {
     environment: string;
     actions: Actions;
     configuration: Configuration.Root;
-    onAuthorized(cb: (auth: AuthCallback) => void);
-    onContext(cb: (context: Context) => void);
-    onError(cb: (err: Error) => void);
-    onHighlightChanged(cb: (isHighlighted: boolean) => void);
-    onPositionChanged(cb: (position: { x: number, y: number }) => void);
-    onVisibilityChaged(cb: (isVisible: boolean, context?: Context) => void);
-    send(target: string, contentType: string, message: string | {});
-    listen(target: String, cb: PubsubCallback);
-    unlisten(target: String, cb: PubsubCallback);
+    onAuthorized(cb: (auth: AuthCallback) => void): void;
+    onContext(cb: (context: Context, updatedProperties: Array<keyof Context>) => void): void;
+    onError(cb: (err: Error) => void): void;
+    onHighlightChanged(cb: (isHighlighted: boolean) => void): void;
+    onPositionChanged(cb: (position: { x: number, y: number }) => void): void;
+    onVisibilityChaged(cb: (isVisible: boolean, context?: Context) => void): void;
+    send(target: string, contentType: string, message: string | {}): void;
+    listen(target: String, cb: PubsubCallback): void;
+    unlisten(target: String, cb: PubsubCallback): void;
   }
 
   export const ext: ExtensionsJsHelper | undefined;

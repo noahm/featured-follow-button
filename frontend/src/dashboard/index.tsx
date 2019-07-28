@@ -2,38 +2,41 @@ import "../common-styles.css";
 import styles from "./style.css";
 import { applyThemeClass } from "../common-styles";
 import iassign from "immutable-assign";
-import { Component } from "react";
+import { Component, ChangeEvent } from "react";
 import { render } from "react-dom";
 import { Config } from "../config";
-import { defaultLayout, getAnchorMode } from "../utils";
+import { defaultLayout } from "../utils";
 import { Status } from "./components/status";
 import { ChannelQueue } from "./components/channel-queue";
+import { Layout, LiveLayoutItem, LiveButton } from "../models";
 
 const startingCharCode = "A".charCodeAt(0);
 
-class App extends Component {
-  state = {
-    /** @type {Layout} */
+interface State {
+  layout: Layout;
+  liveItems: Record<string, LiveLayoutItem>;
+  editingPosition: number;
+  globalHide: boolean;
+}
+
+class App extends Component<{}, State> {
+  state: State = {
     layout: defaultLayout,
-    /** @type {Record<string, LiveLayoutItem>} */
     liveItems: {},
     editingPosition: 0,
     globalHide: false
   };
-  /** @type {Config} */
-  config;
+  config: Config;
 
-  constructor(props) {
+  constructor(props: {}) {
     super(props);
-    if (typeof Twitch !== "undefined" && Twitch.ext) {
-      this.config = new Config();
-      this.config.onLayoutBroadcast = this.updateLayoutFromConfig;
-      this.config.onLiveBroadcast = this.updateFromLiveBroadcast;
-      this.config.configAvailable.then(() => {
-        this.updateFromLiveBroadcast();
-        this.updateLayoutFromConfig();
-      });
-    }
+    this.config = new Config();
+    this.config.onLayoutBroadcast = this.updateLayoutFromConfig;
+    this.config.onLiveBroadcast = this.updateFromLiveBroadcast;
+    this.config.configAvailable.then(() => {
+      this.updateFromLiveBroadcast();
+      this.updateLayoutFromConfig();
+    });
   }
 
   render() {
@@ -112,7 +115,7 @@ class App extends Component {
   };
 
   updateFromLiveBroadcast = () => {
-    const liveItems = {};
+    const liveItems: Record<string, LiveLayoutItem> = {};
     for (const item of this.config.liveState.liveItems) {
       liveItems[item.id] = item;
     }
@@ -122,7 +125,7 @@ class App extends Component {
     });
   };
 
-  updateEditingPosition = e => {
+  updateEditingPosition = (e: ChangeEvent<HTMLSelectElement>) => {
     const newPosition = +e.currentTarget.value;
     if (Number.isInteger(newPosition)) {
       this.setState({
@@ -144,10 +147,7 @@ class App extends Component {
       : defaultLayout.positions[0];
   };
 
-  /**
-   * @param {LiveButton} liveInfo
-   */
-  updateChannel = liveInfo => {
+  updateChannel = (liveInfo: LiveButton) => {
     const layoutItem = this.getLayoutItem();
     const liveItem = {
       ...layoutItem,

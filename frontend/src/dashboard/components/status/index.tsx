@@ -1,8 +1,14 @@
-import style from './style';
+import style from './style.css';
 import { Component } from 'react';
 import { getUsername } from '../../../utils';
 
-export class Status extends Component {
+interface Props {
+  channelName: string | undefined;
+  displayName: string | undefined;
+  onClear: () => void;
+}
+
+export class Status extends Component<Props> {
   render() {
     const { channelName, displayName, onClear } = this.props;
     let statusLine = <span>Follow button is not active</span>;

@@ -1,8 +1,18 @@
 import classNames from 'classnames';
-import { Component } from 'react';
+import { Component, CSSProperties } from 'react';
 import styles from './follow-button.css';
+import { LiveLayoutItem } from '../models';
 
-export class FollowButton extends Component {
+interface Props {
+  item: LiveLayoutItem;
+  componentMode: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+  onAnimationEnd: () => void;
+  animateOut?: boolean;
+}
+
+export class FollowButton extends Component<Props> {
   render() {
     const {
       item,
@@ -13,8 +23,7 @@ export class FollowButton extends Component {
       animateOut,
     } = this.props;
 
-    /** @type {CSSProperties} */
-    const style = componentMode ? {
+    const style: CSSProperties = componentMode ? {
       position: 'static',
     } : {
       top: item.top + '%',

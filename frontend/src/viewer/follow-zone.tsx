@@ -1,11 +1,20 @@
 import classNames from 'classnames';
 import { Component } from 'react';
 import styles from './follow-zone.css';
+import { LiveButton, PositionedZone } from '../models';
 
-export class FollowZone extends Component {
+interface Props {
+  item: LiveButton & PositionedZone;
+  onClick: () => void;
+  showBorder: boolean;
+  disabled: boolean;
+}
+
+export class FollowZone extends Component<Props> {
   render() {
     const {
       item,
+      disabled,
       onClick,
       showBorder,
     } = this.props;
@@ -18,7 +27,7 @@ export class FollowZone extends Component {
     };
 
     return (
-      <div className={classNames(styles.followZone, { [styles.showBorder]: showBorder })} style={style} onClick={onClick}>
+      <div className={classNames(styles.followZone, { [styles.showBorder]: showBorder })} style={style} onClick={!disabled ? onClick : undefined}>
         <span className={styles.text}>Click to follow {item.displayName || item.channelName}</span>
       </div>
     );
