@@ -1,4 +1,4 @@
-import { Component, ChangeEvent } from "react";
+import { Component, ChangeEvent, Fragment } from "react";
 import { Config } from "../config";
 
 export class ComponentOptions extends Component {
@@ -26,7 +26,7 @@ export class ComponentOptions extends Component {
     }
 
     return (
-      <>
+      <Fragment>
         <p>
           <label>
             Horizontal Alignment&nbsp;
@@ -53,7 +53,7 @@ export class ComponentOptions extends Component {
             </select>
           </label>
         </p>
-      </>
+      </Fragment>
     );
   }
 

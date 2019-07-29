@@ -43,9 +43,10 @@ module.exports = function(env = {}) {
       contentBase: './dist',
       https: true,
       port: 8080,
-      public: 'localhost.rig.twitch.tv:8080',
+      public: 'localhost:8080',
       allowedHosts: [
         'localhost.rig.twitch.tv',
+        'localhost',
       ],
     },
     entry: entryFolders.reduce((config, entry) => {
@@ -81,7 +82,7 @@ module.exports = function(env = {}) {
               ],
               plugins: [
                 require('@babel/plugin-proposal-class-properties'),
-                [require('babel-plugin-jsx-pragmatic'), {
+                [require('@emotion/babel-plugin-jsx-pragmatic'), {
                   module: 'react',
                   export: 'createElement',
                   import: 'h',
