@@ -9,25 +9,3 @@ main {
   height: 100vh;
   overflow: hidden;
 }
-
-.componentMode {
-  transform-origin: top right;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.componentMode.top {
-  justify-content: flex-start;
-}
-.componentMode.bottom {
-  justify-content: flex-end;
-}
-.componentMode.left {
-  align-items: flex-start;
-}
-.componentMode.right {
-  align-items: flex-end;
-}

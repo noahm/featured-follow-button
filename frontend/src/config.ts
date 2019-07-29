@@ -9,8 +9,7 @@ const defaultConfig: ChannelData = {
   liveState: {
     liveItems: [],
     hideAll: false,
-    componentAlignment: undefined,
-    componentVAlignment: undefined
+    componentHeader: '',
   },
   settings: {
     favorites: [],
@@ -213,31 +212,12 @@ export class Config {
     this.save();
   }
 
-  /**
-   * @param alignment must be 0 | 1 | 2
-   */
-  saveHAlignment(alignment: number) {
+  saveComponentHeader(header: string) {
     this.config = iassign(
       this.config,
       config => config.liveState,
       liveState => {
-        liveState.componentAlignment = alignment;
-        return liveState;
-      }
-    );
-    this.publishLiveState();
-    this.save();
-  }
-
-  /**
-   * @param alignment must be 0 | 1 | 2
-   */
-  saveVAlignment(alignment: number) {
-    this.config = iassign(
-      this.config,
-      config => config.liveState,
-      liveState => {
-        liveState.componentVAlignment = alignment;
+        liveState.componentHeader = header;
         return liveState;
       }
     );

@@ -3,9 +3,9 @@ import { Config } from "../config";
 
 export class ComponentOptions extends Component {
   state = {
-    hAlign: null,
-    vAlign: null
+    header: ''
   };
+  saveTimer = 0;
 
   config: Config;
 
@@ -14,62 +14,44 @@ export class ComponentOptions extends Component {
     this.config = new Config();
     this.config.configAvailable.then(() => {
       this.setState({
-        hAlign: this.config.liveState.componentAlignment,
-        vAlign: this.config.liveState.componentVAlignment
+        header: this.config.liveState.componentHeader
       });
     });
   }
 
   render() {
-    if (this.state.hAlign === null) {
+    if (this.state.header === null) {
       return null;
     }
 
     return (
       <Fragment>
         <p>
-          <label>
-            Horizontal Alignment&nbsp;
-            <select
-              value={(this.state.hAlign || 0).toString()}
-              onChange={this.handleHAlignChange}
-            >
-              <option value={0}>Auto</option>
-              <option value={1}>Left</option>
-              <option value={2}>Right</option>
-            </select>
-          </label>
+          Used as a component, this extension will display a list of channels a viewer can click to follow.
+          You may set a message to display above the list of buttons here:
         </p>
         <p>
           <label>
-            Vertical Alignment&nbsp;
-            <select
-              value={(this.state.vAlign || 0).toString()}
-              onChange={this.handleVAlignChange}
-            >
-              <option value={0}>Auto</option>
-              <option value={1}>Top</option>
-              <option value={2}>Bottom</option>
-            </select>
+            Header&nbsp;
+            <input
+              value={this.state.header}
+              onChange={this.handleHeaderChange}
+            />
           </label>
         </p>
       </Fragment>
     );
   }
 
-  handleHAlignChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const newValue = +e.currentTarget.value;
+  handleHeaderChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.currentTarget.value;
     this.setState({
       hAlign: newValue
     });
-    this.config.saveHAlignment(newValue);
-  };
-
-  handleVAlignChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const newValue = +e.currentTarget.value;
-    this.setState({
-      vAlign: newValue
-    });
-    this.config.saveVAlignment(newValue);
+    clearTimeout(this.saveTimer);
+    this.saveTimer = setTimeout(
+      (() => this.config.saveComponentHeader(newValue)) as TimerHandler,
+      1000
+    );
   };
 }

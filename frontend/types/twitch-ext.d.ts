@@ -84,6 +84,9 @@ declare namespace Twitch {
     send(target: string, contentType: string, message: string | {}): void;
     listen(target: String, cb: PubsubCallback): void;
     unlisten(target: String, cb: PubsubCallback): void;
+    rig: {
+      log(message: string): void;
+    }
   }
 
   export const ext: ExtensionsJsHelper | undefined;

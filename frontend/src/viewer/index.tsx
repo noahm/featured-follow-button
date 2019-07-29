@@ -10,36 +10,31 @@ import { getAnchorMode } from "../utils";
 import { FollowButton } from "./follow-button";
 import { FollowZone } from "./follow-zone";
 import { LiveItems, LiveLayoutItem } from "../models";
+import { FollowList } from "./follow-list";
 
 interface State {
   animateOut: boolean;
   itemsHidden: boolean;
+  componentHeader: string;
   liveItems: LiveItems;
   followUiOpen: boolean;
   componentMode: boolean;
   isBroadcaster: boolean;
   globalHide: boolean;
   playerUiVisible: boolean;
-  componentXpos: number;
-  componentYpos: number;
-  componentHAlignment: number;
-  componentVAlignment: number;
 }
 
 class App extends Component<{}, State> {
   state: State = {
     animateOut: false,
     itemsHidden: false,
+    componentHeader: '',
     liveItems: [],
     followUiOpen: false,
     componentMode: getAnchorMode() === "component",
     isBroadcaster: false,
     globalHide: false,
-    playerUiVisible: false,
-    componentXpos: 0,
-    componentYpos: 0,
-    componentHAlignment: 0,
-    componentVAlignment: 0
+    playerUiVisible: false
   };
 
   config: Config;
@@ -66,63 +61,18 @@ class App extends Component<{}, State> {
           });
         }
       });
-      Twitch.ext!.onPositionChanged(pos => {
-        if (this.state.componentMode) {
-          this.setState({
-            componentXpos: pos.x / 100,
-            componentYpos: pos.y / 100
-          });
-        }
-      });
     });
   }
 
   render() {
     if (this.state.componentMode) {
-      let hAlign = this.state.componentXpos < 25 ? styles.left : styles.right;
-      switch (this.state.componentHAlignment) {
-        case 1:
-          hAlign = styles.left;
-          break;
-        case 2:
-          hAlign = styles.right;
-          break;
-      }
-
-      let vAlign = this.state.componentYpos < 25 ? styles.top : styles.bottom;
-      switch (this.state.componentVAlignment) {
-        case 1:
-          vAlign = styles.top;
-          break;
-        case 2:
-          vAlign = styles.bottom;
-          break;
-      }
-
-      const buttons = [];
-      try {
-        for (const position of this.config.settings.configuredLayouts[0]
-          .positions) {
-          if (position.type !== "button") {
-            continue;
-          }
-          let button = this.state.liveItems.find(i => i.id === position.id);
-          if (button) {
-            buttons.push(button);
-          }
-        }
-      } catch (_e) {
-        // nbd, we'll use the fallback
-      }
-      if (!buttons.length) {
-        buttons.push(this.state.liveItems.find(i => i.type === "button"));
-      }
       return (
-        <main>
-          <div className={classNames(styles.componentMode, hAlign, vAlign)}>
-            {buttons.slice(0, 5).map(this.renderItem)}
-          </div>
-        </main>
+        <FollowList
+          title={this.state.componentHeader}
+          items={this.state.animateOut ? [] : this.state.liveItems}
+          disabled={this.state.followUiOpen}
+          onFollowClick={this.onFollowClick}
+        />
       );
     }
 
@@ -155,7 +105,7 @@ class App extends Component<{}, State> {
           key={item.id + ":" + item.channelName}
           animateOut={animateOut}
           disabled={followUiOpen}
-          onClick={() => this.onFollowClick(item)}
+          onClick={this.onFollowClick}
           onAnimationEnd={this.animationEnded}
           item={item}
           componentMode={componentMode}
@@ -166,7 +116,7 @@ class App extends Component<{}, State> {
         <FollowZone
           key={item.id}
           disabled={followUiOpen}
-          onClick={() => this.onFollowClick(item)}
+          onClick={this.onFollowClick}
           item={item}
           showBorder={this.state.playerUiVisible}
         />
@@ -190,8 +140,7 @@ class App extends Component<{}, State> {
     const newState = this.config.liveState;
     this.setState({
       globalHide: newState.hideAll,
-      componentHAlignment: newState.componentAlignment || 0,
-      componentVAlignment: newState.componentVAlignment || 0
+      componentHeader: newState.componentHeader,
     });
 
     if (
@@ -212,11 +161,7 @@ class App extends Component<{}, State> {
     });
   };
 
-  onFollowClick = (item: LiveLayoutItem) => {
-    if (!item.channelName) {
-      return;
-    }
-    Twitch.ext!.actions.followChannel(item.channelName);
+  onFollowClick = () => {
     this.setState({
       followUiOpen: true
     });

@@ -1,7 +1,7 @@
 /**
  * info for a live follow item
  */
-export interface LiveButton { channelName?: string, displayName?: string }
+export interface LiveButton { channelName: string, displayName?: string }
 
 export interface PositionedButton {
   type: 'button';
@@ -50,13 +50,9 @@ export interface LiveState {
   liveItems: LiveItems;
   hideAll: boolean;
   /**
-   * how to horizontally align the buttons in component mode. 1 is left, 2 is right, 0 is auto
+   * Message displayed at the top of the follow list in component mode
    */
-  componentAlignment: number | undefined;
-  /**
-   * how to vertically align the buttons in component mode. 1 is top, 2 is bottom, 0 is auto
-   */
-  componentVAlignment: number | undefined;
+  componentHeader: string;
 }
 
 export interface Settings {
