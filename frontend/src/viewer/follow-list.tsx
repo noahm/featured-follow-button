@@ -2,17 +2,19 @@ import { FC, useContext } from "react";
 import { FollowButton } from "./follow-button";
 import styles from "./follow-list.css";
 import { ConfigContext } from "../config";
+import { Auth } from "../auth";
 
 interface Props {
   disabled?: boolean;
   onFollowClick?: () => void;
-  isBroadcaster?: boolean;
 }
 
 export const FollowList: FC<Props> = props => {
   const config = useContext(ConfigContext);
-  const { isBroadcaster, onFollowClick } = props;
+  const { onFollowClick } = props;
+  const isBroadcaster = Auth.isBroadcaster;
   const { liveItems: items, componentHeader: title } = config.config.liveState;
+
   return (
     <div className={styles.followList}>
       {title && <h3>{title}</h3>}

@@ -1,12 +1,14 @@
-import styles from './style.css';
-import { Component, createRef, FormEvent, ChangeEvent } from 'react';
-import { Auth } from '../../../auth';
-import { LiveButton } from '../../../models';
+import styles from "./style.css";
+import { Component, createRef, FormEvent, ChangeEvent } from "react";
+import { Auth } from "../../../auth";
+import { LiveButton } from "../../../models";
 
 const LOGIN_REGEX = /^[a-zA-Z0-9]\w{0,23}$/;
 const remoteCheckCache: Record<string, boolean> = {};
 
 interface Props {
+  submitText: string;
+  allowFavorites?: boolean;
   onAddFavorite: (channelName: string, displayName: string) => void;
   onActivate: (item: LiveButton) => void;
 }
@@ -20,25 +22,31 @@ interface State {
 
 export class ChannelInput extends Component<Props, State> {
   state: State = {
-    pendingChannelName: '',
-    pendingDisplayName: '',
+    pendingChannelName: "",
+    pendingDisplayName: "",
     isValidating: false,
-    useRemoteDisplayName: true,
+    useRemoteDisplayName: true
   };
   channelInput = createRef<HTMLInputElement>();
 
-  componentWillUpdate(nextProps: Props, nextState: State) {
-    if (!this.isValid(nextState.pendingChannelName)) {
-      this.channelInput.current!.setCustomValidity('No spaces or special characters');
-    } else if (this.isKnownBad(nextState.pendingChannelName)) {
-      this.channelInput.current!.setCustomValidity('Not a twitch channel');
+  componentDidUpdate() {
+    if (!this.isValid(this.state.pendingChannelName)) {
+      this.channelInput.current!.setCustomValidity(
+        "No spaces or special characters"
+      );
+    } else if (this.isKnownBad(this.state.pendingChannelName)) {
+      this.channelInput.current!.setCustomValidity("Not a twitch channel");
     } else {
-      this.channelInput.current!.setCustomValidity('');
+      this.channelInput.current!.setCustomValidity("");
     }
   }
 
   render() {
-    const { isValidating, pendingChannelName, useRemoteDisplayName } = this.state;
+    const {
+      isValidating,
+      pendingChannelName,
+      useRemoteDisplayName
+    } = this.state;
     return (
       <form onSubmit={this.onSubmit}>
         <input
@@ -58,19 +66,29 @@ export class ChannelInput extends Component<Props, State> {
           disabled={useRemoteDisplayName}
         />
         <label>
-          <input type="checkbox" checked={this.state.useRemoteDisplayName} onChange={this.setRemoteDisplayName} />
-          {' Auto'}
+          <input
+            type="checkbox"
+            checked={this.state.useRemoteDisplayName}
+            onChange={this.setRemoteDisplayName}
+          />
+          {" Auto"}
         </label>
         <br />
-        <button disabled={isValidating} onClick={this.onClickActivate}>Activate</button>
-        <button disabled={isValidating} onClick={this.onClickFavorite}>Favorite</button>
+        <button disabled={isValidating} onClick={this.onClickActivate}>
+          {this.props.submitText}
+        </button>
+        {this.props.allowFavorites && (
+          <button disabled={isValidating} onClick={this.onClickFavorite}>
+            Favorite
+          </button>
+        )}
       </form>
     );
   }
 
   renderError() {
     if (this.isKnownBad()) {
-      return 'Not a Twitch channel';
+      return "Not a Twitch channel";
     }
     if (this.state.pendingChannelName && !this.isValid()) {
       return 'e.g. "lirik"';
@@ -85,62 +103,65 @@ export class ChannelInput extends Component<Props, State> {
       return;
     }
     this.setState({
-      pendingChannelName: channelName,
+      pendingChannelName: channelName
     });
-  }
+  };
 
   setDisplayName = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      pendingDisplayName: e.currentTarget.value,
+      pendingDisplayName: e.currentTarget.value
     });
-  }
+  };
 
   setRemoteDisplayName = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      pendingDisplayName: '',
-      useRemoteDisplayName: e.currentTarget.checked,
+      pendingDisplayName: "",
+      useRemoteDisplayName: e.currentTarget.checked
     });
-  }
+  };
 
   onSubmit = (e: FormEvent) => {
     e.preventDefault();
-  }
+  };
 
   onClickFavorite = () => {
-    this.checkValidRemote().then((isValid) => {
+    this.checkValidRemote().then(isValid => {
       if (!isValid) {
         return;
       }
-      this.props.onAddFavorite(this.state.pendingChannelName, this.state.pendingDisplayName);
+      this.props.onAddFavorite(
+        this.state.pendingChannelName,
+        this.state.pendingDisplayName
+      );
       this.setState({
-        pendingChannelName: '',
-        pendingDisplayName: '',
+        pendingChannelName: "",
+        pendingDisplayName: ""
       });
     });
-  }
+  };
 
   onClickActivate = () => {
-    this.checkValidRemote().then((isValid) => {
+    this.checkValidRemote().then(isValid => {
       if (!isValid) {
         return;
       }
       this.props.onActivate({
         channelName: this.state.pendingChannelName,
-        displayName: this.state.pendingDisplayName,
+        displayName: this.state.pendingDisplayName
       });
       this.setState({
-        pendingChannelName: '',
-        pendingDisplayName: '',
+        pendingChannelName: "",
+        pendingDisplayName: ""
       });
     });
-  }
+  };
 
   isValid(channelName = this.state.pendingChannelName) {
     return !channelName || LOGIN_REGEX.test(channelName);
   }
 
   isKnownBad(channelName = this.state.pendingChannelName) {
-    if (channelName && typeof remoteCheckCache[channelName] === 'boolean') {
+    if (channelName && typeof remoteCheckCache[channelName] === "boolean") {
       return !remoteCheckCache[channelName];
     }
     return false;
@@ -151,7 +172,7 @@ export class ChannelInput extends Component<Props, State> {
       return Promise.resolve(false);
     }
 
-    return new Promise<boolean>((resolve) => {
+    return new Promise<boolean>(resolve => {
       if (!Auth.clientID) {
         resolve(true);
         return;
@@ -161,43 +182,52 @@ export class ChannelInput extends Component<Props, State> {
         return;
       }
       const channelName = this.state.pendingChannelName;
-      if (!this.state.useRemoteDisplayName && typeof remoteCheckCache[channelName] === 'boolean') {
+      if (
+        !this.state.useRemoteDisplayName &&
+        typeof remoteCheckCache[channelName] === "boolean"
+      ) {
         resolve(remoteCheckCache[channelName]);
         return;
       }
 
       this.setState({
-        isValidating: true,
+        isValidating: true
       });
-      const remoteCheck = fetch('https://api.twitch.tv/helix/users?login='+channelName, {
-        headers: {
-          'Client-ID': Auth.clientID,
-        },
-      })
-      .then(r => r.json())
-      .then((response: { data: Array<{ display_name: string }>}) => {
-        // fill in display name if left blank?
-        if (response.data && response.data.length) {
-          if (this.state.useRemoteDisplayName) {
-            return new Promise<boolean>(res => {
-              this.setState({
-                pendingDisplayName: response.data[0].display_name,
-              }, () => res(true));
-            });
-          } else {
-            return true;
+      const remoteCheck = fetch(
+        "https://api.twitch.tv/helix/users?login=" + channelName,
+        {
+          headers: {
+            "Client-ID": Auth.clientID
           }
         }
-        return false;
-      })
-      .catch(() => {
-        // maybe throws here should be treated differently...?
-        return false;
-      });
-      remoteCheck.then((result) => {
+      )
+        .then(r => r.json())
+        .then((response: { data: Array<{ display_name: string }> }) => {
+          // fill in display name if left blank?
+          if (response.data && response.data.length) {
+            if (this.state.useRemoteDisplayName) {
+              return new Promise<boolean>(res => {
+                this.setState(
+                  {
+                    pendingDisplayName: response.data[0].display_name
+                  },
+                  () => res(true)
+                );
+              });
+            } else {
+              return true;
+            }
+          }
+          return false;
+        })
+        .catch(() => {
+          // maybe throws here should be treated differently...?
+          return false;
+        });
+      remoteCheck.then(result => {
         remoteCheckCache[channelName] = result;
         this.setState({
-          isValidating: false,
+          isValidating: false
         });
         resolve(result);
       });

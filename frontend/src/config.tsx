@@ -20,7 +20,12 @@ const defaultConfig: ChannelData = {
   },
   settings: {
     favorites: [],
-    configuredLayouts: []
+    configuredLayouts: [
+      {
+        name: "default",
+        positions: []
+      }
+    ]
   }
 };
 

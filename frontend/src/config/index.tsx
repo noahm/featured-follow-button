@@ -30,8 +30,9 @@ class App extends Component {
           <h2>Activate me first!</h2>
           <p>
             You have yet to activate this extension anywhere. Activate it as a
-            component for a simple 1-button setup, or as an overlay to build a
-            custom layout with multiple buttons or transparent zones.
+            component for a list of channels to follow, or as an overlay to
+            build a custom layout with buttons or transparent zones in specific
+            locations over the video.
           </p>
         </div>
       </div>
@@ -63,10 +64,8 @@ class App extends Component {
         <div style={{ maxWidth: "37em" }}>
           <h2>Component Mode</h2>
           <p>
-            You have this extension activated as a component. Activate your
-            button from your live dashboard now! By default the button will
-            align to the nearest edge of the video player, but you can override
-            that here.
+            You have this extension activated as a component. In this mode, this
+            extension will display a list of channels a viewer can follow.
           </p>
         </div>
         <ComponentOptions />

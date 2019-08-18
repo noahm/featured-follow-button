@@ -12,11 +12,7 @@ export function ComponentOptions() {
 
   return (
     <Fragment>
-      <p>
-        Used as a component, this extension will display a list of channels a
-        viewer can click to follow. You may set a message to display above the
-        list of buttons here:
-      </p>
+      <p>You may set a message to display above the list of buttons here:</p>
       <p>
         <label>
           Header:{" "}
@@ -42,7 +38,7 @@ export function ComponentOptions() {
         </label>
       </p>
       <div className={styles.preview}>
-        <FollowList isBroadcaster />
+        <FollowList />
       </div>
     </Fragment>
   );

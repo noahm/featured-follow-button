@@ -25,7 +25,7 @@ class App extends Component<Props, State> {
     editingPosition: 0
   };
 
-  componentDidUpdate(prevProps: Props, prevState: State) {
+  componentDidUpdate() {
     const layout = this.props.config.config.settings.configuredLayouts[0];
     if (this.state.editingPosition >= layout.positions.length) {
       this.setState({
@@ -137,10 +137,15 @@ class App extends Component<Props, State> {
       ...liveInfo
     };
 
-    const liveItems = this.getLiveItems().map(existingItem => {
-      if (existingItem.id === liveItem.id) return liveItem;
-      else return existingItem;
-    });
+    const liveItems = this.getLiveItems().slice();
+    const editIndex = liveItems.findIndex(
+      existingItem => existingItem.id === liveItem.id
+    );
+    if (editIndex >= 0) {
+      liveItems[editIndex] = liveItem;
+    } else {
+      liveItems.push(liveItem);
+    }
 
     this.props.config.setLiveItems(liveItems);
   };

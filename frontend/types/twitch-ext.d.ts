@@ -12,7 +12,7 @@ declare namespace Twitch {
       developer?: Segment;
       global?: Segment;
       onChanged(cb: () => void): void;
-      set(segment: 'broadcaster', version: string, content: string): void;
+      set(segment: "broadcaster", version: string, content: string): void;
     }
 
     interface Segment {
@@ -27,10 +27,22 @@ declare namespace Twitch {
   }
 
   interface AuthCallback {
-    channelId: string; // Channel ID of the page where the extension is iframe embedded.
-    clientId: string; // Client ID of the extension.
-    token: string; // JWT that should be passed to any EBS call for authentication.
-    userId: string; // Opaque user ID.
+    /**
+     * Channel ID of the page where the extension iframe is embedded.
+     */
+    channelId: string;
+    /**
+     * Client ID of the extension.
+     */
+    clientId: string;
+    /**
+     * JWT that should be passed to any EBS call for authentication.
+     */
+    token: string;
+    /**
+     * Opaque user ID.
+     */
+    userId: string;
   }
 
   interface JwtToken {
@@ -41,7 +53,7 @@ declare namespace Twitch {
       listen: string[];
       send: string[];
     };
-    role: 'broadcaster' | 'moderator' | 'viewer' | 'external';
+    role: "broadcaster" | "moderator" | "viewer" | "external";
     user_id?: string;
   }
 
@@ -61,14 +73,18 @@ declare namespace Twitch {
     isPaused: boolean;
     isTheatreMode: boolean;
     language: string;
-    mode: 'viewer' | 'dashboard' | 'config';
-    playbackMode: 'video' | 'audio' | 'remote' | 'chat-only';
-    theme: 'light' | 'dark';
+    mode: "viewer" | "dashboard" | "config";
+    playbackMode: "video" | "audio" | "remote" | "chat-only";
+    theme: "light" | "dark";
     videoResolution: string;
     volume: number;
   }
 
-  type PubsubCallback = (target: string, contentType: string, message: string) => void;
+  type PubsubCallback = (
+    target: string,
+    contentType: string,
+    message: string
+  ) => void;
 
   interface ExtensionsJsHelper {
     version: string;
@@ -76,17 +92,21 @@ declare namespace Twitch {
     actions: Actions;
     configuration: Configuration.Root;
     onAuthorized(cb: (auth: AuthCallback) => void): void;
-    onContext(cb: (context: Context, updatedProperties: Array<keyof Context>) => void): void;
+    onContext(
+      cb: (context: Context, updatedProperties: Array<keyof Context>) => void
+    ): void;
     onError(cb: (err: Error) => void): void;
     onHighlightChanged(cb: (isHighlighted: boolean) => void): void;
-    onPositionChanged(cb: (position: { x: number, y: number }) => void): void;
-    onVisibilityChaged(cb: (isVisible: boolean, context?: Context) => void): void;
+    onPositionChanged(cb: (position: { x: number; y: number }) => void): void;
+    onVisibilityChaged(
+      cb: (isVisible: boolean, context?: Context) => void
+    ): void;
     send(target: string, contentType: string, message: string | {}): void;
     listen(target: String, cb: PubsubCallback): void;
     unlisten(target: String, cb: PubsubCallback): void;
     rig: {
       log(message: string): void;
-    }
+    };
   }
 
   export const ext: ExtensionsJsHelper | undefined;
