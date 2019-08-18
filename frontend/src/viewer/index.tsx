@@ -2,50 +2,41 @@ import "../common-styles";
 import jwt from "jsonwebtoken";
 import { Component } from "react";
 import { render } from "react-dom";
-import "./style.css";
+import styles from "./style.css";
 import { Auth } from "../auth";
-import { Config } from "../config";
+import { ConfigProvider, ConfigContext } from "../config";
 import { getAnchorMode } from "../utils";
 import { AnimatedButton } from "./animated-button";
 import { FollowZone } from "./follow-zone";
-import { LiveItems, LiveLayoutItem } from "../models";
+import { LiveItems, LiveLayoutItem, ChannelData } from "../models";
 import { FollowList } from "./follow-list";
 import { applyThemeClass } from "../common-styles";
+
+interface Props {
+  config: ChannelData;
+}
 
 interface State {
   animateOut: boolean;
   itemsHidden: boolean;
-  componentHeader: string;
-  liveItems: LiveItems;
   followUiOpen: boolean;
   componentMode: boolean;
   isBroadcaster: boolean;
-  globalHide: boolean;
   playerUiVisible: boolean;
 }
 
-class App extends Component<{}, State> {
+class App extends Component<Props, State> {
   state: State = {
     animateOut: false,
     itemsHidden: false,
-    componentHeader: "",
-    liveItems: [],
     followUiOpen: false,
     componentMode: getAnchorMode() === "component",
     isBroadcaster: false,
-    globalHide: false,
     playerUiVisible: false
   };
 
-  config: Config;
-
-  constructor(props: {}) {
+  constructor(props: Props) {
     super(props);
-    this.config = new Config();
-    this.config.configAvailable.then(() => {
-      this.applyLiveStateFromConfig();
-    });
-    this.config.onLiveBroadcast = this.applyLiveStateFromConfig;
     Auth.authAvailable.then(() => {
       const token = jwt.decode(Auth.token!) as null | Twitch.JwtToken;
       if (token && token.role === "broadcaster") {
@@ -64,13 +55,31 @@ class App extends Component<{}, State> {
     });
   }
 
+  componentDidUpdate(prevProps: Props, prevState: State) {
+    if (prevProps.config.liveState !== this.props.config.liveState) {
+      if (
+        prevProps.config.liveState.liveItems.length &&
+        !this.props.config.liveState.liveItems.length &&
+        !this.state.animateOut &&
+        !this.props.config.liveState.hideAll
+      ) {
+        this.setState({
+          animateOut: true
+        });
+        return;
+      }
+      this.setState({
+        animateOut: false,
+        itemsHidden: false
+      });
+    }
+  }
+
   render() {
     if (this.state.componentMode) {
       return (
-        <main>
+        <main className={styles.componentMode}>
           <FollowList
-            title={this.state.componentHeader}
-            items={this.state.animateOut ? [] : this.state.liveItems}
             disabled={this.state.followUiOpen}
             onFollowClick={this.onFollowClick}
           />
@@ -78,18 +87,15 @@ class App extends Component<{}, State> {
       );
     }
 
-    return <main>{this.state.liveItems.map(this.renderItem)}</main>;
+    return (
+      <main>{this.props.config.liveState.liveItems.map(this.renderItem)}</main>
+    );
   }
 
   renderItem = (item?: LiveLayoutItem) => {
-    const {
-      itemsHidden,
-      followUiOpen,
-      componentMode,
-      isBroadcaster
-    } = this.state;
+    const { itemsHidden, followUiOpen, isBroadcaster } = this.state;
     let animateOut = this.state.animateOut;
-    if (this.state.globalHide) {
+    if (this.props.config.liveState.hideAll) {
       if (isBroadcaster) {
         animateOut = false;
       } else {
@@ -128,38 +134,13 @@ class App extends Component<{}, State> {
   animationEnded = () => {
     if (
       (this.state.animateOut ||
-        (this.state.globalHide && !this.state.isBroadcaster)) &&
+        (this.props.config.liveState.hideAll && !this.state.isBroadcaster)) &&
       !this.state.itemsHidden
     ) {
       this.setState({
         itemsHidden: true
       });
     }
-  };
-
-  applyLiveStateFromConfig = () => {
-    const newState = this.config.liveState;
-    this.setState({
-      globalHide: newState.hideAll,
-      componentHeader: newState.componentHeader
-    });
-
-    if (
-      this.state.liveItems.length &&
-      !newState.liveItems.length &&
-      !this.state.animateOut &&
-      !newState.hideAll
-    ) {
-      this.setState({
-        animateOut: true
-      });
-      return;
-    }
-    this.setState({
-      animateOut: false,
-      itemsHidden: false,
-      liveItems: newState.liveItems
-    });
   };
 
   onFollowClick = () => {
@@ -177,5 +158,12 @@ class App extends Component<{}, State> {
 
 const appNode = document.createElement("div");
 document.body.appendChild(appNode);
-render(<App />, appNode);
+render(
+  <ConfigProvider>
+    <ConfigContext.Consumer>
+      {({ config }) => <App config={config} />}
+    </ConfigContext.Consumer>
+  </ConfigProvider>,
+  appNode
+);
 applyThemeClass("dark");

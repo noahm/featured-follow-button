@@ -11,7 +11,7 @@ svg {
 
 .button {
   border: 1px solid transparent;
-  border-radius: 0;
+  border-radius: 4px;
   background: #6441a4;
   color: #fff;
   display: inline-flex;

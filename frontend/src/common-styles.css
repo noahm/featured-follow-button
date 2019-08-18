@@ -17,20 +17,21 @@ div {
 }
 button {
   background-color: #6441a4;
-  border-radius: 0;
+  border-radius: 4px;
   border: 1px solid transparent;
   outline: none;
   color: white;
   cursor: pointer;
   transition: background-color 0.2s ease;
   margin: 0.5em;
-  padding: 0.5em 1rem;
+  padding: 0.3em 0.5rem;
 }
 button:hover:not(:disabled) {
   background-color: #7d5bbe;
   border-color: #7d5bbe;
 }
-button:disabled, input:disabled {
+button:disabled,
+input:disabled {
   opacity: 0.6;
   cursor: default;
 }

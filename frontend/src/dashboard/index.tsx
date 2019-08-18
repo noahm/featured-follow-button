@@ -4,7 +4,7 @@ import { applyThemeClass } from "../common-styles";
 import iassign from "immutable-assign";
 import { Component, ChangeEvent } from "react";
 import { render } from "react-dom";
-import { Config } from "../config";
+import { ConfigProvider, ConfigContext, ConfigState } from "../config";
 import { defaultLayout } from "../utils";
 import { Status } from "./components/status";
 import { ChannelQueue } from "./components/channel-queue";
@@ -12,31 +12,26 @@ import { Layout, LiveLayoutItem, LiveButton } from "../models";
 
 const startingCharCode = "A".charCodeAt(0);
 
-interface State {
-  layout: Layout;
-  liveItems: Record<string, LiveLayoutItem>;
-  editingPosition: number;
-  globalHide: boolean;
+interface Props {
+  config: ConfigState;
 }
 
-class App extends Component<{}, State> {
-  state: State = {
-    layout: defaultLayout,
-    liveItems: {},
-    editingPosition: 0,
-    globalHide: false
-  };
-  config: Config;
+interface State {
+  editingPosition: number;
+}
 
-  constructor(props: {}) {
-    super(props);
-    this.config = new Config();
-    this.config.onLayoutBroadcast = this.updateLayoutFromConfig;
-    this.config.onLiveBroadcast = this.updateFromLiveBroadcast;
-    this.config.configAvailable.then(() => {
-      this.updateFromLiveBroadcast();
-      this.updateLayoutFromConfig();
-    });
+class App extends Component<Props, State> {
+  state: State = {
+    editingPosition: 0
+  };
+
+  componentDidUpdate(prevProps: Props, prevState: State) {
+    const layout = this.props.config.config.settings.configuredLayouts[0];
+    if (this.state.editingPosition >= layout.positions.length) {
+      this.setState({
+        editingPosition: layout.positions.length - 1
+      });
+    }
   }
 
   render() {
@@ -48,23 +43,37 @@ class App extends Component<{}, State> {
         >
           <input
             type="checkbox"
-            checked={!!this.state.globalHide}
+            checked={!!this.props.config.config.liveState.hideAll}
             onChange={this.toggleHide}
           />{" "}
           Hide All
         </label>
         {this.renderStatus()}
-        <ChannelQueue config={this.config} onChange={this.updateChannel} />
+        <ChannelQueue
+          config={this.props.config}
+          onChange={this.updateChannel}
+        />
       </div>
     );
   }
 
-  renderStatus() {
-    const layoutItem = this.getLayoutItem();
-    /** @type {LiveButton} */
-    const liveItem = (layoutItem && this.state.liveItems[layoutItem.id]) || {};
+  private getLayout() {
+    return this.props.config.config.settings.configuredLayouts[0];
+  }
 
-    if (this.state.layout.positions.length > 1) {
+  private getLiveItems() {
+    return this.props.config.config.liveState.liveItems;
+  }
+
+  private renderStatus() {
+    const layoutItem = this.getLayoutItem();
+    const liveItem: Partial<LiveLayoutItem> =
+      (layoutItem &&
+        this.getLiveItems().find(item => item.id === layoutItem.id)) ||
+      {};
+    const layout = this.getLayout();
+
+    if (layout.positions.length > 1) {
       return (
         <div className={styles.slotSelect}>
           Editing position: <br />
@@ -72,12 +81,14 @@ class App extends Component<{}, State> {
             value={this.state.editingPosition}
             onChange={this.updateEditingPosition}
           >
-            {this.state.layout.positions.map((item, i) => {
+            {layout.positions.map((layoutPosition, i) => {
               const label = String.fromCharCode(startingCharCode + i);
-              const channel = this.state.liveItems[item.id];
+              const channel = this.getLiveItems().find(
+                liveItem => layoutPosition.id === liveItem.id
+              );
               return (
-                <option key={item.id} value={i}>
-                  {item.type + " " + label} -{" "}
+                <option key={layoutPosition.id} value={i}>
+                  {layoutPosition.type + " " + label} -{" "}
                   {channel ? channel.channelName : "(inactive)"}
                 </option>
               );
@@ -99,32 +110,6 @@ class App extends Component<{}, State> {
     );
   }
 
-  updateLayoutFromConfig = () => {
-    let layout = this.config.settings.configuredLayouts[0];
-    if (!layout || !layout.positions || !layout.positions.length) {
-      layout = defaultLayout;
-    }
-    this.setState({
-      layout
-    });
-    if (this.state.editingPosition >= layout.positions.length) {
-      this.setState({
-        editingPosition: layout.positions.length - 1
-      });
-    }
-  };
-
-  updateFromLiveBroadcast = () => {
-    const liveItems: Record<string, LiveLayoutItem> = {};
-    for (const item of this.config.liveState.liveItems) {
-      liveItems[item.id] = item;
-    }
-    this.setState({
-      liveItems,
-      globalHide: this.config.liveState.hideAll
-    });
-  };
-
   updateEditingPosition = (e: ChangeEvent<HTMLSelectElement>) => {
     const newPosition = +e.currentTarget.value;
     if (Number.isInteger(newPosition)) {
@@ -135,15 +120,13 @@ class App extends Component<{}, State> {
   };
 
   toggleHide = () => {
-    this.config.toggleHideAll();
-    this.setState({
-      globalHide: this.config.liveState.hideAll
-    });
+    this.props.config.toggleHideAll();
   };
 
   getLayoutItem = () => {
-    return this.state.layout.positions.length
-      ? this.state.layout.positions[this.state.editingPosition]
+    const layout = this.getLayout();
+    return layout.positions.length
+      ? layout.positions[this.state.editingPosition]
       : defaultLayout.positions[0];
   };
 
@@ -154,31 +137,31 @@ class App extends Component<{}, State> {
       ...liveInfo
     };
 
-    const liveItems = iassign(this.state.liveItems, liveItems => {
-      liveItems[layoutItem.id] = liveItem;
-      return liveItems;
+    const liveItems = this.getLiveItems().map(existingItem => {
+      if (existingItem.id === liveItem.id) return liveItem;
+      else return existingItem;
     });
 
-    this.setState({
-      liveItems
-    });
-    this.config.setLiveItems(Object.values(liveItems));
+    this.props.config.setLiveItems(liveItems);
   };
 
   clearChannel = () => {
-    const layoutItem = this.state.layout.positions[this.state.editingPosition];
-    const liveItems = iassign(this.state.liveItems, liveItems => {
-      delete liveItems[layoutItem.id];
-      return liveItems;
-    });
-    this.config.setLiveItems(Object.values(liveItems));
-    this.setState({
-      liveItems
-    });
+    const layoutItem = this.getLayout().positions[this.state.editingPosition];
+    const liveItems = this.getLiveItems().filter(
+      item => item.id !== layoutItem.id
+    );
+    this.props.config.setLiveItems(liveItems);
   };
 }
 
 const appNode = document.createElement("div");
 document.body.appendChild(appNode);
-render(<App />, appNode);
+render(
+  <ConfigProvider>
+    <ConfigContext.Consumer>
+      {config => <App config={config} />}
+    </ConfigContext.Consumer>
+  </ConfigProvider>,
+  appNode
+);
 applyThemeClass();

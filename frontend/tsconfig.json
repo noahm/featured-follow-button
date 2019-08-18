@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "noImplicitThis": true,
     "lib": ["dom"],
     "module": "esnext",
     "jsx": "preserve",

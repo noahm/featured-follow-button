@@ -4,11 +4,15 @@ import Dropzone from "react-dropzone";
 import { FollowZone } from "./follow-zone";
 import { DraggableButton } from "./draggable-button";
 import styles from "./layout-editor.css";
-import { Config } from "../config";
+import { ConfigState } from "../config";
 import { getRandomID } from "../utils";
 import { Layout, LayoutItem } from "../models";
 
 const startingCharCode = "A".charCodeAt(0);
+
+interface Props {
+  config: ConfigState;
+}
 
 interface State {
   background: string | undefined;
@@ -16,7 +20,7 @@ interface State {
   isDirty: boolean;
 }
 
-export class LayoutEditor extends Component<{}, State> {
+export class LayoutEditor extends Component<Props, State> {
   state: State = {
     background: undefined,
     layout: {
@@ -25,18 +29,14 @@ export class LayoutEditor extends Component<{}, State> {
     },
     isDirty: false
   };
-
-  config: Config;
   dirtyLayout: Layout | undefined;
 
-  constructor(props: {}) {
-    super(props);
-    this.config = new Config();
-    this.config.configAvailable.then(() => {
+  componentDidUpdate(prevProps: Props) {
+    if (!prevProps.config.available && this.props.config.available) {
       this.setState({
-        layout: this.config.settings.configuredLayouts[0]
+        layout: this.props.config.config.settings.configuredLayouts[0]
       });
-    });
+    }
   }
 
   render() {
@@ -227,7 +227,7 @@ export class LayoutEditor extends Component<{}, State> {
 
   save = () => {
     const newLayout = this.dirtyLayout || this.state.layout;
-    this.config.saveLayout(newLayout);
+    this.props.config.saveLayout(newLayout);
     this.setState({
       isDirty: false,
       layout: newLayout

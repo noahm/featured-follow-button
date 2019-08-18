@@ -5,6 +5,7 @@ import { render } from "react-dom";
 import { LayoutEditor } from "./layout-editor";
 import { ComponentOptions } from "./component-options";
 import { getAnchorMode } from "../utils";
+import { ConfigProvider, ConfigContext } from "../config";
 
 class App extends Component {
   state = {
@@ -49,7 +50,9 @@ class App extends Component {
             stream. Don't forget to save when you're done editing!
           </p>
         </div>
-        <LayoutEditor />
+        <ConfigContext.Consumer>
+          {config => <LayoutEditor config={config} />}
+        </ConfigContext.Consumer>
       </div>
     );
   }
@@ -74,5 +77,10 @@ class App extends Component {
 
 const appNode = document.createElement("div");
 document.body.appendChild(appNode);
-render(<App />, appNode);
+render(
+  <ConfigProvider>
+    <App />
+  </ConfigProvider>,
+  appNode
+);
 applyThemeClass();
