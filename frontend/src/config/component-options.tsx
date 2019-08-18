@@ -3,7 +3,7 @@ import { Config } from "../config";
 
 export class ComponentOptions extends Component {
   state = {
-    header: ''
+    header: ""
   };
   saveTimer = 0;
 
@@ -27,8 +27,9 @@ export class ComponentOptions extends Component {
     return (
       <Fragment>
         <p>
-          Used as a component, this extension will display a list of channels a viewer can click to follow.
-          You may set a message to display above the list of buttons here:
+          Used as a component, this extension will display a list of channels a
+          viewer can click to follow. You may set a message to display above the
+          list of buttons here:
         </p>
         <p>
           <label>
@@ -46,7 +47,7 @@ export class ComponentOptions extends Component {
   handleHeaderChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.currentTarget.value;
     this.setState({
-      hAlign: newValue
+      header: newValue
     });
     clearTimeout(this.saveTimer);
     this.saveTimer = setTimeout(

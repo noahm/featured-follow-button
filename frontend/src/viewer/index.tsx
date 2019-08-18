@@ -1,16 +1,16 @@
 import "../common-styles";
-import classNames from "classnames";
 import jwt from "jsonwebtoken";
 import { Component } from "react";
 import { render } from "react-dom";
-import styles from "./style.css";
+import "./style.css";
 import { Auth } from "../auth";
 import { Config } from "../config";
 import { getAnchorMode } from "../utils";
-import { FollowButton } from "./follow-button";
+import { AnimatedButton } from "./animated-button";
 import { FollowZone } from "./follow-zone";
 import { LiveItems, LiveLayoutItem } from "../models";
 import { FollowList } from "./follow-list";
+import { applyThemeClass } from "../common-styles";
 
 interface State {
   animateOut: boolean;
@@ -28,7 +28,7 @@ class App extends Component<{}, State> {
   state: State = {
     animateOut: false,
     itemsHidden: false,
-    componentHeader: '',
+    componentHeader: "",
     liveItems: [],
     followUiOpen: false,
     componentMode: getAnchorMode() === "component",
@@ -67,12 +67,14 @@ class App extends Component<{}, State> {
   render() {
     if (this.state.componentMode) {
       return (
-        <FollowList
-          title={this.state.componentHeader}
-          items={this.state.animateOut ? [] : this.state.liveItems}
-          disabled={this.state.followUiOpen}
-          onFollowClick={this.onFollowClick}
-        />
+        <main>
+          <FollowList
+            title={this.state.componentHeader}
+            items={this.state.animateOut ? [] : this.state.liveItems}
+            disabled={this.state.followUiOpen}
+            onFollowClick={this.onFollowClick}
+          />
+        </main>
       );
     }
 
@@ -101,14 +103,13 @@ class App extends Component<{}, State> {
 
     if (item.type === "button") {
       return (
-        <FollowButton
+        <AnimatedButton
           key={item.id + ":" + item.channelName}
           animateOut={animateOut}
           disabled={followUiOpen}
           onClick={this.onFollowClick}
           onAnimationEnd={this.animationEnded}
           item={item}
-          componentMode={componentMode}
         />
       );
     } else if (!animateOut) {
@@ -140,7 +141,7 @@ class App extends Component<{}, State> {
     const newState = this.config.liveState;
     this.setState({
       globalHide: newState.hideAll,
-      componentHeader: newState.componentHeader,
+      componentHeader: newState.componentHeader
     });
 
     if (
@@ -177,3 +178,4 @@ class App extends Component<{}, State> {
 const appNode = document.createElement("div");
 document.body.appendChild(appNode);
 render(<App />, appNode);
+applyThemeClass("dark");

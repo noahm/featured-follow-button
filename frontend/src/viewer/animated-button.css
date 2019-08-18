@@ -1,0 +1,65 @@
+.animation {
+  overflow: hidden;
+  position: absolute;
+}
+.animationSlide {
+  transform: translate3d(0, 100%, 0);
+  transform-style: preserve-3d;
+  position: relative;
+}
+.animationSlide::after {
+  content: "";
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #3c2065;
+  transform: translate3d(0, 0, 0);
+}
+.animationHide {
+  animation-name: animation--hide;
+  animation-timing-function: ease;
+  animation-duration: 0.8s;
+  animation-fill-mode: forwards;
+}
+
+.animationShow .animationSlide::after {
+  position: absolute;
+  animation-name: animation--block-slide;
+  animation-timing-function: ease;
+  animation-duration: 0.8s;
+  animation-fill-mode: forwards;
+}
+.animationShow .animationSlide {
+  animation-name: animation--slide;
+  animation-timing-function: ease;
+  animation-duration: 0.8s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes animation--slide {
+  0% {
+    transform: translate3d(0, 100%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes animation--block-slide {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, -100%, 0);
+  }
+}
+@keyframes animation--hide {
+  0% {
+    max-height: 5em;
+  }
+  100% {
+    max-height: 0;
+  }
+}

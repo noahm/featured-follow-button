@@ -1,0 +1,24 @@
+.followList {
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  font-size: 6vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h3 {
+  flex: 0 0 auto;
+  text-align: center;
+}
+
+ul {
+  flex: 1 1 auto;
+  list-style: none;
+  margin: 0;
+  padding: 0 1em;
+  line-height: 10vh;
+  overflow-y: auto;
+}
