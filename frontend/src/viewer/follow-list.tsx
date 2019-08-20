@@ -3,6 +3,7 @@ import { FollowButton } from "./follow-button";
 import styles from "./follow-list.css";
 import { ConfigContext } from "../config";
 import { Auth } from "../auth";
+import { ChannelInput } from "../dashboard/components/channel-input";
 
 interface Props {
   disabled?: boolean;
@@ -10,10 +11,10 @@ interface Props {
 }
 
 export const FollowList: FC<Props> = props => {
-  const config = useContext(ConfigContext);
+  const { config, addQuickButton, setLiveItems } = useContext(ConfigContext);
   const { onFollowClick } = props;
   const isBroadcaster = Auth.isBroadcaster;
-  const { liveItems: items, componentHeader: title } = config.config.liveState;
+  const { liveItems: items, componentHeader: title } = config.liveState;
 
   return (
     <div className={styles.followList}>
@@ -27,14 +28,21 @@ export const FollowList: FC<Props> = props => {
                 onClick={onFollowClick}
               />{" "}
               Follow {item.displayName || item.channelName}
-              {isBroadcaster && <button>Delete</button>}
+              {isBroadcaster && (
+                <button
+                  onClick={() =>
+                    setLiveItems(items.filter(i => i.id !== item.id))
+                  }
+                >
+                  Delete
+                </button>
+              )}
             </li>
           );
         })}
         {isBroadcaster && (
-          <li>
-            <input type="text" placeholder="Channel Username" />
-            <button>Add</button>
+          <li className={styles.addItem}>
+            <ChannelInput submitText="Add" onActivate={addQuickButton} />
           </li>
         )}
       </ul>

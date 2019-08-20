@@ -118,7 +118,7 @@ class App extends Component<Props, State> {
           item={item}
         />
       );
-    } else if (!animateOut) {
+    } else if (item.type === "zone" && !animateOut) {
       return (
         <FollowZone
           key={item.id}

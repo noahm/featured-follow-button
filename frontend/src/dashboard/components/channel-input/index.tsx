@@ -1,16 +1,26 @@
 import styles from "./style.css";
-import { Component, createRef, FormEvent, ChangeEvent } from "react";
+import {
+  Component,
+  createRef,
+  FormEvent,
+  ChangeEvent,
+  useContext
+} from "react";
 import { Auth } from "../../../auth";
 import { LiveButton } from "../../../models";
+import { ConfigContext } from "../../../config";
 
 const LOGIN_REGEX = /^[a-zA-Z0-9]\w{0,23}$/;
 const remoteCheckCache: Record<string, boolean> = {};
 
 interface Props {
   submitText: string;
-  allowFavorites?: boolean;
-  onAddFavorite: (channelName: string, displayName: string) => void;
+  onAddFavorite?: (channelName: string, displayName: string) => void;
   onActivate: (item: LiveButton) => void;
+}
+
+interface ContextProps {
+  favorites: LiveButton[];
 }
 
 interface State {
@@ -20,7 +30,7 @@ interface State {
   useRemoteDisplayName: boolean;
 }
 
-export class ChannelInput extends Component<Props, State> {
+class ChannelInputImpl extends Component<Props & ContextProps, State> {
   state: State = {
     pendingChannelName: "",
     pendingDisplayName: "",
@@ -47,9 +57,11 @@ export class ChannelInput extends Component<Props, State> {
       pendingChannelName,
       useRemoteDisplayName
     } = this.state;
+    const { favorites } = this.props;
     return (
       <form onSubmit={this.onSubmit}>
         <input
+          list="favorites"
           width="15"
           placeholder="Channel Username"
           ref={this.channelInput}
@@ -77,11 +89,16 @@ export class ChannelInput extends Component<Props, State> {
         <button disabled={isValidating} onClick={this.onClickActivate}>
           {this.props.submitText}
         </button>
-        {this.props.allowFavorites && (
+        {this.props.onAddFavorite && (
           <button disabled={isValidating} onClick={this.onClickFavorite}>
             Favorite
           </button>
         )}
+        <datalist id="favorites">
+          {favorites.map(item => (
+            <option value={item.channelName} key={item.channelName} />
+          ))}
+        </datalist>
       </form>
     );
   }
@@ -126,7 +143,7 @@ export class ChannelInput extends Component<Props, State> {
 
   onClickFavorite = () => {
     this.checkValidRemote().then(isValid => {
-      if (!isValid) {
+      if (!isValid || !this.props.onAddFavorite) {
         return;
       }
       this.props.onAddFavorite(
@@ -233,4 +250,9 @@ export class ChannelInput extends Component<Props, State> {
       });
     });
   }
+}
+
+export function ChannelInput(props: Props) {
+  const { config } = useContext(ConfigContext);
+  return <ChannelInputImpl favorites={config.settings.favorites} {...props} />;
 }

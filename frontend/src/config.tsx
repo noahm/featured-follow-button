@@ -1,7 +1,7 @@
 import iassign from "immutable-assign";
 import { createContext, Component } from "react";
 import { Auth } from "./auth";
-import { defaultLayout } from "./utils";
+import { defaultLayout, getRandomID } from "./utils";
 import {
   ChannelData,
   LiveItems,
@@ -33,7 +33,7 @@ export interface ConfigState {
   available: boolean;
   config: ChannelData;
   setLiveItems(liveItems: LiveItems, broadcast?: boolean): void;
-
+  addQuickButton(item: LiveButton): void;
   /**
    * @param {Layout} layout
    * @param {boolean} localChange if true, change was made in this client, will broadcast to other clients
@@ -48,6 +48,7 @@ export const ConfigContext = createContext<ConfigState>({
   available: false,
   config: defaultConfig,
   setLiveItems: () => null,
+  addQuickButton: () => null,
   saveLayout: () => null,
   toggleHideAll: () => null,
   saveFavorites: () => null,
@@ -59,7 +60,7 @@ export class ConfigProvider extends Component<{}, ConfigState> {
     available: false,
     config: defaultConfig,
 
-    setLiveItems: (liveItems: LiveItems, localChange = true) => {
+    setLiveItems: (liveItems, localChange = true) => {
       this.setState(
         prevState =>
           iassign(
@@ -77,6 +78,28 @@ export class ConfigProvider extends Component<{}, ConfigState> {
             // broadcast to pubsub
             this.publishLiveState();
           }
+        }
+      );
+    },
+
+    addQuickButton: item => {
+      this.setState(
+        prevState =>
+          iassign(
+            prevState,
+            c => c.config.liveState.liveItems,
+            liveItems => {
+              liveItems.push({
+                type: "quick",
+                id: getRandomID(),
+                ...item
+              });
+              return liveItems;
+            }
+          ),
+        () => {
+          this.save();
+          this.publishLiveState();
         }
       );
     },

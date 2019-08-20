@@ -17,7 +17,6 @@ export class ChannelQueue extends Component<Props> {
       <div>
         <ChannelInput
           submitText="Activate"
-          allowFavorites
           onAddFavorite={this.addFavoriteChannel}
           onActivate={this.props.onChange}
         />

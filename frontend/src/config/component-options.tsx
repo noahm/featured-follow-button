@@ -37,6 +37,7 @@ export function ComponentOptions() {
           />
         </label>
       </p>
+      <h3>Live Preview</h3>
       <div className={styles.preview}>
         <FollowList />
       </div>

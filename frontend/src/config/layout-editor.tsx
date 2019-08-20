@@ -82,6 +82,9 @@ export class LayoutEditor extends Component<Props, State> {
           <div className={styles.layoutContainer}>
             <div className={styles.layoutArea}>
               {this.state.layout.positions.map((item, i) => {
+                if (item.type === "quick") {
+                  return;
+                }
                 const label = String.fromCharCode(startingCharCode + i);
                 const defaultPosition = { top: item.top, left: item.left };
                 if (item.type === "button") {

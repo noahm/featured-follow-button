@@ -19,8 +19,8 @@ svg {
   align-items: center;
   justify-content: center;
   outline: none;
-  font-size: 3.5vh;
-  line-height: 1.5em;
+  font-size: 1rem;
+  line-height: 1.5rem;
   text-decoration: none;
   white-space: nowrap;
   vertical-align: middle;

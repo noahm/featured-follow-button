@@ -16,7 +16,8 @@ class AuthInstance {
         this.clientID = auth.clientId;
         this.userID = auth.userId;
         this.token = auth.token;
-        this.isBroadcaster = auth.userId === auth.channelId;
+        this.isBroadcaster =
+          !!Twitch.ext!.viewer && Twitch.ext!.viewer.role === "broadcaster";
 
         resolve();
       });

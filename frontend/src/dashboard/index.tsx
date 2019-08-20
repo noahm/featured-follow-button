@@ -1,14 +1,13 @@
 import "../common-styles.css";
 import styles from "./style.css";
 import { applyThemeClass } from "../common-styles";
-import iassign from "immutable-assign";
 import { Component, ChangeEvent } from "react";
 import { render } from "react-dom";
 import { ConfigProvider, ConfigContext, ConfigState } from "../config";
 import { defaultLayout } from "../utils";
 import { Status } from "./components/status";
 import { ChannelQueue } from "./components/channel-queue";
-import { Layout, LiveLayoutItem, LiveButton } from "../models";
+import { LiveLayoutItem, LiveButton } from "../models";
 
 const startingCharCode = "A".charCodeAt(0);
 

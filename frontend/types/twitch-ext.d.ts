@@ -45,6 +45,8 @@ declare namespace Twitch {
     userId: string;
   }
 
+  type Role = "broadcaster" | "moderator" | "viewer" | "external";
+
   interface JwtToken {
     channel_id: string;
     exp: number;
@@ -53,7 +55,7 @@ declare namespace Twitch {
       listen: string[];
       send: string[];
     };
-    role: "broadcaster" | "moderator" | "viewer" | "external";
+    role: Role;
     user_id?: string;
   }
 
@@ -80,6 +82,18 @@ declare namespace Twitch {
     volume: number;
   }
 
+  interface Viewer {
+    opaqueId: string;
+    id: string | null;
+    role: Role;
+    isLinked: boolean;
+    sessionToken: string;
+    subscriptionStatus: null | {
+      tier: "1000" | "2000" | "3000";
+    };
+    onChanged(cb: () => void): void;
+  }
+
   type PubsubCallback = (
     target: string,
     contentType: string,
@@ -91,6 +105,7 @@ declare namespace Twitch {
     environment: string;
     actions: Actions;
     configuration: Configuration.Root;
+    viewer: Viewer | null;
     onAuthorized(cb: (auth: AuthCallback) => void): void;
     onContext(
       cb: (context: Context, updatedProperties: Array<keyof Context>) => void

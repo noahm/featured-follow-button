@@ -1,11 +1,11 @@
 import classNames from "classnames";
 import { Component, CSSProperties } from "react";
 import styles from "./animated-button.css";
-import { LiveLayoutItem } from "../models";
+import { PositionedButton, LiveButton } from "../models";
 import { FollowButton } from "./follow-button";
 
 interface Props {
-  item: LiveLayoutItem;
+  item: PositionedButton & LiveButton;
   disabled?: boolean;
   onClick?: () => void;
   onAnimationEnd?: () => void;

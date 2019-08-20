@@ -1,10 +1,13 @@
 /**
  * info for a live follow item
  */
-export interface LiveButton { channelName: string, displayName?: string }
+export interface LiveButton {
+  channelName: string;
+  displayName?: string;
+}
 
 export interface PositionedButton {
-  type: 'button';
+  type: "button";
   id: string;
   /**
    * Percentage from edge, 0 - 100
@@ -17,7 +20,7 @@ export interface PositionedButton {
 }
 
 export interface PositionedZone {
-  type: 'zone';
+  type: "zone";
   id: string;
   /**
    * percentage from edge, 0 - 100
@@ -37,7 +40,12 @@ export interface PositionedZone {
   width: number;
 }
 
-export type LayoutItem = PositionedButton | PositionedZone;
+export interface QuickButton {
+  type: "quick";
+  id: string;
+}
+
+export type LayoutItem = PositionedButton | PositionedZone | QuickButton;
 export type LiveLayoutItem = LayoutItem & LiveButton;
 export type LiveItems = Array<LiveLayoutItem>;
 
