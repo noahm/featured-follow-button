@@ -4,16 +4,16 @@ body {
 }
 
 button {
-	font-size: 0.8rem;
-	padding: 0.2rem 0.6rem;
-	margin-bottom: 0.2rem;
-	margin-right: 0.2rem;
+	font-size: 0.8em;
+	padding: 0.2em 0.6em;
+	margin-bottom: 0.2em;
+	margin-right: 0.2em;
 }
 
 input {
-	font-size: 0.8rem;
-	margin-bottom: 0.2rem;
-	margin-right: 0.2rem;
+	font-size: 0.8em;
+	margin-bottom: 0.2em;
+	margin-right: 0.2em;
 }
 
 input[type="checkbox"] {
