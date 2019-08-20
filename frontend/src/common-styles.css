@@ -8,10 +8,13 @@ body {
 
 body.light {
   color: #19171c;
+  background-color: white;
 }
 body.dark {
   color: #dad8de;
+  background-color: #0f0e11;
 }
+
 div {
   margin: 0px;
 }

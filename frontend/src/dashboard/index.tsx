@@ -4,11 +4,13 @@ import { applyThemeClass } from "../common-styles";
 import { Component, ChangeEvent } from "react";
 import { render } from "react-dom";
 import { ConfigProvider, ConfigContext, ConfigState } from "../config";
-import { defaultLayout } from "../utils";
+import { defaultLayout, getAnchorMode } from "../utils";
 import { Status } from "./components/status";
 import { ChannelQueue } from "./components/channel-queue";
 import { LiveLayoutItem, LiveButton } from "../models";
+import { FollowList } from "../viewer/follow-list";
 
+const anchorType = getAnchorMode();
 const startingCharCode = "A".charCodeAt(0);
 
 interface Props {
@@ -34,6 +36,10 @@ class App extends Component<Props, State> {
   }
 
   render() {
+    if (anchorType !== "video_overlay") {
+      return <FollowList />;
+    }
+
     return (
       <div>
         <label

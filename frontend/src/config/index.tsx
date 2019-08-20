@@ -17,6 +17,7 @@ class App extends Component {
       case "video_overlay":
         return this.renderOverlay();
       case "component":
+      case "panel":
         return this.renderComponentMode();
       default:
         return this.unactivated();
@@ -62,10 +63,11 @@ class App extends Component {
     return (
       <div style={{ fontSize: "200%" }}>
         <div style={{ maxWidth: "37em" }}>
-          <h2>Component Mode</h2>
+          <h2>List Mode</h2>
           <p>
-            You have this extension activated as a component. In this mode, this
-            extension will display a list of channels a viewer can follow.
+            You have this extension activated as a component or panel. In this
+            mode, this extension will display a list of channels a viewer can
+            follow.
           </p>
         </div>
         <ComponentOptions />

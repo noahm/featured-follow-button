@@ -12,7 +12,6 @@ interface Props {
 
 export const FollowList: FC<Props> = props => {
   const { config, addQuickButton, setLiveItems } = useContext(ConfigContext);
-  const { onFollowClick } = props;
   const isBroadcaster = Auth.isBroadcaster;
   const { liveItems: items, componentHeader: title } = config.liveState;
 
@@ -25,7 +24,8 @@ export const FollowList: FC<Props> = props => {
             <li key={item.id}>
               <FollowButton
                 followChannel={item.channelName}
-                onClick={onFollowClick}
+                onClick={props.onFollowClick}
+                disabled={props.disabled}
               />{" "}
               Follow {item.displayName || item.channelName}
               {isBroadcaster && (

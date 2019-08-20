@@ -8,9 +8,11 @@ import { ConfigProvider, ConfigContext } from "../config";
 import { getAnchorMode } from "../utils";
 import { AnimatedButton } from "./animated-button";
 import { FollowZone } from "./follow-zone";
-import { LiveItems, LiveLayoutItem, ChannelData } from "../models";
+import { LiveLayoutItem, ChannelData } from "../models";
 import { FollowList } from "./follow-list";
 import { applyThemeClass } from "../common-styles";
+
+const anchorType = getAnchorMode();
 
 interface Props {
   config: ChannelData;
@@ -20,7 +22,6 @@ interface State {
   animateOut: boolean;
   itemsHidden: boolean;
   followUiOpen: boolean;
-  componentMode: boolean;
   isBroadcaster: boolean;
   playerUiVisible: boolean;
 }
@@ -30,7 +31,6 @@ class App extends Component<Props, State> {
     animateOut: false,
     itemsHidden: false,
     followUiOpen: false,
-    componentMode: getAnchorMode() === "component",
     isBroadcaster: false,
     playerUiVisible: false
   };
@@ -45,13 +45,20 @@ class App extends Component<Props, State> {
         });
       }
       Twitch.ext!.actions.onFollow(this.onFollowUiClosed);
-      Twitch.ext!.onContext(context => {
-        if (context.arePlayerControlsVisible !== this.state.playerUiVisible) {
-          this.setState({
-            playerUiVisible: context.arePlayerControlsVisible
-          });
-        }
-      });
+
+      if (anchorType === "component" || anchorType === "video_overlay") {
+        applyThemeClass("dark");
+        // this overwrites the context handler set by applyThemeClass
+        Twitch.ext!.onContext(context => {
+          if (context.arePlayerControlsVisible !== this.state.playerUiVisible) {
+            this.setState({
+              playerUiVisible: context.arePlayerControlsVisible
+            });
+          }
+        });
+      } else {
+        applyThemeClass();
+      }
     });
   }
 
@@ -76,7 +83,7 @@ class App extends Component<Props, State> {
   }
 
   render() {
-    if (this.state.componentMode) {
+    if (anchorType !== "video_overlay") {
       return (
         <main className={styles.componentMode}>
           <FollowList
@@ -166,4 +173,3 @@ render(
   </ConfigProvider>,
   appNode
 );
-applyThemeClass("dark");
