@@ -33,6 +33,11 @@ export interface ConfigState {
   available: boolean;
   config: ChannelData;
   setLiveItems(liveItems: LiveItems, broadcast?: boolean): void;
+
+  /**
+   * @param {Layout} layout
+   * @param {boolean} localChange if true, change was made in this client, will broadcast to other clients
+   */
   saveLayout(liveItems: Layout, broadcast?: boolean): void;
   toggleHideAll(): void;
   saveFavorites(favorites: Array<LiveButton>): void;
@@ -50,60 +55,66 @@ export const ConfigContext = createContext<ConfigState>({
 });
 
 export class ConfigProvider extends Component<{}, ConfigState> {
-  public state = {
+  public state: ConfigState = {
     available: false,
     config: defaultConfig,
 
-    setLiveItems: (liveItems: LiveItems, broadcast = true) => {
-      this.config = iassign(
-        this.config,
-        c => c.liveState,
-        liveState => {
-          liveState.liveItems = liveItems.slice();
-          return liveState;
+    setLiveItems: (liveItems: LiveItems, localChange = true) => {
+      this.setState(
+        prevState =>
+          iassign(
+            prevState,
+            c => c.config.liveState,
+            liveState => {
+              liveState.liveItems = liveItems.slice();
+              return liveState;
+            }
+          ),
+        () => {
+          if (localChange) {
+            // set configuration
+            this.save();
+            // broadcast to pubsub
+            this.publishLiveState();
+          }
         }
       );
-
-      if (broadcast) {
-        // set configuration
-        this.save();
-        // broadcast to pubsub
-        this.publishLiveState();
-      }
     },
 
     toggleHideAll: () => {
-      this.config = iassign(
-        this.config,
-        c => c.liveState,
-        liveState => {
-          liveState.hideAll = !liveState.hideAll;
-          return liveState;
+      this.setState(
+        prevState =>
+          iassign(
+            prevState,
+            c => c.config.liveState,
+            liveState => {
+              liveState.hideAll = !liveState.hideAll;
+              return liveState;
+            }
+          ),
+        () => {
+          this.save();
+          this.publishLiveState();
         }
       );
-      this.save();
-      this.publishLiveState();
     },
 
-    /**
-     * @param {Layout} layout
-     * @param {boolean} broadcast if true, will broadcast to other clients
-     */
-    saveLayout: (layout: Layout, broadcast = true) => {
-      this.config = iassign(
-        this.config,
-        config => config.settings,
+    saveLayout: (layout: Layout, localChange = true) => {
+      let newState = iassign(
+        this.state,
+        config => config.config.settings,
         settings => {
           settings.configuredLayouts = [layout];
           return settings;
         }
       );
       const availableSlots = new Map(
-        this.config.settings.configuredLayouts[0].positions.map(
-          /** @return {[string, LayoutItem]} */ item => [item.id, item]
-        )
+        newState.config.settings.configuredLayouts[0].positions.map(item => [
+          item.id,
+          item
+        ])
       );
-      const validLiveItems = this.config.liveState.liveItems
+      const validLiveItems = newState.config.liveState.liveItems
         .filter(item => availableSlots.has(item.id))
         .map(item => {
           const parentSlot = availableSlots.get(item.id);
@@ -114,40 +125,53 @@ export class ConfigProvider extends Component<{}, ConfigState> {
         });
 
       // if we had any live buttons to begin with, update them
-      if (this.config.liveState.liveItems.length) {
-        this.state.setLiveItems(validLiveItems, broadcast);
-      } else if (broadcast) {
-        this.save();
+      if (newState.config.liveState.liveItems.length) {
+        newState = iassign(
+          newState,
+          state => state.config.liveState.liveItems,
+          () => validLiveItems
+        );
       }
 
-      if (broadcast) {
-        this.publishLayout();
-      }
+      this.setState(newState, () => {
+        if (localChange) {
+          this.save();
+          this.publishLayout();
+        }
+      });
     },
 
     saveFavorites: (favorites: Array<LiveButton>) => {
-      this.config = iassign(
-        this.config,
-        config => config.settings,
-        settings => {
-          settings.favorites = favorites.slice();
-          return settings;
-        }
+      this.setState(
+        prevState =>
+          iassign(
+            prevState,
+            config => config.config.settings,
+            settings => {
+              settings.favorites = favorites.slice();
+              return settings;
+            }
+          ),
+        this.save
       );
-      this.save();
     },
 
     saveComponentHeader: (header: string) => {
-      this.config = iassign(
-        this.config,
-        config => config.liveState,
-        liveState => {
-          liveState.componentHeader = header;
-          return liveState;
+      this.setState(
+        prevState =>
+          iassign(
+            prevState,
+            config => config.config.liveState,
+            liveState => {
+              liveState.componentHeader = header;
+              return liveState;
+            }
+          ),
+        () => {
+          this.publishLiveState();
+          this.save();
         }
       );
-      this.publishLiveState();
-      this.save();
     }
   };
 
@@ -160,14 +184,12 @@ export class ConfigProvider extends Component<{}, ConfigState> {
       }
 
       Twitch.ext.configuration.onChanged(() => {
-        this.config = this.getConfiguration();
-        resolve();
+        this.setState({ config: this.getConfiguration() }, resolve);
       });
 
       const availableConfig = this.getConfiguration();
       if (availableConfig !== defaultConfig) {
-        this.config = availableConfig;
-        resolve();
+        this.setState({ config: availableConfig }, resolve);
       }
 
       Auth.authAvailable.then(() => {
@@ -212,17 +234,14 @@ export class ConfigProvider extends Component<{}, ConfigState> {
     try {
       const decodedMessage: LiveState = JSON.parse(message);
       if (decodedMessage) {
-        this.config = iassign(
-          this.config,
-          c => c.liveState,
-          () => decodedMessage
+        this.setState(prevState =>
+          iassign(prevState, c => c.config.liveState, () => decodedMessage)
         );
       }
     } catch (_) {}
   };
 
   private getConfiguration() {
-    // return defaultConfig;
     let ret = defaultConfig;
     try {
       if (Twitch.ext!.configuration.broadcaster!.version === CONFIG_VERSION) {
@@ -264,11 +283,5 @@ export class ConfigProvider extends Component<{}, ConfigState> {
 
   private get config() {
     return this.state.config;
-  }
-
-  private set config(config: ChannelData) {
-    this.setState({
-      config
-    });
   }
 }
