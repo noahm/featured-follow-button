@@ -10,3 +10,7 @@ main.componentMode {
   left: 0;
   font-size: 6vw;
 }
+
+main.overlay {
+  font-size: 2.2vw;
+}

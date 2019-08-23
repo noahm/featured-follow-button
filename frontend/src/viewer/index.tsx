@@ -10,7 +10,7 @@ import { AnimatedButton } from "./animated-button";
 import { FollowZone } from "./follow-zone";
 import { LiveLayoutItem, ChannelData } from "../models";
 import { FollowList } from "./follow-list";
-import { applyThemeClass } from "../common-styles";
+import { applyThemeClass, setTransparentBg } from "../common-styles";
 
 const anchorType = getAnchorMode();
 
@@ -56,6 +56,9 @@ class App extends Component<Props, State> {
             });
           }
         });
+        if (anchorType === "video_overlay") {
+          setTransparentBg();
+        }
       } else {
         applyThemeClass();
       }
@@ -95,7 +98,9 @@ class App extends Component<Props, State> {
     }
 
     return (
-      <main>{this.props.config.liveState.liveItems.map(this.renderItem)}</main>
+      <main className={styles.overlay}>
+        {this.props.config.liveState.liveItems.map(this.renderItem)}
+      </main>
     );
   }
 

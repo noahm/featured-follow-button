@@ -15,6 +15,10 @@ body.dark {
   background-color: #0f0e11;
 }
 
+body.transparentBg {
+  background-color: transparent;
+}
+
 div {
   margin: 0px;
 }

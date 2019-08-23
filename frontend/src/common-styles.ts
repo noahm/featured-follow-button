@@ -1,4 +1,5 @@
 import commonStyles from "./common-styles.css";
+import classNames from "classnames";
 
 /**
  * Call once at app start to apply the right theme classname to the html body tag
@@ -17,4 +18,8 @@ export function applyThemeClass(force?: "dark" | "light") {
       }
     });
   }
+}
+
+export function setTransparentBg() {
+  document.body.className = classNames(document.body.className, commonStyles.transparentBg);
 }

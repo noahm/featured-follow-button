@@ -23,7 +23,14 @@ const defaultConfig: ChannelData = {
     configuredLayouts: [
       {
         name: "default",
-        positions: []
+        positions: [
+          {
+            id: '00000000',
+            type: "button",
+            left: 75,
+            top: 75,
+          }
+        ]
       }
     ]
   }
