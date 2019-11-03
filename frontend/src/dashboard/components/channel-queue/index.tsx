@@ -52,6 +52,7 @@ export class ChannelQueue extends Component<Props> {
     const channelIndex = +e.currentTarget.parentElement!.dataset.channelIndex!;
     const newFavorites = this.props.config.config.settings.favorites.slice();
     newFavorites.splice(channelIndex, 1);
+    this.props.config.saveFavorites(newFavorites);
   };
 
   addFavoriteChannel = (channelName: string, displayName = "") => {
