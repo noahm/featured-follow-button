@@ -12,7 +12,7 @@ svg {
 .button {
   border: 1px solid transparent;
   border-radius: 4px;
-  background: #6441a4;
+  background: #9147ff;
   color: #fff;
   display: inline-flex;
   position: relative;
@@ -38,21 +38,21 @@ svg {
 }
 
 .button:hover {
-  border-color: #7d5bbe;
-  background: #7d5bbe;
+  border-color: #772ce8;
+  background: #772ce8;
   color: #fff;
 }
 
 .button:focus {
   border-color: #9a7fcc;
-  background: #7d5bbe;
+  background: #772ce8;
   color: #fff;
-  box-shadow: 0 0 6px 0 #7d5bbe;
+  box-shadow: 0 0 6px 0 #772ce8;
 }
 
 .button:active {
-  border-color: #7d5bbe;
-  background: #6441a4;
+  border-color: #5c16c5;
+  background: #5c16c5;
   color: #fff;
-  box-shadow: 0 0 6px 0 #7d5bbe;
+  box-shadow: 0 0 6px 0 #772ce8;
 }

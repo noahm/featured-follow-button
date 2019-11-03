@@ -24,7 +24,7 @@ div {
 }
 button {
   font-size: 0.8em;
-  background-color: #6441a4;
+  background-color: #9147ff;
   border-radius: 4px;
   border: 1px solid transparent;
   outline: none;
@@ -35,8 +35,8 @@ button {
   padding: 0.3em 0.5em;
 }
 button:hover:not(:disabled) {
-  background-color: #7d5bbe;
-  border-color: #7d5bbe;
+  background-color: #772ce8;
+  border-color: #772ce8;
 }
 button:disabled,
 input:disabled {

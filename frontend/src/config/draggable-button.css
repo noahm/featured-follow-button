@@ -1,7 +1,7 @@
 .button {
   border: 1px solid transparent;
   border-radius: 4px;
-  background: #6441a4;
+  background: #9147ff;
   color: #fff;
   display: inline-flex;
   align-items: center;
@@ -28,8 +28,8 @@
 }
 
 .button:hover {
-  border-color: #7d5bbe;
-  background: #7d5bbe;
+  border-color: #772ce8;
+  background: #772ce8;
   color: #fff;
 }
 
