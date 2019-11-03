@@ -15,7 +15,6 @@ export class FollowZone extends Component<Props> {
     const {
       item,
       disabled,
-      onClick,
       showBorder,
     } = this.props;
 
@@ -27,9 +26,14 @@ export class FollowZone extends Component<Props> {
     };
 
     return (
-      <div className={classNames(styles.followZone, { [styles.showBorder]: showBorder })} style={style} onClick={!disabled ? onClick : undefined}>
+      <div className={classNames(styles.followZone, { [styles.showBorder]: showBorder })} style={style} onClick={!disabled ? this.handleFollow : undefined}>
         <span className={styles.text}>Click to follow {item.displayName || item.channelName}</span>
       </div>
     );
+  }
+
+  private handleFollow = () => {
+    this.props.onClick();
+    Twitch.ext!.actions.followChannel(this.props.item.channelName);
   }
 }
