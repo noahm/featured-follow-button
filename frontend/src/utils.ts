@@ -29,8 +29,12 @@ export function getAnchorMode():
   | "component"
   | "video_overlay"
   | "panel"
+  | "mobile"
   | undefined {
   const queryString = parse(window.location.search) as Record<string, string>;
+  if ("force_anchor" in queryString) {
+    return queryString.force_anchor as ReturnType<typeof getAnchorMode>;
+  }
   if ("anchor" in queryString) {
     return queryString.anchor as ReturnType<typeof getAnchorMode>;
   }

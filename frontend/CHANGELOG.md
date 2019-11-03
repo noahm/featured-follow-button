@@ -1,6 +1,7 @@
 # v2.2.1
 - Updated colors to match new site design.
 - Fixed a bug causing follow zones to do nothing when clicked.
+- Fixed a bug causing the mobile view to not be used when activated as an overlay.
 
 # v2.2.0
 - Added new list-style display, used for new docked component design, new panel type, and as a new mobile view.
