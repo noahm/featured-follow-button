@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { Component } from 'react';
 import styles from './follow-zone.css';
-import { LiveButton, PositionedZone } from '../models';
+import { LiveButton, PositionedZone, TrackingEvent } from '../models';
 
 interface Props {
   item: LiveButton & PositionedZone;
@@ -35,5 +35,10 @@ export class FollowZone extends Component<Props> {
   private handleFollow = () => {
     this.props.onClick();
     Twitch.ext!.actions.followChannel(this.props.item.channelName);
+    Twitch.ext!.tracking.trackEvent(
+      TrackingEvent.FollowZoneClick,
+      Twitch.ext!.tracking.InteractionTypes.Interact,
+      Twitch.ext!.tracking.Categories.Click
+    );
   }
 }

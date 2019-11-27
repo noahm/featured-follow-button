@@ -8,7 +8,7 @@ import { ConfigProvider, ConfigContext } from "../config";
 import { getAnchorMode } from "../utils";
 import { AnimatedButton } from "./animated-button";
 import { FollowZone } from "./follow-zone";
-import { LiveLayoutItem, ChannelData } from "../models";
+import { LiveLayoutItem, ChannelData, TrackingEvent } from "../models";
 import { FollowList } from "./follow-list";
 import { applyThemeClass, setTransparentBg } from "../common-styles";
 
@@ -161,10 +161,23 @@ class App extends Component<Props, State> {
     });
   };
 
-  onFollowUiClosed = () => {
+  onFollowUiClosed = (didFollow: boolean) => {
     this.setState({
       followUiOpen: false
     });
+    if (didFollow) {
+      Twitch.ext!.tracking.trackEvent(
+        TrackingEvent.FollowConfirmed,
+        Twitch.ext!.tracking.InteractionTypes.Interact,
+        Twitch.ext!.tracking.Categories.Click
+      );
+    } else {
+      Twitch.ext!.tracking.trackEvent(
+        TrackingEvent.FollowAborted,
+        Twitch.ext!.tracking.InteractionTypes.Interact,
+        Twitch.ext!.tracking.Categories.Click
+      );
+    }
   };
 }
 

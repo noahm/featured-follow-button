@@ -1,3 +1,12 @@
+export enum TrackingEvent {
+  FollowButtonClick = "follow-button-click",
+  FollowZoneClick = "follow-zone-click",
+  FollowConfirmed = "follow-channel-confirm",
+  FollowAborted = "follow-channel-abort",
+  LiveStateSave = "update-live-state",
+  LayoutSave = "update-layout",
+}
+
 /**
  * info for a live follow item
  */

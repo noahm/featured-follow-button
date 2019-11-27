@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { Component } from "react";
 import styles from "./follow-button.css";
+import { TrackingEvent } from "../models";
 
 interface FBProps {
   disabled?: boolean;
@@ -44,5 +45,10 @@ export class FollowButton extends Component<FBProps> {
       this.props.onClick();
     }
     Twitch.ext!.actions.followChannel(this.props.followChannel);
+    Twitch.ext!.tracking.trackEvent(
+      TrackingEvent.FollowButtonClick,
+      Twitch.ext!.tracking.InteractionTypes.Interact,
+      Twitch.ext!.tracking.Categories.Click
+    );
   };
 }

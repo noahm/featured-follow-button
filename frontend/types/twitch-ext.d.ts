@@ -59,6 +59,36 @@ declare namespace Twitch {
     user_id?: string;
   }
 
+  namespace Tracking {
+    export enum InteractionTypes {
+      Access,
+      Content,
+      Reward,
+      Bits,
+      Interact,
+      Account,
+      Configuration,
+      StreamManager,
+      Error,
+      Other
+    }
+
+    export enum Categories {
+      Click,
+      Hover,
+      Tap,
+      Swipe,
+      Impression,
+      Other
+    }
+
+    export function trackEvent(
+      name: string,
+      interactionType: InteractionTypes,
+      category: Categories
+    ): void;
+  }
+
   interface Context {
     arePlayerControlsVisible: boolean;
     bitrate: number;
@@ -106,6 +136,7 @@ declare namespace Twitch {
     actions: Actions;
     configuration: Configuration.Root;
     viewer: Viewer | null;
+    tracking: typeof Tracking;
     onAuthorized(cb: (auth: AuthCallback) => void): void;
     onContext(
       cb: (context: Context, updatedProperties: Array<keyof Context>) => void

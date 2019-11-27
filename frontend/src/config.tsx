@@ -7,7 +7,8 @@ import {
   LiveItems,
   LiveButton,
   Layout,
-  LiveState
+  LiveState,
+  TrackingEvent
 } from "./models";
 
 const CONFIG_VERSION = "1.0";
@@ -25,10 +26,10 @@ const defaultConfig: ChannelData = {
         name: "default",
         positions: [
           {
-            id: '00000000',
+            id: "00000000",
             type: "button",
             left: 75,
-            top: 75,
+            top: 75
           }
         ]
       }
@@ -265,7 +266,11 @@ export class ConfigProvider extends Component<{}, ConfigState> {
       const decodedMessage: LiveState = JSON.parse(message);
       if (decodedMessage) {
         this.setState(prevState =>
-          iassign(prevState, c => c.config.liveState, () => decodedMessage)
+          iassign(
+            prevState,
+            c => c.config.liveState,
+            () => decodedMessage
+          )
         );
       }
     } catch (_) {}
@@ -298,6 +303,11 @@ export class ConfigProvider extends Component<{}, ConfigState> {
 
   private publishLiveState() {
     Twitch.ext!.send("broadcast", "application/json", this.config.liveState);
+    Twitch.ext!.tracking.trackEvent(
+      TrackingEvent.LiveStateSave,
+      Twitch.ext!.tracking.InteractionTypes.Configuration,
+      Twitch.ext!.tracking.Categories.Click
+    );
   }
 
   private publishLayout() {
@@ -308,6 +318,11 @@ export class ConfigProvider extends Component<{}, ConfigState> {
       `whisper-${Auth.userID}`,
       "application/json",
       this.config.settings.configuredLayouts[0]
+    );
+    Twitch.ext!.tracking.trackEvent(
+      TrackingEvent.LayoutSave,
+      Twitch.ext!.tracking.InteractionTypes.Configuration,
+      Twitch.ext!.tracking.Categories.Click
     );
   }
 
