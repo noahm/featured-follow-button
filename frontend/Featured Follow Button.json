@@ -1,0 +1,183 @@
+{
+  "allowHttpBackend": false,
+  "backendCommand": "",
+  "backendFolderName": "",
+  "certificateExceptions": [
+    {
+      "isAllowed": true,
+      "isEphemeral": false,
+      "isOrigin": true,
+      "value": "https://localhost:8080"
+    },
+    {
+      "isAllowed": true,
+      "isEphemeral": false,
+      "isOrigin": true,
+      "value": "wss://localhost:8080"
+    }
+  ],
+  "extensionViews": [
+    {
+      "id": "1",
+      "label": "",
+      "channelId": "24358834",
+      "configurationAnchor": "panel",
+      "displayChannelName": "cathadan",
+      "type": "video_overlay",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "linked": false,
+      "linkedUserId": "",
+      "mode": "viewer",
+      "isPopout": false,
+      "role": "Broadcaster",
+      "x": 0,
+      "y": 0,
+      "orientation": "Portrait",
+      "frameSize": {
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "id": "2",
+      "label": "",
+      "channelId": "24358834",
+      "configurationAnchor": "video_overlay",
+      "displayChannelName": "cathadan",
+      "type": "dashboard",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "linked": true,
+      "linkedUserId": "265737932",
+      "mode": "dashboard",
+      "isPopout": false,
+      "role": "Broadcaster",
+      "x": 0,
+      "y": 0,
+      "orientation": "Portrait",
+      "frameSize": {
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "id": "3",
+      "label": "",
+      "channelId": "24358834",
+      "configurationAnchor": "video_overlay",
+      "displayChannelName": "cathadan",
+      "type": "config",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "linked": true,
+      "linkedUserId": "265737932",
+      "mode": "config",
+      "isPopout": false,
+      "role": "Broadcaster",
+      "x": 0,
+      "y": 0,
+      "orientation": "Portrait",
+      "frameSize": {
+        "width": 1280,
+        "height": 720
+      }
+    }
+  ],
+  "manifest": {
+    "anchor": "panel",
+    "assetUrls": [],
+    "authorName": "Noah Manneschmidt",
+    "bitsEnabled": false,
+    "canInstall": true,
+    "configUrl": "https://localhost:8080/config.html",
+    "configurationLocation": "hosted",
+    "description": "As seen on Twitch Weekly: give viewers a direct call-to-action for following you or other channels! Activate as a component to display button at a time, or activate as a video overlay to build a custom layout with multiple buttons or transparent clickable areas.\r\n\r\nWhile live, you can show and hide or change the channel any of the items will follow from your live dashboard. Use it to self-promote or when you shout out another channel!\r\n\r\nCode is available on github:\r\nhttps://github.com/noahm/featured-follow-button",
+    "eulaTosUrl": "",
+    "hasChatSupport": false,
+    "iconUrl": "https://extensions-discovery-images.twitch.tv/ih4ptg04wzw6nf4qms0612b8uj0tbh/2.1.0/logo401d7909-cc55-442c-9531-7e906e438989",
+    "iconUrls": {
+      "100x100": "https://extensions-discovery-images.twitch.tv/ih4ptg04wzw6nf4qms0612b8uj0tbh/2.1.0/logo401d7909-cc55-442c-9531-7e906e438989",
+      "24x24": "https://extensions-discovery-images.twitch.tv/ih4ptg04wzw6nf4qms0612b8uj0tbh/2.1.0/taskbar9f7126dd-d95e-4925-b944-1d92f855e67d",
+      "300x200": "https://extensions-discovery-images.twitch.tv/ih4ptg04wzw6nf4qms0612b8uj0tbh/2.1.0/discovery74292a48-3b67-4a86-a70a-75d2e192e6bf"
+    },
+    "id": "ih4ptg04wzw6nf4qms0612b8uj0tbh",
+    "installationCount": -42,
+    "liveConfigUrl": "https://localhost:8080/dashboard.html",
+    "name": "Dynamic Follow Buttons",
+    "panelHeight": 350,
+    "privacyPolicyUrl": "",
+    "requestIdentityLink": false,
+    "requiredBroadcasterAbilities": [],
+    "screenshotUrls": [
+      "https://extensions-discovery-images.twitch.tv/ih4ptg04wzw6nf4qms0612b8uj0tbh/2.2.0/screenshot6760067b-0c3b-4f25-8f89-d979f01af299",
+      "https://extensions-discovery-images.twitch.tv/ih4ptg04wzw6nf4qms0612b8uj0tbh/2.2.0/screenshotf4a19227-8d6e-472e-b306-6e6ee4fd09f1"
+    ],
+    "sku": "",
+    "state": "Testing",
+    "subscriptionsSupportLevel": "none",
+    "summary": "Displays follow buttons over the stream for any channels you want",
+    "supportEmail": "nmannesc@twitch.tv",
+    "vendorCode": "",
+    "version": "2.2.0",
+    "viewerSummary": "Displays follow buttons over the stream for any channels you want",
+    "viewerUrl": "https://localhost:8080/viewer.html",
+    "viewerUrls": {
+      "mobile": "https://localhost:8080/viewer.html",
+      "panel": "https://localhost:8080/viewer.html",
+      "videoOverlay": "https://localhost:8080/viewer.html",
+      "component": "https://localhost:8080/viewer.html"
+    },
+    "views": {
+      "mobile": {
+        "viewerUrl": "https://localhost:8080/viewer.html"
+      },
+      "panel": {
+        "viewerUrl": "https://localhost:8080/viewer.html",
+        "height": 350,
+        "canLinkExternalContent": false
+      },
+      "videoOverlay": {
+        "viewerUrl": "https://localhost:8080/viewer.html",
+        "canLinkExternalContent": false
+      },
+      "component": {
+        "viewerUrl": "https://localhost:8080/viewer.html",
+        "aspectWidth": 5000,
+        "aspectHeight": 5000,
+        "aspectRatioX": 4000,
+        "aspectRatioY": 4500,
+        "autoscale": false,
+        "scalePixels": 0,
+        "targetHeight": 6666,
+        "size": 0,
+        "zoom": false,
+        "zoomPixels": 0,
+        "canLinkExternalContent": false
+      },
+      "config": {
+        "viewerUrl": "https://localhost:8080/config.html",
+        "canLinkExternalContent": false
+      },
+      "liveConfig": {
+        "viewerUrl": "https://localhost:8080/dashboard.html",
+        "canLinkExternalContent": false
+      }
+    },
+    "whitelistedConfigUrls": [],
+    "whitelistedPanelUrls": []
+  },
+  "frontendCommand": "npm start",
+  "frontendFolderName": "",
+  "name": "Featured Follow Button",
+  "version": 1
+}
