@@ -1,3 +1,6 @@
+# v2.3.0
+- Added tracking calls using new twitch extension tracking methods
+
 # v2.2.1
 - Updated colors to match new site design.
 - Fixed a bug causing follow zones to do nothing when clicked.
