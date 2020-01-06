@@ -61,6 +61,15 @@ declare namespace Twitch {
 
   namespace Tracking {
     export enum InteractionTypes {
+      Click,
+      Hover,
+      Tap,
+      Swipe,
+      Impression,
+      Other
+    }
+
+    export enum Categories {
       Access,
       Content,
       Reward,
@@ -70,15 +79,6 @@ declare namespace Twitch {
       Configuration,
       StreamManager,
       Error,
-      Other
-    }
-
-    export enum Categories {
-      Click,
-      Hover,
-      Tap,
-      Swipe,
-      Impression,
       Other
     }
 

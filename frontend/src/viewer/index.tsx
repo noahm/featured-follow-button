@@ -168,14 +168,14 @@ class App extends Component<Props, State> {
     if (didFollow) {
       Twitch.ext!.tracking.trackEvent(
         TrackingEvent.FollowConfirmed,
-        Twitch.ext!.tracking.InteractionTypes.Interact,
-        Twitch.ext!.tracking.Categories.Click
+        Twitch.ext!.tracking.InteractionTypes.Click,
+        Twitch.ext!.tracking.Categories.Interact
       );
     } else {
       Twitch.ext!.tracking.trackEvent(
         TrackingEvent.FollowAborted,
-        Twitch.ext!.tracking.InteractionTypes.Interact,
-        Twitch.ext!.tracking.Categories.Click
+        Twitch.ext!.tracking.InteractionTypes.Click,
+        Twitch.ext!.tracking.Categories.Interact
       );
     }
   };

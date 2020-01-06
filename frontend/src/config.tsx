@@ -305,8 +305,8 @@ export class ConfigProvider extends Component<{}, ConfigState> {
     Twitch.ext!.send("broadcast", "application/json", this.config.liveState);
     Twitch.ext!.tracking.trackEvent(
       TrackingEvent.LiveStateSave,
-      Twitch.ext!.tracking.InteractionTypes.Configuration,
-      Twitch.ext!.tracking.Categories.Click
+      Twitch.ext!.tracking.InteractionTypes.Click,
+      Twitch.ext!.tracking.Categories.Configuration
     );
   }
 
@@ -321,8 +321,8 @@ export class ConfigProvider extends Component<{}, ConfigState> {
     );
     Twitch.ext!.tracking.trackEvent(
       TrackingEvent.LayoutSave,
-      Twitch.ext!.tracking.InteractionTypes.Configuration,
-      Twitch.ext!.tracking.Categories.Click
+      Twitch.ext!.tracking.InteractionTypes.Click,
+      Twitch.ext!.tracking.Categories.Configuration
     );
   }
 

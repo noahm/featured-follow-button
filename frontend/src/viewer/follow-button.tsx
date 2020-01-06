@@ -47,8 +47,8 @@ export class FollowButton extends Component<FBProps> {
     Twitch.ext!.actions.followChannel(this.props.followChannel);
     Twitch.ext!.tracking.trackEvent(
       TrackingEvent.FollowButtonClick,
-      Twitch.ext!.tracking.InteractionTypes.Interact,
-      Twitch.ext!.tracking.Categories.Click
+      Twitch.ext!.tracking.InteractionTypes.Click,
+      Twitch.ext!.tracking.Categories.Interact
     );
   };
 }
