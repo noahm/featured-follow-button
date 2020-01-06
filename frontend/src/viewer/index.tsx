@@ -21,7 +21,7 @@ interface Props {
 interface State {
   animateOut: boolean;
   itemsHidden: boolean;
-  followUiOpen: boolean;
+  // followUiOpen: boolean;
   isBroadcaster: boolean;
   playerUiVisible: boolean;
 }
@@ -30,7 +30,7 @@ class App extends Component<Props, State> {
   state: State = {
     animateOut: false,
     itemsHidden: false,
-    followUiOpen: false,
+    // followUiOpen: false,
     isBroadcaster: false,
     playerUiVisible: false
   };
@@ -90,8 +90,8 @@ class App extends Component<Props, State> {
       return (
         <main className={styles.componentMode}>
           <FollowList
-            disabled={this.state.followUiOpen}
-            onFollowClick={this.onFollowClick}
+          // disabled={this.state.followUiOpen}
+          // onFollowClick={this.onFollowClick}
           />
         </main>
       );
@@ -104,8 +104,8 @@ class App extends Component<Props, State> {
     );
   }
 
-  renderItem = (item?: LiveLayoutItem) => {
-    const { itemsHidden, followUiOpen, isBroadcaster } = this.state;
+  private renderItem = (item?: LiveLayoutItem) => {
+    const { itemsHidden, isBroadcaster } = this.state;
     let animateOut = this.state.animateOut;
     if (this.props.config.liveState.hideAll) {
       if (isBroadcaster) {
@@ -124,8 +124,8 @@ class App extends Component<Props, State> {
         <AnimatedButton
           key={item.id + ":" + item.channelName}
           animateOut={animateOut}
-          disabled={followUiOpen}
-          onClick={this.onFollowClick}
+          // disabled={followUiOpen}
+          // onClick={this.onFollowClick}
           onAnimationEnd={this.animationEnded}
           item={item}
         />
@@ -134,8 +134,8 @@ class App extends Component<Props, State> {
       return (
         <FollowZone
           key={item.id}
-          disabled={followUiOpen}
-          onClick={this.onFollowClick}
+          // disabled={followUiOpen}
+          // onClick={this.onFollowClick}
           item={item}
           showBorder={this.state.playerUiVisible}
         />
@@ -143,7 +143,7 @@ class App extends Component<Props, State> {
     }
   };
 
-  animationEnded = () => {
+  private animationEnded = () => {
     if (
       (this.state.animateOut ||
         (this.props.config.liveState.hideAll && !this.state.isBroadcaster)) &&
@@ -155,16 +155,16 @@ class App extends Component<Props, State> {
     }
   };
 
-  onFollowClick = () => {
-    this.setState({
-      followUiOpen: true
-    });
-  };
+  // private onFollowClick = () => {
+  //   this.setState({
+  //     followUiOpen: true
+  //   });
+  // };
 
-  onFollowUiClosed = (didFollow: boolean) => {
-    this.setState({
-      followUiOpen: false
-    });
+  private onFollowUiClosed = (didFollow: boolean) => {
+    // this.setState({
+    //   followUiOpen: false
+    // });
     if (didFollow) {
       Twitch.ext!.tracking.trackEvent(
         TrackingEvent.FollowConfirmed,

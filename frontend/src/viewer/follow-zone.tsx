@@ -5,9 +5,9 @@ import { LiveButton, PositionedZone, TrackingEvent } from "../models";
 
 interface Props {
   item: LiveButton & PositionedZone;
-  onClick: () => void;
+  onClick?: () => void;
   showBorder: boolean;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 export class FollowZone extends Component<Props> {
@@ -37,7 +37,7 @@ export class FollowZone extends Component<Props> {
   }
 
   private handleFollow = () => {
-    this.props.onClick();
+    this.props.onClick && this.props.onClick();
     Twitch.ext!.actions.followChannel(this.props.item.channelName);
     Twitch.ext!.tracking.trackEvent(
       TrackingEvent.FollowZoneClick,

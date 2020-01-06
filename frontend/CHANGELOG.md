@@ -1,10 +1,11 @@
 # v2.3.1
 
-- Fixed tracking calls enum definitions
+- Fixed tracking calls enum definitions.
+- Stopped disabling follow buttons while twitch UI is open as its state cannot be reliably tracked.
 
 # v2.3.0
 
-- Added tracking calls using new twitch extension tracking methods
+- Added tracking calls using new twitch extension tracking methods.
 
 # v2.2.1
 
