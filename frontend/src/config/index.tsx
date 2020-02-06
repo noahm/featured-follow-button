@@ -2,77 +2,44 @@ import "../common-styles.css";
 import { applyThemeClass } from "../common-styles";
 import { Component } from "react";
 import { render } from "react-dom";
-import { LayoutEditor } from "./layout-editor";
-import { ComponentOptions } from "./component-options";
 import { getAnchorMode } from "../utils";
-import { ConfigProvider, ConfigContext } from "../config";
+import { ConfigProvider } from "../config";
+import { SettingsPage } from "./settings-page";
 
 class App extends Component {
-  state = {
-    anchor: getAnchorMode()
-  };
-
   render() {
-    switch (this.state.anchor) {
+    switch (getAnchorMode()) {
       case "video_overlay":
-        return this.renderOverlay();
+        return (
+          <SettingsPage
+            title="Overlay Mode"
+            description={`You have this extension activated as an overlay, so you can
+        configure a custom layout below. Think of the buttons and zones as
+        "slots" that can be filled or left unused and invisible during a
+        stream. Don't forget to save when you're done editing!`}
+          />
+        );
       case "component":
       case "panel":
-        return this.renderComponentMode();
+        return (
+          <SettingsPage
+            title="List Mode"
+            description="You have this extension activated as a component or panel. In this
+        mode, this extension will display a list of channels a viewer can
+        follow."
+          />
+        );
       default:
-        return this.unactivated();
+        return (
+          <SettingsPage
+            title="Activate me first!"
+            description="You have yet to activate this extension anywhere. Activate it as a
+        component for a list of channels to follow, or as an overlay to
+        build a custom layout with buttons or transparent zones in specific
+        locations over the video."
+          />
+        );
     }
-  }
-
-  unactivated() {
-    return (
-      <div style={{ fontSize: "200%" }}>
-        <div style={{ maxWidth: "37em" }}>
-          <h2>Activate me first!</h2>
-          <p>
-            You have yet to activate this extension anywhere. Activate it as a
-            component for a list of channels to follow, or as an overlay to
-            build a custom layout with buttons or transparent zones in specific
-            locations over the video.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  renderOverlay() {
-    return (
-      <div style={{ fontSize: "200%" }}>
-        <div style={{ maxWidth: "37em" }}>
-          <h2>Overlay Builder</h2>
-          <p>
-            You have this extension activated as an overlay, so you can
-            configure a custom layout below. Think of the buttons and zones as
-            "slots" that can be filled or left unused and invisible during a
-            stream. Don't forget to save when you're done editing!
-          </p>
-        </div>
-        <ConfigContext.Consumer>
-          {config => <LayoutEditor config={config} />}
-        </ConfigContext.Consumer>
-      </div>
-    );
-  }
-
-  renderComponentMode() {
-    return (
-      <div style={{ fontSize: "200%" }}>
-        <div style={{ maxWidth: "37em" }}>
-          <h2>List Mode</h2>
-          <p>
-            You have this extension activated as a component or panel. In this
-            mode, this extension will display a list of channels a viewer can
-            follow.
-          </p>
-        </div>
-        <ComponentOptions />
-      </div>
-    );
   }
 }
 
