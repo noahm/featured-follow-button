@@ -1,4 +1,5 @@
-import { parse } from "querystringify";
+import "regenerator-runtime/runtime";
+import { parse, stringify } from "querystringify";
 import { Layout } from "./models";
 
 export function getUsername(
@@ -44,3 +45,80 @@ export const defaultLayout: Layout = {
   name: "default",
   positions: [{ type: "button", id: "00000000", top: 75, left: 75 }]
 };
+
+export interface HelixUser {
+  broadcaster_type: "partner" | "affiliate" | "";
+  description: string;
+  display_name: string;
+  id: string;
+  login: string;
+  offline_image_url: string;
+  profile_image_url: string;
+  type: "staff" | "admin" | "global_mod" | "";
+  view_count: number;
+}
+
+const userCache: Record<string, false | HelixUser> = {};
+
+/**
+ *
+ * @param logins
+ * @param assumeFalse when true, assume any cache miss is a missing user
+ */
+function getUsersFromCache(logins: string[], assumeFalse = false) {
+  return logins.map(login => {
+    if (userCache.hasOwnProperty(login)) {
+      return userCache[login];
+    } else {
+      if (assumeFalse) {
+        userCache[login] = false;
+        return false;
+      }
+      throw new Error("user missing from cache");
+    }
+  });
+}
+
+export async function getUserInfo(
+  ...logins: string[]
+): Promise<Array<false | HelixUser>> {
+  if (!logins.length) {
+    return [];
+  }
+
+  try {
+    return getUsersFromCache(logins);
+  } catch {
+    // no worries
+  }
+
+  let params = "";
+  for (const login of logins) {
+    params += stringify({ login }, params ? "&" : false);
+  }
+
+  try {
+    const response: { data: Array<HelixUser> } = await fetch(
+      "https://api.twitch.tv/helix/users?" + params,
+      {
+        headers: {
+          "Client-ID": "ih4ptg04wzw6nf4qms0612b8uj0tbh"
+        }
+      }
+    ).then(r => r.json());
+
+    if (response.data) {
+      // got data back
+      for (const user of response.data) {
+        userCache[user.login] = user;
+      }
+      // assume all unavailable users from input are not real users
+      return getUsersFromCache(logins, true);
+    } else {
+      // request error of some kind
+      return [];
+    }
+  } catch {
+    return [];
+  }
+}

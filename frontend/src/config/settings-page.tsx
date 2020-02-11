@@ -5,6 +5,7 @@ import { LayoutEditor } from "./layout-editor";
 import { getAnchorMode } from "../utils";
 import { ComponentOptions } from "./component-options";
 import { OverlayOptions } from "./overlay-options";
+import styles from "./settings-page.css";
 
 enum SettingsTab {
   LiveState,
@@ -41,8 +42,8 @@ export function SettingsPage(props: Props) {
   }
 
   return (
-    <div style={{ fontSize: "200%" }}>
-      <div style={{ maxWidth: "37em" }}>
+    <div className={styles.settingsPage} style={{ fontSize: "140%" }}>
+      <div style={{ maxWidth: "50em" }}>
         <h2>{props.title}</h2>
         <p>{props.description}</p>
         {enableTabs && (

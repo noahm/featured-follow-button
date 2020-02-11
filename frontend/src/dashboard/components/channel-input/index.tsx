@@ -9,6 +9,7 @@ import {
 import { Auth } from "../../../auth";
 import { LiveButton } from "../../../models";
 import { ConfigContext } from "../../../config";
+import { getUserInfo } from "../../../utils";
 
 const LOGIN_REGEX = /^[a-zA-Z0-9]\w{0,23}$/;
 const remoteCheckCache: Record<string, boolean> = {};
@@ -210,23 +211,16 @@ class ChannelInputImpl extends Component<Props & ContextProps, State> {
       this.setState({
         isValidating: true
       });
-      const remoteCheck = fetch(
-        "https://api.twitch.tv/helix/users?login=" + channelName,
-        {
-          headers: {
-            "Client-ID": Auth.clientID
-          }
-        }
-      )
-        .then(r => r.json())
-        .then((response: { data: Array<{ display_name: string }> }) => {
+      const remoteCheck = getUserInfo(Auth.clientID, channelName).then(
+        response => {
           // fill in display name if left blank?
-          if (response.data && response.data.length) {
+          if (response.length && response[0]) {
+            const channel = response[0];
             if (this.state.useRemoteDisplayName) {
               return new Promise<boolean>(res => {
                 this.setState(
                   {
-                    pendingDisplayName: response.data[0].display_name
+                    pendingDisplayName: channel.display_name
                   },
                   () => res(true)
                 );
@@ -236,11 +230,8 @@ class ChannelInputImpl extends Component<Props & ContextProps, State> {
             }
           }
           return false;
-        })
-        .catch(() => {
-          // maybe throws here should be treated differently...?
-          return false;
-        });
+        }
+      );
       remoteCheck.then(result => {
         remoteCheckCache[channelName] = result;
         this.setState({

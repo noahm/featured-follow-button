@@ -4,7 +4,7 @@ export enum TrackingEvent {
   FollowConfirmed = "follow-channel-confirm",
   FollowAborted = "follow-channel-abort",
   LiveStateSave = "update-live-state",
-  LayoutSave = "update-layout",
+  LayoutSave = "update-layout"
 }
 
 /**
@@ -70,6 +70,8 @@ export interface LiveState {
    * Message displayed at the top of the follow list in component mode
    */
   componentHeader: string;
+  zoneBorderStyle?: string;
+  zoneBorderRadius?: number;
 }
 
 export interface Settings {

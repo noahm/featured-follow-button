@@ -18,6 +18,13 @@ ul {
   overflow-y: auto;
 }
 
+.avatar {
+  height: 2.2em;
+  width: 2.2em;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
 .addItem {
   line-height: normal;
 }
