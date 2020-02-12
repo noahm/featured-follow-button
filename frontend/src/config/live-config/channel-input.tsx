@@ -1,4 +1,4 @@
-import styles from "./style.css";
+import styles from "./channel-input.css";
 import {
   Component,
   createRef,
@@ -6,10 +6,10 @@ import {
   ChangeEvent,
   useContext
 } from "react";
-import { Auth } from "../../../auth";
-import { LiveButton } from "../../../models";
-import { ConfigContext } from "../../../config";
-import { getUserInfo } from "../../../utils";
+import { Auth } from "../../auth";
+import { LiveButton } from "../../models";
+import { ConfigContext } from "../../config";
+import { getUserInfo } from "../../utils";
 
 const LOGIN_REGEX = /^[a-zA-Z0-9]\w{0,23}$/;
 const remoteCheckCache: Record<string, boolean> = {};

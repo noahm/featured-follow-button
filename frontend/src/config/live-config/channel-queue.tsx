@@ -1,9 +1,9 @@
-import styles from "./style.css";
+import styles from "./channel-queue.css";
 import { Component, MouseEvent } from "react";
-import { getUsername } from "../../../utils";
-import { ChannelInput } from "../channel-input";
-import { LiveButton } from "../../../models";
-import { ConfigState } from "../../../config";
+import { getUsername } from "../../utils";
+import { ChannelInput } from "./channel-input";
+import { LiveButton } from "../../models";
+import { ConfigState } from "../../config";
 
 interface Props {
   config: ConfigState;

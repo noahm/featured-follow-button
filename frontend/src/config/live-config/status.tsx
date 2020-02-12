@@ -1,6 +1,6 @@
-import style from './style.css';
-import { Component } from 'react';
-import { getUsername } from '../../../utils';
+import style from "./status.css";
+import { Component } from "react";
+import { getUsername } from "../../utils";
 
 interface Props {
   channelName: string | undefined;
@@ -13,7 +13,11 @@ export class Status extends Component<Props> {
     const { channelName, displayName, onClear } = this.props;
     let statusLine = <span>Follow button is not active</span>;
     if (channelName) {
-      statusLine = <span>Follow button is visible for {getUsername(channelName, displayName)}</span>;
+      statusLine = (
+        <span>
+          Follow button is visible for {getUsername(channelName, displayName)}
+        </span>
+      );
     }
     return (
       <div className={style.Status}>
