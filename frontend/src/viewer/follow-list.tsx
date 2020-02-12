@@ -52,7 +52,7 @@ export const FollowList: FC<Props> = props => {
                   className={styles.avatar}
                 />
               )}
-              Follow {item.displayName || item.channelName}
+              {item.displayName || item.channelName}
               {isBroadcaster && (
                 <button
                   onClick={() =>
