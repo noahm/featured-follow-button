@@ -6,6 +6,9 @@ import { getAnchorMode } from "../utils";
 import { ComponentOptions } from "./component-options";
 import { OverlayOptions } from "./overlay-options";
 import styles from "./settings-page.css";
+import { TabNav } from "../common/tab-nav";
+
+const anchorMode = getAnchorMode();
 
 enum SettingsTab {
   LiveState,
@@ -19,13 +22,20 @@ interface Props {
 }
 
 export function SettingsPage(props: Props) {
-  const [tab, setTab] = useState(SettingsTab.LiveState);
+  const enableTabs = anchorMode === "video_overlay";
+  const [tab, setTab] = useState(
+    enableTabs ? SettingsTab.LiveState : SettingsTab.Settings
+  );
   const config = useContext(ConfigContext);
-  const anchorMode = getAnchorMode();
-  const enableTabs = !!anchorMode;
 
   let content: ReactNode;
   switch (tab) {
+    case SettingsTab.LiveState:
+      content = <LiveConfig config={config} />;
+      break;
+    case SettingsTab.Layout:
+      content = <LayoutEditor config={config} />;
+      break;
     case SettingsTab.Settings:
       if (anchorMode === "video_overlay") {
         content = <OverlayOptions />;
@@ -33,36 +43,26 @@ export function SettingsPage(props: Props) {
         content = <ComponentOptions />;
       }
       break;
-    case SettingsTab.Layout:
-      content = <LayoutEditor config={config} />;
-      break;
-    case SettingsTab.LiveState:
-      content = <LiveConfig config={config} />;
-      break;
   }
 
   return (
-    <div className={styles.settingsPage} style={{ fontSize: "140%" }}>
-      <div style={{ maxWidth: "50em" }}>
+    <div className={styles.settingsPage}>
+      <div className={styles.maxWidth}>
         <h2>{props.title}</h2>
         <p>{props.description}</p>
         {enableTabs && (
-          <ul>
-            <li>
-              <a onClick={() => setTab(SettingsTab.LiveState)}>Live State</a>
-            </li>
-            {anchorMode === "video_overlay" && (
-              <li>
-                <a onClick={() => setTab(SettingsTab.Layout)}>Layout</a>
-              </li>
-            )}
-            <li>
-              <a onClick={() => setTab(SettingsTab.Settings)}>Settings</a>
-            </li>
-          </ul>
+          <TabNav
+            tabs={[
+              ["Live State", SettingsTab.LiveState],
+              ["Layout", SettingsTab.Layout],
+              ["Settings", SettingsTab.Settings]
+            ]}
+            activeTab={tab}
+            onTabChanged={setTab}
+          />
         )}
       </div>
-      {enableTabs && content}
+      {!!anchorMode && content}
     </div>
   );
 }

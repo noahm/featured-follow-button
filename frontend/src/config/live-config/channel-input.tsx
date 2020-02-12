@@ -185,61 +185,48 @@ class ChannelInputImpl extends Component<Props & ContextProps, State> {
     return false;
   }
 
-  checkValidRemote() {
+  async checkValidRemote() {
     if (this.state.isValidating) {
-      return Promise.resolve(false);
+      return false;
+    }
+    if (!this.isValid()) {
+      return false;
     }
 
-    return new Promise<boolean>(resolve => {
-      if (!Auth.clientID) {
-        resolve(true);
-        return;
-      }
-      if (!this.isValid()) {
-        resolve(false);
-        return;
-      }
-      const channelName = this.state.pendingChannelName;
-      if (
-        !this.state.useRemoteDisplayName &&
-        typeof remoteCheckCache[channelName] === "boolean"
-      ) {
-        resolve(remoteCheckCache[channelName]);
-        return;
-      }
-
-      this.setState({
-        isValidating: true
-      });
-      const remoteCheck = getUserInfo(Auth.clientID, channelName).then(
-        response => {
-          // fill in display name if left blank?
-          if (response.length && response[0]) {
-            const channel = response[0];
-            if (this.state.useRemoteDisplayName) {
-              return new Promise<boolean>(res => {
-                this.setState(
-                  {
-                    pendingDisplayName: channel.display_name
-                  },
-                  () => res(true)
-                );
-              });
-            } else {
-              return true;
-            }
-          }
-          return false;
-        }
-      );
-      remoteCheck.then(result => {
-        remoteCheckCache[channelName] = result;
-        this.setState({
-          isValidating: false
-        });
-        resolve(result);
-      });
+    const channelName = this.state.pendingChannelName;
+    if (
+      !this.state.useRemoteDisplayName &&
+      typeof remoteCheckCache[channelName] === "boolean"
+    ) {
+      return remoteCheckCache[channelName];
+    }
+    this.setState({
+      isValidating: true
     });
+
+    const response = await getUserInfo(channelName);
+    let ret = false;
+    // fill in display name if left blank?
+    if (response.length && response[0]) {
+      if (this.state.useRemoteDisplayName) {
+        const pendingDisplayName = response[0].display_name;
+        await new Promise<boolean>(resolve => {
+          this.setState(
+            {
+              pendingDisplayName
+            },
+            () => resolve()
+          );
+        });
+      }
+      ret = true;
+    }
+
+    remoteCheckCache[channelName] = ret;
+    this.setState({
+      isValidating: false
+    });
+    return ret;
   }
 }
 

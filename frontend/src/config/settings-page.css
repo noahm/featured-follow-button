@@ -1,5 +1,6 @@
-.settingsPage ul li {
-  list-style: none;
-  display: inline-block;
-  margin-right: 2em;
+.settingsPage {
+}
+
+.maxWidth {
+  max-width: 50em;
 }

@@ -1,6 +1,7 @@
 import "regenerator-runtime/runtime";
 import { parse, stringify } from "querystringify";
 import { Layout } from "./models";
+import { Auth } from "./auth";
 
 export function getUsername(
   channelName: string | undefined,
@@ -107,7 +108,7 @@ export async function getUserInfo(
       "https://api.twitch.tv/helix/users?" + params,
       {
         headers: {
-          "Client-ID": "ih4ptg04wzw6nf4qms0612b8uj0tbh"
+          "Client-ID": Auth.clientID || "ih4ptg04wzw6nf4qms0612b8uj0tbh"
         }
       }
     ).then(r => r.json());

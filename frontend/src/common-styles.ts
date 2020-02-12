@@ -12,6 +12,7 @@ export function applyThemeClass(force?: "dark" | "light") {
 
   if (typeof Twitch !== "undefined" && Twitch.ext) {
     Twitch.ext.onContext((context, changedProperties) => {
+      console.warn({ theme: context.theme });
       if (changedProperties.indexOf("theme") >= 0) {
         document.body.className =
           context.theme === "dark" ? commonStyles.dark : commonStyles.light;
