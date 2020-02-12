@@ -3,6 +3,11 @@ import { parse, stringify } from "querystringify";
 import { Layout } from "./models";
 import { Auth } from "./auth";
 
+/**
+ * True if twtich ext library is unavailable
+ */
+export const TWITCH_UNAVAILABLE = typeof Twitch === "undefined" || !Twitch.ext;
+
 export function getUsername(
   channelName: string | undefined,
   displayName: string | undefined
@@ -127,4 +132,20 @@ export async function getUserInfo(
   } catch {
     return [];
   }
+}
+
+/**
+ * Returns a function that will pass calls on to `input` exactly
+ * `delay`ms later. Multiple invocations within the delay period
+ * will reset the delay period.
+ */
+export function debounce<T extends Function>(input: T, delay: number): T {
+  let timeout = 0;
+  return ((...args: unknown[]) => {
+    window.clearTimeout(timeout);
+    timeout = window.setTimeout(() => {
+      window.clearTimeout(timeout);
+      return input(...args);
+    }, delay);
+  }) as any;
 }

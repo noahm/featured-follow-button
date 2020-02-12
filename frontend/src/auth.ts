@@ -1,3 +1,5 @@
+import { TWITCH_UNAVAILABLE } from "./utils";
+
 class AuthInstance {
   public clientID: string | undefined;
   public token: string | undefined;
@@ -7,12 +9,12 @@ class AuthInstance {
 
   constructor() {
     this.authAvailable = new Promise(resolve => {
-      if (typeof Twitch === "undefined" || !Twitch.ext) {
+      if (TWITCH_UNAVAILABLE) {
         console.error("Twitch ext not present. Auth not available.");
         return;
       }
 
-      Twitch.ext.onAuthorized(auth => {
+      Twitch.ext!.onAuthorized(auth => {
         this.clientID = auth.clientId;
         this.userID = auth.userId;
         this.token = auth.token;

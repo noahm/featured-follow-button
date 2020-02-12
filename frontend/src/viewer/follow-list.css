@@ -23,6 +23,7 @@ ul {
   width: 2.2em;
   border-radius: 50%;
   vertical-align: middle;
+  margin-right: 0.25em;
 }
 
 .addItem {

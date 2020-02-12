@@ -32,11 +32,11 @@ export const FollowList: FC<Props> = props => {
     });
   }, [Array.from(channelNames).join(":")]);
   const isBroadcaster = Auth.isBroadcaster;
-  const { liveItems: items, componentHeader: title } = config.liveState;
+  const { liveItems: items, listOptions } = config.liveState;
 
   return (
     <div className={styles.followList}>
-      {title && <h3>{title}</h3>}
+      {listOptions.title && <h3>{listOptions.title}</h3>}
       <ul>
         {items.map(item => {
           return (
@@ -46,10 +46,12 @@ export const FollowList: FC<Props> = props => {
                 onClick={props.onFollowClick}
                 disabled={props.disabled}
               />{" "}
-              <img
-                src={userInfo[item.channelName]?.profile_image_url}
-                className={styles.avatar}
-              />{" "}
+              {listOptions.showAvatars && (
+                <img
+                  src={userInfo[item.channelName]?.profile_image_url}
+                  className={styles.avatar}
+                />
+              )}
               Follow {item.displayName || item.channelName}
               {isBroadcaster && (
                 <button
@@ -60,7 +62,7 @@ export const FollowList: FC<Props> = props => {
                   x
                 </button>
               )}
-              {userInfo[item.channelName] && (
+              {listOptions.showDescriptions && userInfo[item.channelName] && (
                 <caption>{userInfo[item.channelName].description}</caption>
               )}
             </li>

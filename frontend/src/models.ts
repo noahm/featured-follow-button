@@ -68,8 +68,10 @@ export interface LiveState {
   hideAll: boolean;
   /**
    * Message displayed at the top of the follow list in component mode
+   * @deprecated 2-11-2020
    */
-  componentHeader: string;
+  componentHeader?: string;
+  listOptions: ListOptions;
   zoneBorderStyle?: string;
   zoneBorderRadius?: number;
 }
@@ -85,4 +87,10 @@ export interface Settings {
 export interface ChannelData {
   liveState: LiveState;
   settings: Settings;
+}
+
+export interface ListOptions {
+  title: string;
+  showAvatars: boolean;
+  showDescriptions: boolean;
 }

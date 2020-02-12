@@ -1,14 +1,20 @@
 import iassign from "immutable-assign";
 import { createContext, Component } from "react";
 import { Auth } from "./auth";
-import { defaultLayout, getRandomID } from "./utils";
+import {
+  defaultLayout,
+  getRandomID,
+  TWITCH_UNAVAILABLE,
+  debounce
+} from "./utils";
 import {
   ChannelData,
   LiveItems,
   LiveButton,
   Layout,
   LiveState,
-  TrackingEvent
+  TrackingEvent,
+  ListOptions
 } from "./models";
 
 const CONFIG_VERSION = "1.0";
@@ -17,7 +23,11 @@ const defaultConfig: ChannelData = {
   liveState: {
     liveItems: [],
     hideAll: false,
-    componentHeader: ""
+    listOptions: {
+      title: "",
+      showAvatars: true,
+      showDescriptions: false
+    }
   },
   settings: {
     favorites: [],
@@ -49,7 +59,11 @@ export interface ConfigState {
   saveLayout(liveItems: Layout, broadcast?: boolean): void;
   toggleHideAll(): void;
   saveFavorites(favorites: Array<LiveButton>): void;
-  saveComponentHeader(header: string): void;
+  /**
+   * Updates display options for list mode.
+   * Delays saving and publishing by 1s
+   */
+  saveListOptions(opts: Partial<ListOptions>): void;
 }
 
 export const ConfigContext = createContext<ConfigState>({
@@ -60,7 +74,7 @@ export const ConfigContext = createContext<ConfigState>({
   saveLayout: () => null,
   toggleHideAll: () => null,
   saveFavorites: () => null,
-  saveComponentHeader: () => null
+  saveListOptions: () => null
 });
 
 export class ConfigProvider extends Component<{}, ConfigState> {
@@ -188,34 +202,33 @@ export class ConfigProvider extends Component<{}, ConfigState> {
       );
     },
 
-    saveComponentHeader: (header: string) => {
+    saveListOptions: (opts: Partial<ListOptions>) => {
       this.setState(
         prevState =>
           iassign(
             prevState,
-            config => config.config.liveState,
-            liveState => {
-              liveState.componentHeader = header;
-              return liveState;
-            }
+            config => config.config.liveState.listOptions,
+            current => ({ ...current, ...opts })
           ),
-        () => {
-          this.publishLiveState();
-          this.save();
-        }
+        this.delayLiveSave
       );
     }
   };
 
+  private delayLiveSave = debounce(() => {
+    this.publishLiveState();
+    this.save();
+  }, 1000);
+
   constructor(props: {}) {
     super(props);
     new Promise(resolve => {
-      if (typeof Twitch === "undefined" || !Twitch.ext) {
+      if (TWITCH_UNAVAILABLE) {
         console.error("Twitch ext not present. Config not available.");
         return;
       }
 
-      Twitch.ext.configuration.onChanged(() => {
+      Twitch.ext!.configuration.onChanged(() => {
         this.setState({ config: this.getConfiguration() }, resolve);
       });
 
@@ -239,7 +252,7 @@ export class ConfigProvider extends Component<{}, ConfigState> {
   public render() {
     return (
       <ConfigContext.Provider value={this.state}>
-        {this.props.children}
+        {(this.state.available || TWITCH_UNAVAILABLE) && this.props.children}
       </ConfigContext.Provider>
     );
   }
@@ -277,6 +290,7 @@ export class ConfigProvider extends Component<{}, ConfigState> {
     } catch (_) {}
   };
 
+  /** retrieve saved config from twitch, migrate values as necessary */
   private getConfiguration() {
     let ret = defaultConfig;
     try {
@@ -285,6 +299,16 @@ export class ConfigProvider extends Component<{}, ConfigState> {
           ...defaultConfig,
           ...JSON.parse(Twitch.ext!.configuration.broadcaster!.content || "{}")
         };
+
+        // migrate componentHeader to listOptions
+        if (!ret.liveState.listOptions) {
+          ret.liveState.listOptions = defaultConfig.liveState.listOptions;
+        }
+        if (ret.liveState.componentHeader) {
+          ret.liveState.listOptions.title = ret.liveState.componentHeader;
+          delete ret.liveState.componentHeader;
+        }
+
         if (!ret.settings.configuredLayouts.length) {
           ret.settings.configuredLayouts = [defaultLayout];
         }

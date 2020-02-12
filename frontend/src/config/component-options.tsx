@@ -1,40 +1,63 @@
-import { Fragment, useContext, useState } from "react";
+import { Fragment, useContext, useState, useRef } from "react";
 import { ConfigContext } from "../config";
 import { FollowList } from "../viewer/follow-list";
 import styles from "./component-options.css";
 
 export function ComponentOptions() {
-  const config = useContext(ConfigContext);
-  const [header, updateHeader] = useState(
-    config.config.liveState.componentHeader
-  );
-  const [timerHandle, updateTimer] = useState(0);
+  const { config, saveListOptions } = useContext(ConfigContext);
+  const { title, showAvatars, showDescriptions } = config.liveState.listOptions;
+  // const [title, saveLocalTitle] = useState(listOptions.title);
+  // const [showAvatars, saveLocalAvatars] = useState(listOptions.showAvatars);
+  // const [showDescriptions, saveLocalDescription] = useState(
+  //   listOptions.showDescriptions
+  // );
+  // const localOptions = useRef<ListOptions>({
+  //   title,
+  //   showAvatars,
+  //   showDescriptions
+  // });
+  // localOptions.current.title = title;
+  // localOptions.current.showAvatars = showAvatars;
+  // localOptions.current.showDescriptions = showDescriptions;
 
   return (
     <Fragment>
-      <p>You may set a message to display above the list of buttons here:</p>
       <p>
         <label>
-          Header:{" "}
+          Heading:{" "}
           <input
-            value={
-              timerHandle ? header : config.config.liveState.componentHeader
-            }
+            value={title}
             onChange={e => {
               const newValue = e.currentTarget.value;
-              clearTimeout(timerHandle);
-              updateHeader(newValue);
-              updateTimer(
-                setTimeout(
-                  (() => {
-                    config.saveComponentHeader(newValue);
-                    updateTimer(0);
-                  }) as TimerHandler,
-                  1000
-                )
-              );
+              saveListOptions({ title: newValue });
             }}
           />
+        </label>
+      </p>
+      <p>
+        <label>
+          <input
+            type="checkbox"
+            checked={showAvatars}
+            onChange={e => {
+              const newValue = e.currentTarget.checked;
+              saveListOptions({ showAvatars: newValue });
+            }}
+          />{" "}
+          Show avatars
+        </label>
+      </p>
+      <p>
+        <label>
+          <input
+            type="checkbox"
+            checked={showDescriptions}
+            onChange={e => {
+              const newValue = e.currentTarget.checked;
+              saveListOptions({ showDescriptions: newValue });
+            }}
+          />{" "}
+          Show descriptions
         </label>
       </p>
       <h3>Live Preview</h3>
