@@ -1,11 +1,12 @@
 import "../common-styles";
 import jwt from "jsonwebtoken";
+import classNames from "classnames";
 import { Component } from "react";
 import { render } from "react-dom";
 import styles from "./style.css";
 import { Auth } from "../auth";
 import { ConfigProvider, ConfigContext } from "../config";
-import { getAnchorMode } from "../utils";
+import { getAnchorMode, getIsPopout } from "../utils";
 import { AnimatedButton } from "./animated-button";
 import { FollowZone } from "./follow-zone";
 import { LiveLayoutItem, ChannelData, TrackingEvent } from "../models";
@@ -13,6 +14,7 @@ import { FollowList } from "./follow-list";
 import { applyThemeClass, setTransparentBg } from "../common-styles";
 
 const anchorType = getAnchorMode();
+const isPopout = getIsPopout();
 
 interface Props {
   config: ChannelData;
@@ -72,7 +74,11 @@ class App extends Component<Props, State> {
   render() {
     if (anchorType !== "video_overlay") {
       return (
-        <main className={styles.componentMode}>
+        <main
+          className={classNames(styles.componentMode, {
+            [styles.popout]: isPopout
+          })}
+        >
           <FollowList
           // disabled={this.state.followUiOpen}
           // onFollowClick={this.onFollowClick}

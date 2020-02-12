@@ -41,6 +41,11 @@ export function getAnchorMode():
   }
 }
 
+export function getIsPopout() {
+  const queryString = parse(window.location.search) as Record<string, string>;
+  return !!queryString.popout;
+}
+
 export const defaultLayout: Layout = {
   name: "default",
   positions: [{ type: "button", id: "00000000", top: 75, left: 75 }]
