@@ -9,6 +9,7 @@ import { getUserInfo, HelixUser } from "../utils";
 interface Props {
   disabled?: boolean;
   onFollowClick?: () => void;
+  disableEdits?: boolean;
 }
 
 export const FollowList: FC<Props> = props => {
@@ -31,7 +32,7 @@ export const FollowList: FC<Props> = props => {
       setUserInfo(userInfo);
     });
   }, [Array.from(channelNames).join(":")]);
-  const isBroadcaster = Auth.isBroadcaster;
+  const isBroadcaster = Auth.isBroadcaster && !props.disableEdits;
   const { liveItems: items, listOptions } = config.liveState;
 
   return (

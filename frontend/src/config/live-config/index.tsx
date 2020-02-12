@@ -48,7 +48,7 @@ export class LiveConfig extends Component<Props, State> {
             checked={!!this.props.config.config.liveState.hideAll}
             onChange={this.toggleHide}
           />{" "}
-          Hide All
+          Hide Overlay
         </label>
         {this.renderStatus()}
         <ChannelQueue

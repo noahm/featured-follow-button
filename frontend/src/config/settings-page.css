@@ -1,6 +1,7 @@
-.settingsPage {
-}
-
 .maxWidth {
   max-width: 50em;
+}
+
+.lessWidth {
+  max-width: 25em;
 }

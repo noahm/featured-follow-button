@@ -3,22 +3,13 @@ import { ConfigContext } from "../config";
 import { FollowList } from "../viewer/follow-list";
 import styles from "./component-options.css";
 
-export function ComponentOptions() {
+interface Props {
+  disablePreviewEdits?: boolean;
+}
+
+export function ComponentOptions(props: Props) {
   const { config, saveListOptions } = useContext(ConfigContext);
   const { title, showAvatars, showDescriptions } = config.liveState.listOptions;
-  // const [title, saveLocalTitle] = useState(listOptions.title);
-  // const [showAvatars, saveLocalAvatars] = useState(listOptions.showAvatars);
-  // const [showDescriptions, saveLocalDescription] = useState(
-  //   listOptions.showDescriptions
-  // );
-  // const localOptions = useRef<ListOptions>({
-  //   title,
-  //   showAvatars,
-  //   showDescriptions
-  // });
-  // localOptions.current.title = title;
-  // localOptions.current.showAvatars = showAvatars;
-  // localOptions.current.showDescriptions = showDescriptions;
 
   return (
     <Fragment>
@@ -62,7 +53,7 @@ export function ComponentOptions() {
       </p>
       <h3>Live Preview</h3>
       <div className={styles.preview}>
-        <FollowList />
+        <FollowList disableEdits={props.disablePreviewEdits} />
       </div>
     </Fragment>
   );

@@ -13,7 +13,8 @@ const anchorMode = getAnchorMode();
 enum SettingsTab {
   LiveState,
   Layout,
-  Settings
+  OverlaySettings,
+  ListSettings
 }
 
 interface Props {
@@ -22,26 +23,29 @@ interface Props {
 }
 
 export function SettingsPage(props: Props) {
-  const enableTabs = anchorMode === "video_overlay";
+  const isOverlay = anchorMode === "video_overlay";
   const [tab, setTab] = useState(
-    enableTabs ? SettingsTab.LiveState : SettingsTab.Settings
+    isOverlay ? SettingsTab.LiveState : SettingsTab.ListSettings
   );
   const config = useContext(ConfigContext);
 
   let content: ReactNode;
   switch (tab) {
     case SettingsTab.LiveState:
-      content = <LiveConfig config={config} />;
+      content = (
+        <div className={styles.lessWidth}>
+          <LiveConfig config={config} />
+        </div>
+      );
       break;
     case SettingsTab.Layout:
       content = <LayoutEditor config={config} />;
       break;
-    case SettingsTab.Settings:
-      if (anchorMode === "video_overlay") {
-        content = <OverlayOptions />;
-      } else {
-        content = <ComponentOptions />;
-      }
+    case SettingsTab.OverlaySettings:
+      content = <OverlayOptions />;
+      break;
+    case SettingsTab.ListSettings:
+      content = <ComponentOptions disablePreviewEdits={isOverlay} />;
       break;
   }
 
@@ -50,12 +54,13 @@ export function SettingsPage(props: Props) {
       <div className={styles.maxWidth}>
         <h2>{props.title}</h2>
         <p>{props.description}</p>
-        {enableTabs && (
+        {isOverlay && (
           <TabNav
             tabs={[
               ["Live State", SettingsTab.LiveState],
               ["Layout", SettingsTab.Layout],
-              ["Settings", SettingsTab.Settings]
+              ["Overlay Appearance", SettingsTab.OverlaySettings],
+              ["Mobile Appearance", SettingsTab.ListSettings]
             ]}
             activeTab={tab}
             onTabChanged={setTab}
