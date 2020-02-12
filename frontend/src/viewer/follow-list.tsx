@@ -3,7 +3,7 @@ import { FollowButton } from "./follow-button";
 import styles from "./follow-list.css";
 import { ConfigContext } from "../config";
 import { Auth } from "../auth";
-import { ChannelInput } from "../dashboard/components/channel-input";
+import { ChannelInput } from "../config/live-config/channel-input";
 import { getUserInfo, HelixUser } from "../utils";
 
 interface Props {

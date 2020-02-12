@@ -29,7 +29,7 @@ module.exports = function(env = {}) {
   const pkg = readJson(resolve(__dirname, "./package.json")) || {};
 
   // Each of these folders under src/ will be an entry point
-  const entryFolders = ["config", "dashboard", "viewer"];
+  const entryFolders = ["config", "viewer"];
 
   return {
     mode: "none",

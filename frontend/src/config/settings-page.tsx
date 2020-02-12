@@ -1,5 +1,5 @@
 import { ReactNode, useState, useContext } from "react";
-import { LiveConfig } from "../dashboard/live-config";
+import { LiveConfig } from "../config/live-config";
 import { ConfigContext } from "../config";
 import { LayoutEditor } from "./layout-editor";
 import { getAnchorMode } from "../utils";

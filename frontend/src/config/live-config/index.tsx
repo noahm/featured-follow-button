@@ -1,12 +1,11 @@
-import "../common-styles.css";
 import styles from "./style.css";
 import { Component, ChangeEvent } from "react";
-import { ConfigState } from "../config";
-import { defaultLayout, getAnchorMode } from "../utils";
-import { Status } from "./components/status";
-import { ChannelQueue } from "./components/channel-queue";
-import { LiveLayoutItem, LiveButton } from "../models";
-import { FollowList } from "../viewer/follow-list";
+import { ConfigState } from "../../config";
+import { defaultLayout, getAnchorMode } from "../../utils";
+import { Status } from "./status";
+import { ChannelQueue } from "./channel-queue";
+import { LiveLayoutItem, LiveButton } from "../../models";
+import { FollowList } from "../../viewer/follow-list";
 
 const anchorType = getAnchorMode();
 const startingCharCode = "A".charCodeAt(0);
