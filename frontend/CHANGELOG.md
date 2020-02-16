@@ -1,3 +1,8 @@
+# v2.4.0
+
+- Consolidated two config screens down to a single tabbed interface available both from live dashboard and extensions settings.
+- Added options to display avatars and channel descriptions in list mode (component, panel, and mobile views)
+
 # v2.3.1
 
 - Fixed tracking calls enum definitions.
