@@ -10,7 +10,7 @@ svg {
 }
 
 .button {
-  border: 1px solid transparent;
+  border-width: 0;
   border-radius: 4px;
   background: #9147ff;
   color: #fff;
@@ -38,20 +38,17 @@ svg {
 }
 
 .button:hover {
-  border-color: #772ce8;
   background: #772ce8;
   color: #fff;
 }
 
 .button:focus {
-  border-color: #9a7fcc;
   background: #772ce8;
   color: #fff;
   box-shadow: 0 0 6px 0 #772ce8;
 }
 
 .button:active {
-  border-color: #5c16c5;
   background: #5c16c5;
   color: #fff;
   box-shadow: 0 0 6px 0 #772ce8;

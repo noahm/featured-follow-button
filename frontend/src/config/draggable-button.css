@@ -1,5 +1,5 @@
 .button {
-  border: 1px solid transparent;
+  border-width: 0;
   border-radius: 4px;
   background: #9147ff;
   color: #fff;
@@ -28,7 +28,6 @@
 }
 
 .button:hover {
-  border-color: #772ce8;
   background: #772ce8;
   color: #fff;
 }
