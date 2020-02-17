@@ -21,18 +21,19 @@ interface State {
 }
 
 export class LayoutEditor extends Component<Props, State> {
-  state: State = {
-    background: undefined,
-    layout: {
-      positions: [],
-      name: ""
-    },
-    isDirty: false
-  };
   dirtyLayout: Layout | undefined;
 
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      background: undefined,
+      layout: props.config.config.settings.configuredLayouts[0],
+      isDirty: false
+    };
+  }
+
   componentDidUpdate(prevProps: Props) {
-    if (!prevProps.config.available && this.props.config.available) {
+    if ((!prevProps.config.available || !this.dirtyLayout) && this.props.config.available) {
       this.setState({
         layout: this.props.config.config.settings.configuredLayouts[0]
       });

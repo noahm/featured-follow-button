@@ -166,6 +166,7 @@ export class ConfigProvider extends Component<{}, ConfigState> {
 
       this.setState(newState, () => {
         if (localChange) {
+          // TODO use debounced save here and delete save button from layout editor
           this.save();
           this.publishLayout();
         }
