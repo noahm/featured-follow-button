@@ -6,13 +6,12 @@ import { LiveButton, PositionedZone, TrackingEvent } from "../models";
 interface Props {
   item: LiveButton & PositionedZone;
   onClick?: () => void;
-  showBorder: boolean;
   disabled?: boolean;
 }
 
 export class FollowZone extends Component<Props> {
   render() {
-    const { item, disabled, showBorder } = this.props;
+    const { item, disabled } = this.props;
 
     const style = {
       top: item.top + "%",
@@ -23,9 +22,7 @@ export class FollowZone extends Component<Props> {
 
     return (
       <div
-        className={classNames(styles.followZone, {
-          [styles.showBorder]: showBorder
-        })}
+        className={styles.followZone}
         style={style}
         onClick={!disabled ? this.handleFollow : undefined}
       >

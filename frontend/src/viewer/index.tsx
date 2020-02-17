@@ -23,7 +23,6 @@ interface State {
   itemsHidden: boolean;
   // followUiOpen: boolean;
   isBroadcaster: boolean;
-  playerUiVisible: boolean;
 }
 
 class App extends Component<Props, State> {
@@ -31,8 +30,7 @@ class App extends Component<Props, State> {
     animateOut: false,
     itemsHidden: false,
     // followUiOpen: false,
-    isBroadcaster: false,
-    playerUiVisible: false
+    isBroadcaster: false
   };
 
   constructor(props: Props) {
@@ -45,22 +43,8 @@ class App extends Component<Props, State> {
         });
       }
       Twitch.ext!.actions.onFollow(this.onFollowUiClosed);
-
-      if (anchorType === "component" || anchorType === "video_overlay") {
-        applyThemeClass("dark");
-        // this overwrites the context handler set by applyThemeClass
-        Twitch.ext!.onContext(context => {
-          if (context.arePlayerControlsVisible !== this.state.playerUiVisible) {
-            this.setState({
-              playerUiVisible: context.arePlayerControlsVisible
-            });
-          }
-        });
-        if (anchorType === "video_overlay") {
-          setTransparentBg();
-        }
-      } else {
-        applyThemeClass();
+      if (anchorType === "video_overlay") {
+        setTransparentBg();
       }
     });
   }
@@ -137,7 +121,6 @@ class App extends Component<Props, State> {
           // disabled={followUiOpen}
           // onClick={this.onFollowClick}
           item={item}
-          showBorder={this.state.playerUiVisible}
         />
       );
     }
@@ -191,3 +174,4 @@ render(
   </ConfigProvider>,
   appNode
 );
+applyThemeClass();
