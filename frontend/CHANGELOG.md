@@ -2,6 +2,7 @@
 
 - Consolidated two config screens down to a single tabbed interface available both from live dashboard and extensions settings.
 - Added options to display avatars and channel descriptions in list mode (component, panel, and mobile views)
+- Added options to control visual style of follow zones
 
 # v2.3.1
 
