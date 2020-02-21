@@ -14,7 +14,8 @@ import {
   Layout,
   LiveState,
   TrackingEvent,
-  ListOptions
+  ListOptions,
+  UserStyles
 } from "./models";
 
 const CONFIG_VERSION = "1.0";
@@ -23,6 +24,12 @@ const defaultConfig: ChannelData = {
   liveState: {
     liveItems: [],
     hideAll: false,
+    styles: {
+      zoneBorder: "",
+      zoneBorderRadius: "",
+      zoneTextColor: "",
+      dropShadow: false
+    },
     listOptions: {
       title: "",
       showAvatars: true,
@@ -64,6 +71,11 @@ export interface ConfigState {
    * Delays saving and publishing by 1s
    */
   saveListOptions(opts: Partial<ListOptions>): void;
+  /**
+   * Updates style options for follow zones.
+   * Delays saving and publishing by 1s
+   */
+  saveUserStyles(opts: Partial<UserStyles>): void;
 }
 
 export const ConfigContext = createContext<ConfigState>({
@@ -74,7 +86,8 @@ export const ConfigContext = createContext<ConfigState>({
   saveLayout: () => null,
   toggleHideAll: () => null,
   saveFavorites: () => null,
-  saveListOptions: () => null
+  saveListOptions: () => null,
+  saveUserStyles: () => null
 });
 
 export class ConfigProvider extends Component<{}, ConfigState> {
@@ -212,6 +225,18 @@ export class ConfigProvider extends Component<{}, ConfigState> {
           ),
         this.delayLiveSave
       );
+    },
+
+    saveUserStyles: opts => {
+      this.setState(
+        prevState =>
+          iassign(
+            prevState,
+            c => c.config.liveState.styles,
+            styles => ({ ...styles, ...opts })
+          ),
+        this.delayLiveSave
+      );
     }
   };
 
@@ -307,6 +332,10 @@ export class ConfigProvider extends Component<{}, ConfigState> {
         if (ret.liveState.componentHeader) {
           ret.liveState.listOptions.title = ret.liveState.componentHeader;
           delete ret.liveState.componentHeader;
+        }
+
+        if (!ret.liveState.styles) {
+          ret.liveState.styles = defaultConfig.liveState.styles;
         }
 
         if (!ret.settings.configuredLayouts.length) {

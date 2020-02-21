@@ -1,4 +1,4 @@
-import { Fragment, useContext, useState, useRef } from "react";
+import { Fragment, useContext } from "react";
 import { ConfigContext } from "../config";
 import { FollowList } from "../viewer/follow-list";
 import styles from "./component-options.css";

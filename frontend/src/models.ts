@@ -72,8 +72,14 @@ export interface LiveState {
    */
   componentHeader?: string;
   listOptions: ListOptions;
-  zoneBorderStyle?: string;
-  zoneBorderRadius?: number;
+  styles: UserStyles;
+}
+
+export interface UserStyles {
+  zoneBorder: string;
+  zoneBorderRadius: string;
+  zoneTextColor: string;
+  dropShadow: boolean;
 }
 
 export interface Settings {

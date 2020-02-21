@@ -1,12 +1,12 @@
 .followZone {
   position: absolute;
   cursor: pointer;
-  opacity: 0;
+  opacity: 0.9;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  border: 2px dashed transparent;
+  border: 2px dashed lightslategray;
   border-radius: 2px;
   user-select: none;
   text-shadow: 0 0 4px white;
@@ -16,23 +16,21 @@
   box-sizing: border-box;
   color: black;
   font-weight: bold;
-  background-color: rgba(128, 128, 128, 0.1);
-}
-
-.followZone.showBorder {
-  opacity: 0.9;
-  border-color: lightslategray;
 }
 
 .text {
   opacity: 0;
 }
 
+.withShadow {
+  box-shadow: 0px 0px 4px white;
+}
+
 .followZone:hover {
   opacity: 0.9;
   border-color: darkslategray;
   box-shadow: 0px 0px 4px white;
-  background-color: rgba(128, 128, 128, 0.5);
+  background-color: rgba(128, 128, 128, 0.2);
 }
 
 .followZone:hover .text {
