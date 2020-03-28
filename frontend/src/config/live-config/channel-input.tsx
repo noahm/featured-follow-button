@@ -6,7 +6,6 @@ import {
   ChangeEvent,
   useContext
 } from "react";
-import { Auth } from "../../auth";
 import { LiveButton } from "../../models";
 import { ConfigContext } from "../../config";
 import { getUserInfo } from "../../utils";
@@ -204,7 +203,7 @@ class ChannelInputImpl extends Component<Props & ContextProps, State> {
       isValidating: true
     });
 
-    const response = await getUserInfo(channelName);
+    const response = await getUserInfo([channelName]);
     let ret = false;
     // fill in display name if left blank?
     if (response.length && response[0]) {

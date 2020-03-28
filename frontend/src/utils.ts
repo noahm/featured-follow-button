@@ -91,14 +91,15 @@ function getUsersFromCache(logins: string[], assumeFalse = false) {
 }
 
 export async function getUserInfo(
-  ...logins: string[]
+  logins: string[],
+  ids: string[] = []
 ): Promise<Array<false | HelixUser>> {
-  if (!logins.length) {
+  if (!logins.length && !ids.length) {
     return [];
   }
 
   try {
-    return getUsersFromCache(logins);
+    return getUsersFromCache(logins.concat(...ids));
   } catch {
     // no worries
   }
@@ -106,6 +107,9 @@ export async function getUserInfo(
   let params = "";
   for (const login of logins) {
     params += stringify({ login }, params ? "&" : false);
+  }
+  for (const id of ids) {
+    params += stringify({ id }, params ? "&" : false);
   }
 
   try {
@@ -122,9 +126,10 @@ export async function getUserInfo(
       // got data back
       for (const user of response.data) {
         userCache[user.login] = user;
+        userCache[user.id] = user;
       }
       // assume all unavailable users from input are not real users
-      return getUsersFromCache(logins, true);
+      return getUsersFromCache(logins.concat(...ids), true);
     } else {
       // request error of some kind
       return [];

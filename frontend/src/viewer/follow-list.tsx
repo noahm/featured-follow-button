@@ -22,7 +22,7 @@ export const FollowList: FC<Props> = props => {
     if (!config.liveState.liveItems.length) {
       return;
     }
-    getUserInfo(...channelNames).then(info => {
+    getUserInfo([...channelNames]).then(info => {
       const userInfo: Record<string, HelixUser> = {};
       for (const channel of info) {
         if (channel) {

@@ -7,6 +7,7 @@ import styles from "./layout-editor.css";
 import { ConfigState } from "../config";
 import { getRandomID } from "../utils";
 import { Layout, LayoutItem } from "../models";
+import { Auth } from "../auth";
 
 const startingCharCode = "A".charCodeAt(0);
 
@@ -18,6 +19,11 @@ interface State {
   background: string | undefined;
   layout: Layout;
   isDirty: boolean;
+}
+
+function liveThumbnail(channel: string, height = 480) {
+  const width = (height * 16) / 9;
+  return `https://static-cdn.jtvnw.net/previews-ttv/live_user_${channel.toLowerCase()}-${width}x${height}.jpg`;
 }
 
 export class LayoutEditor extends Component<Props, State> {
@@ -32,8 +38,25 @@ export class LayoutEditor extends Component<Props, State> {
     };
   }
 
+  componentDidMount() {
+    Auth.authAvailable
+      .then(() => fetch(liveThumbnail(Auth.userLogin!, 1080)))
+      .then(resp => {
+        if (resp.url.match(/previews-ttv/)) {
+          this.setState({
+            background: resp.url
+          });
+        }
+      });
+  }
+
   componentDidUpdate(prevProps: Props) {
-    if ((!prevProps.config.available || !this.dirtyLayout) && this.props.config.available) {
+    if (
+      (!prevProps.config.available || !this.dirtyLayout) &&
+      this.props.config.available &&
+      this.state.layout !==
+        this.props.config.config.settings.configuredLayouts[0]
+    ) {
       this.setState({
         layout: this.props.config.config.settings.configuredLayouts[0]
       });

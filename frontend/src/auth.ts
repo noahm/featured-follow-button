@@ -1,9 +1,10 @@
-import { TWITCH_UNAVAILABLE } from "./utils";
+import { TWITCH_UNAVAILABLE, getUserInfo } from "./utils";
 
 class AuthInstance {
   public clientID: string | undefined;
   public token: string | undefined;
   public userID: string | undefined;
+  public userLogin: string | undefined;
   public isBroadcaster: boolean | undefined;
   public readonly authAvailable: Promise<void>;
 
@@ -23,7 +24,13 @@ class AuthInstance {
 
         resolve();
       });
-    });
+    })
+      .then(() => getUserInfo([], [this.userID!.substr(1)]))
+      .then(([helixUser]) => {
+        if (helixUser) {
+          this.userLogin = helixUser.login;
+        }
+      });
   }
 }
 
