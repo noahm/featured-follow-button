@@ -52,10 +52,11 @@ export class LayoutEditor extends Component<Props, State> {
 
   componentDidUpdate(prevProps: Props) {
     if (
-      (!prevProps.config.available || !this.dirtyLayout) &&
+      !prevProps.config.available &&
       this.props.config.available &&
       this.state.layout !==
-        this.props.config.config.settings.configuredLayouts[0]
+        this.props.config.config.settings.configuredLayouts[0] &&
+      !this.dirtyLayout
     ) {
       this.setState({
         layout: this.props.config.config.settings.configuredLayouts[0]
