@@ -1,9 +1,33 @@
+@font-face {
+  font-family: Roobert;
+  font-weight: 400;
+  src: url(./fonts/Roobert-Regular.woff2) format("woff2"),
+    url(./fonts/Roobert-Regular.woff) format("woff");
+}
+@font-face {
+  font-family: Roobert;
+  font-weight: 600;
+  src: url(./fonts/Roobert-SemiBold.woff2) format("woff2"),
+    url(./fonts/Roobert-SemiBold.woff) format("woff");
+}
+@font-face {
+  font-family: Roobert;
+  font-weight: 700;
+  src: url(./fonts/Roobert-Bold.woff2) format("woff2"),
+    url(./fonts/Roobert-Bold.woff) format("woff");
+}
+
 body {
   margin: 0;
   font-size: 62.5%;
   text-size-adjust: 100%;
-  font-family: arial, sans-serif;
+  font-family: Roobert, Helvetica Neue, Helvetica, Arial, sans-serif !important;
   color: #50596c;
+}
+button,
+input,
+select {
+  font-family: inherit;
 }
 
 body.light {
