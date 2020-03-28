@@ -33,6 +33,6 @@
   background-color: rgba(128, 128, 128, 0.2);
 }
 
-.followZone:hover .text {
+.followZone.textOnHover:hover .text {
   opacity: 0.9;
 }

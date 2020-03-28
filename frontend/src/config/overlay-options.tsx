@@ -8,7 +8,8 @@ export function OverlayOptions() {
     zoneBorder,
     zoneBorderRadius,
     zoneTextColor,
-    dropShadow
+    dropShadow,
+    hideText
   } = config.liveState.styles;
 
   return (
@@ -61,6 +62,18 @@ export function OverlayOptions() {
               }}
             />{" "}
             Drop shadow
+          </label>
+        </p>
+        <p>
+          <label>
+            <input
+              type="checkbox"
+              checked={!hideText}
+              onChange={e => {
+                saveUserStyles({ hideText: !e.currentTarget.checked });
+              }}
+            />{" "}
+            Show text on hover
           </label>
         </p>
       </div>

@@ -80,6 +80,7 @@ export interface UserStyles {
   zoneBorderRadius: string;
   zoneTextColor: string;
   dropShadow: boolean;
+  hideText: boolean;
 }
 
 export interface Settings {

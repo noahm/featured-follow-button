@@ -17,7 +17,8 @@ export function FollowZone(props: Props) {
     zoneBorder,
     zoneBorderRadius,
     zoneTextColor,
-    dropShadow
+    dropShadow,
+    hideText
   } = config.liveState.styles;
 
   function handleFollow() {
@@ -46,7 +47,8 @@ export function FollowZone(props: Props) {
   return (
     <div
       className={classNames(styles.followZone, {
-        [styles.withShadow]: dropShadow
+        [styles.withShadow]: dropShadow,
+        [styles.textOnHover]: !hideText
       })}
       style={style}
       onClick={!disabled ? handleFollow : undefined}

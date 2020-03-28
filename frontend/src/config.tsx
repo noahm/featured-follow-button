@@ -28,7 +28,8 @@ const defaultConfig: ChannelData = {
       zoneBorder: "",
       zoneBorderRadius: "",
       zoneTextColor: "",
-      dropShadow: false
+      dropShadow: false,
+      hideText: false
     },
     listOptions: {
       title: "",
