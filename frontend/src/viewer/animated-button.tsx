@@ -28,12 +28,11 @@ export class AnimatedButton extends Component<Props> {
       <div onAnimationEnd={onAnimationEnd} className={classnames} style={style}>
         <div className={styles.animationSlide}>
           <FollowButton
-            followChannel={item.channelName}
+            channelLogin={item.channelName}
+            channelDisplayName={item.displayName}
             disabled={disabled}
             onClick={this.props.onClick}
-          >
-            Follow {item.displayName || item.channelName}
-          </FollowButton>
+          />
         </div>
       </div>
     );

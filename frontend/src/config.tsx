@@ -29,7 +29,15 @@ const defaultConfig: ChannelData = {
       zoneBorderRadius: "",
       zoneTextColor: "",
       dropShadow: false,
-      hideText: false
+      hideText: false,
+      customButtonStyle: false,
+      buttonBaseColor: "#9147ff",
+      buttonTextColor: "#ffffff",
+      buttonShadowColor: "#ffffff",
+      buttonShadowDirection: "",
+      buttonPadding: "",
+      buttonBorderRadius: "4px",
+      buttonTemplate: ""
     },
     listOptions: {
       title: "",

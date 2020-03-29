@@ -1,54 +1,117 @@
 import classNames from "classnames";
-import { Component } from "react";
 import styles from "./follow-button.css";
 import { TrackingEvent } from "../models";
+import { useContext, CSSProperties } from "react";
+import { ConfigContext } from "../config";
 
 interface FBProps {
   disabled?: boolean;
+  /**
+   * Button is a preview and will do nothing when clicked
+   */
+  preview?: boolean;
   onClick?: () => void;
-  followChannel: string;
+  channelLogin: string;
+  channelDisplayName?: string;
+  forceTemplate?: string;
 }
 
-export class FollowButton extends Component<FBProps> {
-  public render() {
-    return (
-      <button
-        disabled={this.props.disabled}
-        className={classNames(styles.button, {
-          [styles.empty]: !this.props.children
-        })}
-        onClick={this.handleClick}
-      >
-        <span className={styles.buttonText}>
-          <svg
-            width="16px"
-            height="16px"
-            version="1.1"
-            viewBox="0 0 16 16"
-            x="0px"
-            y="0px"
-          >
-            <path
-              clipRule="evenodd"
-              d="M8,14L1,7V4l2-2h3l2,2l2-2h3l2,2v3L8,14z"
-              fillRule="evenodd"
-            />
-          </svg>
-          {this.props.children}
-        </span>
-      </button>
-    );
-  }
+function Heart() {
+  return (
+    <svg
+      width="16px"
+      height="16px"
+      version="1.1"
+      viewBox="0 0 16 16"
+      x="0px"
+      y="0px"
+    >
+      <path
+        clipRule="evenodd"
+        d="M8,14L1,7V4l2-2h3l2,2l2-2h3l2,2v3L8,14z"
+        fillRule="evenodd"
+      />
+    </svg>
+  );
+}
 
-  private handleClick = () => {
-    if (this.props.onClick) {
-      this.props.onClick();
+const subTokens = /HEART|CHANNEL_NAME|CHANNEL_LOGIN/g;
+
+function tokenizeTemplate(template: string) {
+  const nonTokens = template.split(subTokens);
+  const tokens = template.match(subTokens);
+  // zipper merge the two arrays
+  const ret = [nonTokens.shift()];
+  while (nonTokens.length) {
+    ret.push(tokens?.shift());
+    ret.push(nonTokens.shift());
+  }
+  return ret;
+}
+
+export function FollowButton(props: FBProps) {
+  const { disabled, onClick, channelLogin, preview } = props;
+  const {
+    config: {
+      liveState: { styles: userStyles }
     }
-    Twitch.ext!.actions.followChannel(this.props.followChannel);
+  } = useContext(ConfigContext);
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    }
+    Twitch.ext!.actions.followChannel(channelLogin);
     Twitch.ext!.tracking.trackEvent(
       TrackingEvent.FollowButtonClick,
       Twitch.ext!.tracking.InteractionTypes.Click,
       Twitch.ext!.tracking.Categories.Interact
     );
   };
+
+  const template =
+    props.forceTemplate ||
+    (userStyles.customButtonStyle && userStyles.buttonTemplate) ||
+    "HEART Follow CHANNEL_NAME";
+  const contents = tokenizeTemplate(template).map((token, index) => {
+    switch (token) {
+      case "HEART":
+        return <Heart key={index} />;
+      case "CHANNEL_NAME":
+        return props.channelDisplayName || props.channelLogin;
+      case "CHANNEL_LOGIN":
+        return props.channelLogin;
+      default:
+        return token;
+    }
+  });
+
+  let style: Record<string, string> = {};
+  if (userStyles.customButtonStyle) {
+    style["--bg-color"] = userStyles.buttonBaseColor;
+    style["--border-radius"] = userStyles.buttonBorderRadius;
+    style["--shadow-color"] = userStyles.buttonShadowColor;
+    style["--text-color"] = userStyles.buttonTextColor;
+    style["--text-padding"] = userStyles.buttonPadding;
+  }
+
+  return (
+    <button
+      disabled={disabled}
+      className={classNames(
+        styles.button,
+        "custom",
+        userStyles.customButtonStyle && styles.custom,
+        {
+          [styles.empty]: template === "HEART",
+          [styles[`shadow-${userStyles.buttonShadowDirection}`]]:
+            userStyles.customButtonStyle
+        }
+      )}
+      style={style}
+      onClick={!preview ? handleClick : undefined}
+    >
+      <span className={styles.buttonText}>{contents}</span>
+    </button>
+  );
 }

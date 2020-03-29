@@ -10,10 +10,19 @@ svg {
 }
 
 .button {
-  border-width: 0;
+  --bg-color: hsl(264, 100%, 64%);
+  --border-radius: 4px;
+  --text-color: white;
+  --shadow-color: white;
+  --text-padding: 0.4em 0.7em;
+
   border-radius: 4px;
-  background: #9147ff;
+  border-radius: var(--border-radius);
+  border-width: 0;
+  background-color: hsl(264, 100%, 64%);
+  background-color: var(--bg-color, hsl(264, 100%, 64%));
   color: #fff;
+  color: var(--text-color);
   display: inline-flex;
   position: relative;
   align-items: center;
@@ -28,28 +37,70 @@ svg {
   user-select: none;
   margin: 0;
   padding: 0;
+  outline: 0px solid var(--bg-color);
+}
+
+.button.shadow-SE {
+  box-shadow: 1px 1px 0px var(--shadow-color), 2px 2px 0px var(--shadow-color),
+    3px 3px 0px var(--shadow-color), 4px 4px 0px var(--shadow-color);
+}
+
+.button.shadow-NE {
+  box-shadow: 1px -1px 0px var(--shadow-color), 2px -2px 0px var(--shadow-color),
+    3px -3px 0px var(--shadow-color), 4px -4px 0px var(--shadow-color);
+}
+
+.button.shadow-SW {
+  box-shadow: -1px 1px 0px var(--shadow-color), -2px 2px 0px var(--shadow-color),
+    -3px 3px 0px var(--shadow-color), -4px 4px 0px var(--shadow-color);
+}
+
+.button.shadow-NW {
+  box-shadow: -1px -1px 0px var(--shadow-color),
+    -2px -2px 0px var(--shadow-color), -3px -3px 0px var(--shadow-color),
+    -4px -4px 0px var(--shadow-color);
 }
 
 .buttonText {
   position: relative;
   flex-grow: 1;
   padding: 0.4em 0.7em;
+  padding: var(--text-padding);
   text-align: center;
 }
 
-.button:hover {
-  background: #772ce8;
-  color: #fff;
+.button:hover:not(.custom) {
+  background-color: hsl(264, 80%, 54%);
 }
 
-.button:focus {
-  background: #772ce8;
-  color: #fff;
-  box-shadow: 0 0 6px 0 #772ce8;
+.button:focus:not(.custom) {
+  background-color: hsl(264, 80%, 54%);
 }
 
-.button:active {
-  background: #5c16c5;
-  color: #fff;
-  box-shadow: 0 0 6px 0 #772ce8;
+.button:active:not(.custom) {
+  background-color: hsl(264, 80%, 43%);
+}
+
+.button.shadow-SE:hover:not(:active) {
+  box-shadow: 1px 1px 0px var(--shadow-color), 2px 2px 0px var(--shadow-color),
+    3px 3px 0px var(--shadow-color), 4px 4px 0px var(--shadow-color),
+    5px 5px 0px var(--shadow-color);
+}
+
+.button.shadow-NE:hover:not(:active) {
+  box-shadow: 1px -1px 0px var(--shadow-color), 2px -2px 0px var(--shadow-color),
+    3px -3px 0px var(--shadow-color), 4px -4px 0px var(--shadow-color),
+    5px -5px 0px var(--shadow-color);
+}
+
+.button.shadow-SW:hover:not(:active) {
+  box-shadow: -1px 1px 0px var(--shadow-color), -2px 2px 0px var(--shadow-color),
+    -3px 3px 0px var(--shadow-color), -4px 4px 0px var(--shadow-color),
+    -5px 5px 0px var(--shadow-color);
+}
+
+.button.shadow-NW:hover:not(:active) {
+  box-shadow: -1px -1px 0px var(--shadow-color),
+    -2px -2px 0px var(--shadow-color), -3px -3px 0px var(--shadow-color),
+    -4px -4px 0px var(--shadow-color), -5px -5px 0px var(--shadow-color);
 }

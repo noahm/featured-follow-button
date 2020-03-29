@@ -7,7 +7,6 @@ import { ChannelInput } from "../config/live-config/channel-input";
 import { getUserInfo, HelixUser } from "../utils";
 
 interface Props {
-  disabled?: boolean;
   onFollowClick?: () => void;
   disableEdits?: boolean;
 }
@@ -43,9 +42,9 @@ export const FollowList: FC<Props> = props => {
           return (
             <li key={item.id}>
               <FollowButton
-                followChannel={item.channelName}
+                channelLogin={item.channelName}
+                forceTemplate="HEART"
                 onClick={props.onFollowClick}
-                disabled={props.disabled}
               />{" "}
               {listOptions.showAvatars && (
                 <img

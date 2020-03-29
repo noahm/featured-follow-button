@@ -81,6 +81,21 @@ export interface UserStyles {
   zoneTextColor: string;
   dropShadow: boolean;
   hideText: boolean;
+  customButtonStyle: boolean;
+  buttonBaseColor: string;
+  buttonTextColor: string;
+  buttonShadowColor: string;
+  buttonShadowDirection: "SW" | "SE" | "NW" | "NE" | "";
+  buttonPadding: string;
+  buttonBorderRadius: string;
+  /**
+   * Template string for button content.
+   * Substitution values include:
+   * CHANNEL_LOGIN - lowercased
+   * CHANNEL_NAME - localized/capitalized
+   * HEART - heart icon :)
+   */
+  buttonTemplate: string;
 }
 
 export interface Settings {
