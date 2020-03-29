@@ -2,8 +2,9 @@
 
 - Consolidated two config screens down to a single tabbed interface available both from live dashboard and extensions settings.
 - Added options to display avatars and channel descriptions in list mode (component, panel, and mobile views).
-- Added options to control visual style of follow zones, including hiding text completely.
+- Added options to control visual style of follow zones and buttons.
 - Automatically uses current live stream thumbnail as background of layout editor when you are live.
+- Changed font to match the rest of twitch.
 
 # v2.3.1
 
