@@ -119,9 +119,8 @@ export class LayoutEditor extends Component<Props, State> {
                       item={item}
                       onChange={this.updateItem}
                       defaultPosition={defaultPosition}
-                    >
-                      {label}
-                    </DraggableButton>
+                      identifier={label}
+                    />
                   );
                 } else {
                   const defaultSize = {

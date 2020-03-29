@@ -74,7 +74,13 @@ export class FollowZone extends Component<Props, State> {
   }
 
   dragGrabLocation = {
+    /**
+     * x position within the button the cursor grabbed at
+     */
     x: 0,
+    /**
+     * y position within the button the cursor grabbed at
+     */
     y: 0,
     top: this.state.top,
     left: this.state.left
