@@ -12,6 +12,7 @@ import { FollowZone } from "./follow-zone";
 import { LiveLayoutItem, ChannelData, TrackingEvent } from "../models";
 import { FollowList } from "./follow-list";
 import { applyThemeClass, setTransparentBg } from "../common-styles";
+import { hot } from "react-hot-loader/root";
 
 const anchorType = getAnchorMode();
 const isPopout = getIsPopout();
@@ -170,14 +171,15 @@ class App extends Component<Props, State> {
   };
 }
 
-const appNode = document.createElement("div");
-document.body.appendChild(appNode);
-render(
+const HotApp = hot(() => (
   <ConfigProvider>
     <ConfigContext.Consumer>
       {({ config }) => <App config={config} />}
     </ConfigContext.Consumer>
-  </ConfigProvider>,
-  appNode
-);
+  </ConfigProvider>
+));
+
+const appNode = document.createElement("div");
+document.body.appendChild(appNode);
+render(<HotApp />, appNode);
 applyThemeClass();

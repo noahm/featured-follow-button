@@ -45,7 +45,10 @@ module.exports = function(env = {}) {
           allowedHosts: ["localhost.rig.twitch.tv", "localhost"]
         },
     entry: entryFolders.reduce((config, entry) => {
-      const entryPoints = [`./src/${entry}/index.tsx`];
+      const entryPoints = [
+        "react-hot-loader/patch",
+        `./src/${entry}/index.tsx`
+      ];
       // if (env.dev) {
       //   entryPoints.unshift('react-devtools');
       // }
@@ -57,7 +60,10 @@ module.exports = function(env = {}) {
       path: resolve(__dirname, "./dist")
     },
     resolve: {
-      extensions: [".js", ".jsx", ".ts", ".tsx", ".css", ".json"]
+      extensions: [".js", ".jsx", ".ts", ".tsx", ".css", ".json"],
+      alias: {
+        "react-dom": "@hot-loader/react-dom"
+      }
     },
     module: {
       rules: [
@@ -79,7 +85,10 @@ module.exports = function(env = {}) {
                 ]
               ],
               plugins: [
-                require("@babel/plugin-proposal-class-properties"),
+                [
+                  require("@babel/plugin-proposal-class-properties"),
+                  { loose: true }
+                ],
                 require("@babel/plugin-proposal-optional-chaining"),
                 [
                   require("@emotion/babel-plugin-jsx-pragmatic"),
@@ -88,7 +97,8 @@ module.exports = function(env = {}) {
                     export: "createElement",
                     import: "h"
                   }
-                ]
+                ],
+                "react-hot-loader/babel"
               ]
             }
           }

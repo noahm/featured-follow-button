@@ -1,4 +1,5 @@
 import "../common-styles.css";
+import { hot } from "react-hot-loader/root";
 import { applyThemeClass } from "../common-styles";
 import { Component } from "react";
 import { render } from "react-dom";
@@ -43,12 +44,13 @@ class App extends Component {
   }
 }
 
-const appNode = document.createElement("div");
-document.body.appendChild(appNode);
-render(
+const HotApp = hot(() => (
   <ConfigProvider>
     <App />
-  </ConfigProvider>,
-  appNode
-);
+  </ConfigProvider>
+));
+
+const appNode = document.createElement("div");
+document.body.appendChild(appNode);
+render(<HotApp />, appNode);
 applyThemeClass();

@@ -7,21 +7,23 @@
     "url": "https://github.com/noahm/featured-follow-button"
   },
   "scripts": {
-    "start": "webpack-dev-server --env.dev=true",
-    "build": "webpack --env.zip=true",
+    "start": "webpack-dev-server --env.dev=true --hot",
+    "build": "NODE_ENV=production webpack --env.zip=true",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "Noah Manneschmidt",
   "license": "MIT",
   "dependencies": {
+    "@hot-loader/react-dom": "^16.13.0",
     "classnames": "^2.2.6",
     "immutable-assign": "^2.0.9",
     "jsonwebtoken": "^8.3.0",
     "querystringify": "^2.0.0",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "react-dropzone": "^6.0.3"
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0",
+    "react-dropzone": "^6.0.3",
+    "react-hot-loader": "^4.12.20"
   },
   "devDependencies": {
     "@babel/core": "^7.8",
@@ -34,8 +36,8 @@
     "@types/classnames": "^2.2.9",
     "@types/jsonwebtoken": "^8.3.2",
     "@types/querystringify": "^2.0.0",
-    "@types/react": "^16.9.2",
-    "@types/react-dom": "^16.8.5",
+    "@types/react": "^16.9.27",
+    "@types/react-dom": "^16.9.5",
     "autoprefixer": "^7.2.6",
     "babel-loader": "^8.0.0",
     "css-loader": "^1.0.0",
