@@ -127,7 +127,10 @@ module.exports = function(env = {}) {
         },
         {
           test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif|mp4|mov|ogg|webm)(\?.*)?$/i,
-          loader: "file-loader"
+          loader: "file-loader",
+          options: {
+            esModule: false
+          }
         }
       ]
     },
