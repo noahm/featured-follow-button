@@ -254,8 +254,7 @@ export class ConfigProvider extends Component<{}, ConfigState> {
     this.save();
   }, 1000);
 
-  constructor(props: {}) {
-    super(props);
+  public componentDidMount() {
     new Promise(resolve => {
       if (TWITCH_UNAVAILABLE) {
         console.error("Twitch ext not present. Config not available.");

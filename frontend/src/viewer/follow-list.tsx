@@ -44,6 +44,7 @@ export const FollowList: FC<Props> = props => {
               <FollowButton
                 channelLogin={item.channelName}
                 forceTemplate="HEART"
+                disableTheme
                 onClick={props.onFollowClick}
               />{" "}
               {listOptions.showAvatars && (

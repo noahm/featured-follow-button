@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import styles from "./follow-button.css";
 import { TrackingEvent } from "../models";
-import { useContext, CSSProperties } from "react";
+import { useContext } from "react";
 import { ConfigContext } from "../config";
 
 interface FBProps {
@@ -14,6 +14,7 @@ interface FBProps {
   channelLogin: string;
   channelDisplayName?: string;
   forceTemplate?: string;
+  disableTheme?: boolean;
 }
 
 function Heart() {
@@ -50,7 +51,7 @@ function tokenizeTemplate(template: string) {
 }
 
 export function FollowButton(props: FBProps) {
-  const { disabled, onClick, channelLogin, preview } = props;
+  const { disabled, onClick, channelLogin, preview, disableTheme } = props;
   const {
     config: {
       liveState: { styles: userStyles }
@@ -69,9 +70,11 @@ export function FollowButton(props: FBProps) {
     );
   };
 
+  const useTheme = !disableTheme && userStyles.customButtonStyle;
+
   const template =
     props.forceTemplate ||
-    (userStyles.customButtonStyle && userStyles.buttonTemplate) ||
+    (useTheme && userStyles.buttonTemplate) ||
     "HEART Follow CHANNEL_NAME";
   const contents = tokenizeTemplate(template).map((token, index) => {
     switch (token) {
@@ -87,7 +90,7 @@ export function FollowButton(props: FBProps) {
   });
 
   let style: Record<string, string> = {};
-  if (userStyles.customButtonStyle) {
+  if (useTheme) {
     style["--bg-color"] = userStyles.buttonBaseColor;
     style["--border-radius"] = userStyles.buttonBorderRadius;
     style["--shadow-color"] = userStyles.buttonShadowColor;
@@ -101,11 +104,10 @@ export function FollowButton(props: FBProps) {
       className={classNames(
         styles.button,
         "custom",
-        userStyles.customButtonStyle && styles.custom,
+        useTheme && styles.custom,
         {
           [styles.empty]: template === "HEART",
-          [styles[`shadow-${userStyles.buttonShadowDirection}`]]:
-            userStyles.customButtonStyle
+          [styles[`shadow-${userStyles.buttonShadowDirection}`]]: useTheme
         }
       )}
       style={style}

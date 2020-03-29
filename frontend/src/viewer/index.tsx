@@ -7,12 +7,12 @@ import styles from "./style.css";
 import { Auth } from "../auth";
 import { ConfigProvider, ConfigContext } from "../config";
 import { getAnchorMode, getIsPopout } from "../utils";
-import { AnimatedButton } from "./animated-button";
 import { FollowZone } from "./follow-zone";
 import { LiveLayoutItem, ChannelData, TrackingEvent } from "../models";
 import { FollowList } from "./follow-list";
 import { applyThemeClass, setTransparentBg } from "../common-styles";
 import { hot } from "react-hot-loader/root";
+import { FollowButton } from "./follow-button";
 
 const anchorType = getAnchorMode();
 const isPopout = getIsPopout();
@@ -22,17 +22,11 @@ interface Props {
 }
 
 interface State {
-  animateOut: boolean;
-  itemsHidden: boolean;
-  // followUiOpen: boolean;
   isBroadcaster: boolean;
 }
 
 class App extends Component<Props, State> {
   state: State = {
-    animateOut: false,
-    itemsHidden: false,
-    // followUiOpen: false,
     isBroadcaster: false
   };
 
@@ -52,26 +46,6 @@ class App extends Component<Props, State> {
     });
   }
 
-  componentDidUpdate(prevProps: Props, prevState: State) {
-    if (prevProps.config.liveState !== this.props.config.liveState) {
-      if (
-        prevProps.config.liveState.liveItems.length &&
-        !this.props.config.liveState.liveItems.length &&
-        !this.state.animateOut &&
-        !this.props.config.liveState.hideAll
-      ) {
-        this.setState({
-          animateOut: true
-        });
-        return;
-      }
-      this.setState({
-        animateOut: false,
-        itemsHidden: false
-      });
-    }
-  }
-
   render() {
     if (anchorType !== "video_overlay") {
       return (
@@ -80,10 +54,7 @@ class App extends Component<Props, State> {
             [styles.popout]: isPopout
           })}
         >
-          <FollowList
-          // disabled={this.state.followUiOpen}
-          // onFollowClick={this.onFollowClick}
-          />
+          <FollowList />
         </main>
       );
     }
@@ -96,15 +67,8 @@ class App extends Component<Props, State> {
   }
 
   private renderItem = (item?: LiveLayoutItem) => {
-    const { itemsHidden, isBroadcaster } = this.state;
-    let animateOut = this.state.animateOut;
-    if (this.props.config.liveState.hideAll) {
-      if (isBroadcaster) {
-        animateOut = false;
-      } else {
-        animateOut = true;
-      }
-    }
+    const { isBroadcaster } = this.state;
+    const itemsHidden = this.props.config.liveState.hideAll && !isBroadcaster;
 
     if (itemsHidden || !item || !item.channelName) {
       return null;
@@ -112,49 +76,26 @@ class App extends Component<Props, State> {
 
     if (item.type === "button") {
       return (
-        <AnimatedButton
+        <div
+          style={{
+            position: "absolute",
+            top: `${item.top}%`,
+            left: `${item.left}%`
+          }}
           key={item.id + ":" + item.channelName}
-          animateOut={animateOut}
-          // disabled={followUiOpen}
-          // onClick={this.onFollowClick}
-          onAnimationEnd={this.animationEnded}
-          item={item}
-        />
+        >
+          <FollowButton
+            channelLogin={item.channelName}
+            channelDisplayName={item.displayName}
+          />
+        </div>
       );
-    } else if (item.type === "zone" && !animateOut) {
-      return (
-        <FollowZone
-          key={item.id}
-          // disabled={followUiOpen}
-          // onClick={this.onFollowClick}
-          item={item}
-        />
-      );
+    } else if (item.type === "zone") {
+      return <FollowZone key={item.id} item={item} />;
     }
   };
-
-  private animationEnded = () => {
-    if (
-      (this.state.animateOut ||
-        (this.props.config.liveState.hideAll && !this.state.isBroadcaster)) &&
-      !this.state.itemsHidden
-    ) {
-      this.setState({
-        itemsHidden: true
-      });
-    }
-  };
-
-  // private onFollowClick = () => {
-  //   this.setState({
-  //     followUiOpen: true
-  //   });
-  // };
 
   private onFollowUiClosed = (didFollow: boolean) => {
-    // this.setState({
-    //   followUiOpen: false
-    // });
     if (didFollow) {
       Twitch.ext!.tracking.trackEvent(
         TrackingEvent.FollowConfirmed,
