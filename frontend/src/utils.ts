@@ -54,7 +54,9 @@ export function getIsPopout() {
 
 export const defaultLayout: Layout = {
   name: "default",
-  positions: [{ type: "button", id: "00000000", top: 75, left: 75 }]
+  positions: [
+    { type: "button", id: "00000000", top: 75, left: 75, align: "right" },
+  ],
 };
 
 export interface HelixUser {
@@ -77,7 +79,7 @@ const userCache: Record<string, false | HelixUser> = {};
  * @param assumeFalse when true, assume any cache miss is a missing user
  */
 function getUsersFromCache(logins: string[], assumeFalse = false) {
-  return logins.map(login => {
+  return logins.map((login) => {
     if (userCache.hasOwnProperty(login)) {
       return userCache[login];
     } else {
@@ -117,10 +119,10 @@ export async function getUserInfo(
       "https://api.twitch.tv/helix/users?" + params,
       {
         headers: {
-          "Client-ID": Auth.clientID || "ih4ptg04wzw6nf4qms0612b8uj0tbh"
-        }
+          "Client-ID": Auth.clientID || "ih4ptg04wzw6nf4qms0612b8uj0tbh",
+        },
       }
-    ).then(r => r.json());
+    ).then((r) => r.json());
 
     if (response.data) {
       // got data back

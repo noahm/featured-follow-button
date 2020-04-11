@@ -34,17 +34,17 @@ export class LayoutEditor extends Component<Props, State> {
     this.state = {
       background: undefined,
       layout: props.config.config.settings.configuredLayouts[0],
-      isDirty: false
+      isDirty: false,
     };
   }
 
   componentDidMount() {
     Auth.authAvailable
       .then(() => fetch(liveThumbnail(Auth.userLogin!, 1080)))
-      .then(resp => {
+      .then((resp) => {
         if (resp.url.match(/previews-ttv/)) {
           this.setState({
-            background: resp.url
+            background: resp.url,
           });
         }
       });
@@ -59,7 +59,7 @@ export class LayoutEditor extends Component<Props, State> {
       !this.dirtyLayout
     ) {
       this.setState({
-        layout: this.props.config.config.settings.configuredLayouts[0]
+        layout: this.props.config.config.settings.configuredLayouts[0],
       });
     }
   }
@@ -125,7 +125,7 @@ export class LayoutEditor extends Component<Props, State> {
                 } else {
                   const defaultSize = {
                     height: item.height,
-                    width: item.width
+                    width: item.width,
                   };
                   return (
                     <FollowZone
@@ -148,7 +148,13 @@ export class LayoutEditor extends Component<Props, State> {
   }
 
   addButton = () => {
-    this.addItem({ type: "button", id: getRandomID(), top: 0, left: 0 });
+    this.addItem({
+      type: "button",
+      id: getRandomID(),
+      top: 0,
+      left: 0,
+      align: "left",
+    });
   };
 
   addZone = () => {
@@ -158,16 +164,16 @@ export class LayoutEditor extends Component<Props, State> {
       top: 0,
       left: 0,
       height: 25,
-      width: 25
+      width: 25,
     });
   };
 
   addItem = (newItem: LayoutItem) => {
-    this.setState(s => {
+    this.setState((s) => {
       const layout = iassign(
         s.layout,
-        l => l.positions,
-        positions => {
+        (l) => l.positions,
+        (positions) => {
           positions.push(newItem);
           return positions;
         }
@@ -175,8 +181,8 @@ export class LayoutEditor extends Component<Props, State> {
       if (this.dirtyLayout) {
         this.dirtyLayout = iassign(
           this.dirtyLayout,
-          l => l.positions,
-          positions => {
+          (l) => l.positions,
+          (positions) => {
             positions.push(newItem);
             return positions;
           }
@@ -184,7 +190,7 @@ export class LayoutEditor extends Component<Props, State> {
       }
       return {
         layout,
-        isDirty: true
+        isDirty: true,
       };
     });
   };
@@ -194,11 +200,11 @@ export class LayoutEditor extends Component<Props, State> {
     if (!Number.isInteger(deleteIndex)) {
       return;
     }
-    this.setState(s => {
+    this.setState((s) => {
       const layout = iassign(
         s.layout,
-        l => l.positions,
-        positions => {
+        (l) => l.positions,
+        (positions) => {
           positions.splice(deleteIndex, 1);
           return positions;
         }
@@ -206,8 +212,8 @@ export class LayoutEditor extends Component<Props, State> {
       if (this.dirtyLayout) {
         this.dirtyLayout = iassign(
           this.dirtyLayout,
-          l => l.positions,
-          positions => {
+          (l) => l.positions,
+          (positions) => {
             positions.splice(deleteIndex, 1);
             return positions;
           }
@@ -215,7 +221,7 @@ export class LayoutEditor extends Component<Props, State> {
       }
       return {
         layout,
-        isDirty: true
+        isDirty: true,
       };
     });
   };
@@ -228,7 +234,7 @@ export class LayoutEditor extends Component<Props, State> {
     const reader = new FileReader();
     reader.onload = () => {
       this.setState({
-        background: reader.result as string
+        background: reader.result as string,
       });
     };
     reader.readAsDataURL(file);
@@ -239,15 +245,15 @@ export class LayoutEditor extends Component<Props, State> {
       this.state.isDirty && this.dirtyLayout
         ? this.dirtyLayout
         : this.state.layout;
-    this.dirtyLayout = iassign(layout, layout => {
-      layout.positions = layout.positions.map(item =>
+    this.dirtyLayout = iassign(layout, (layout) => {
+      layout.positions = layout.positions.map((item) =>
         item.id === newItem.id ? newItem : item
       );
       return layout;
     });
     if (!this.state.isDirty) {
       this.setState({
-        isDirty: true
+        isDirty: true,
       });
     }
   };
@@ -257,7 +263,7 @@ export class LayoutEditor extends Component<Props, State> {
     this.props.config.saveLayout(newLayout);
     this.setState({
       isDirty: false,
-      layout: newLayout
+      layout: newLayout,
     });
   };
 }

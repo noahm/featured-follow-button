@@ -5,7 +5,7 @@ import {
   defaultLayout,
   getRandomID,
   TWITCH_UNAVAILABLE,
-  debounce
+  debounce,
 } from "./utils";
 import {
   ChannelData,
@@ -15,7 +15,7 @@ import {
   LiveState,
   TrackingEvent,
   ListOptions,
-  UserStyles
+  UserStyles,
 } from "./models";
 
 const CONFIG_VERSION = "1.0";
@@ -37,13 +37,13 @@ const defaultConfig: ChannelData = {
       buttonShadowDirection: "",
       buttonPadding: "",
       buttonBorderRadius: "4px",
-      buttonTemplate: ""
+      buttonTemplate: "",
     },
     listOptions: {
       title: "",
       showAvatars: true,
-      showDescriptions: false
-    }
+      showDescriptions: false,
+    },
   },
   settings: {
     favorites: [],
@@ -55,12 +55,13 @@ const defaultConfig: ChannelData = {
             id: "00000000",
             type: "button",
             left: 75,
-            top: 75
-          }
-        ]
-      }
-    ]
-  }
+            top: 75,
+            align: "right",
+          },
+        ],
+      },
+    ],
+  },
 };
 
 export interface ConfigState {
@@ -96,7 +97,7 @@ export const ConfigContext = createContext<ConfigState>({
   toggleHideAll: () => null,
   saveFavorites: () => null,
   saveListOptions: () => null,
-  saveUserStyles: () => null
+  saveUserStyles: () => null,
 });
 
 export class ConfigProvider extends Component<{}, ConfigState> {
@@ -106,11 +107,11 @@ export class ConfigProvider extends Component<{}, ConfigState> {
 
     setLiveItems: (liveItems, localChange = true) => {
       this.setState(
-        prevState =>
+        (prevState) =>
           iassign(
             prevState,
-            c => c.config.liveState,
-            liveState => {
+            (c) => c.config.liveState,
+            (liveState) => {
               liveState.liveItems = liveItems.slice();
               return liveState;
             }
@@ -126,17 +127,17 @@ export class ConfigProvider extends Component<{}, ConfigState> {
       );
     },
 
-    addQuickButton: item => {
+    addQuickButton: (item) => {
       this.setState(
-        prevState =>
+        (prevState) =>
           iassign(
             prevState,
-            c => c.config.liveState.liveItems,
-            liveItems => {
+            (c) => c.config.liveState.liveItems,
+            (liveItems) => {
               liveItems.push({
                 type: "quick",
                 id: getRandomID(),
-                ...item
+                ...item,
               });
               return liveItems;
             }
@@ -150,11 +151,11 @@ export class ConfigProvider extends Component<{}, ConfigState> {
 
     toggleHideAll: () => {
       this.setState(
-        prevState =>
+        (prevState) =>
           iassign(
             prevState,
-            c => c.config.liveState,
-            liveState => {
+            (c) => c.config.liveState,
+            (liveState) => {
               liveState.hideAll = !liveState.hideAll;
               return liveState;
             }
@@ -169,25 +170,25 @@ export class ConfigProvider extends Component<{}, ConfigState> {
     saveLayout: (layout: Layout, localChange = true) => {
       let newState = iassign(
         this.state,
-        config => config.config.settings,
-        settings => {
+        (config) => config.config.settings,
+        (settings) => {
           settings.configuredLayouts = [layout];
           return settings;
         }
       );
       const availableSlots = new Map(
-        newState.config.settings.configuredLayouts[0].positions.map(item => [
+        newState.config.settings.configuredLayouts[0].positions.map((item) => [
           item.id,
-          item
+          item,
         ])
       );
       const validLiveItems = newState.config.liveState.liveItems
-        .filter(item => availableSlots.has(item.id))
-        .map(item => {
+        .filter((item) => availableSlots.has(item.id))
+        .map((item) => {
           const parentSlot = availableSlots.get(item.id);
           return {
             ...item,
-            ...parentSlot
+            ...parentSlot,
           };
         });
 
@@ -195,7 +196,7 @@ export class ConfigProvider extends Component<{}, ConfigState> {
       if (newState.config.liveState.liveItems.length) {
         newState = iassign(
           newState,
-          state => state.config.liveState.liveItems,
+          (state) => state.config.liveState.liveItems,
           () => validLiveItems
         );
       }
@@ -211,11 +212,11 @@ export class ConfigProvider extends Component<{}, ConfigState> {
 
     saveFavorites: (favorites: Array<LiveButton>) => {
       this.setState(
-        prevState =>
+        (prevState) =>
           iassign(
             prevState,
-            config => config.config.settings,
-            settings => {
+            (config) => config.config.settings,
+            (settings) => {
               settings.favorites = favorites.slice();
               return settings;
             }
@@ -226,27 +227,27 @@ export class ConfigProvider extends Component<{}, ConfigState> {
 
     saveListOptions: (opts: Partial<ListOptions>) => {
       this.setState(
-        prevState =>
+        (prevState) =>
           iassign(
             prevState,
-            config => config.config.liveState.listOptions,
-            current => ({ ...current, ...opts })
+            (config) => config.config.liveState.listOptions,
+            (current) => ({ ...current, ...opts })
           ),
         this.delayLiveSave
       );
     },
 
-    saveUserStyles: opts => {
+    saveUserStyles: (opts) => {
       this.setState(
-        prevState =>
+        (prevState) =>
           iassign(
             prevState,
-            c => c.config.liveState.styles,
-            styles => ({ ...styles, ...opts })
+            (c) => c.config.liveState.styles,
+            (styles) => ({ ...styles, ...opts })
           ),
         this.delayLiveSave
       );
-    }
+    },
   };
 
   private delayLiveSave = debounce(() => {
@@ -255,7 +256,7 @@ export class ConfigProvider extends Component<{}, ConfigState> {
   }, 1000);
 
   public componentDidMount() {
-    new Promise(resolve => {
+    new Promise((resolve) => {
       if (TWITCH_UNAVAILABLE) {
         console.error("Twitch ext not present. Config not available.");
         return;
@@ -312,10 +313,10 @@ export class ConfigProvider extends Component<{}, ConfigState> {
     try {
       const decodedMessage: LiveState = JSON.parse(message);
       if (decodedMessage) {
-        this.setState(prevState =>
+        this.setState((prevState) =>
           iassign(
             prevState,
-            c => c.config.liveState,
+            (c) => c.config.liveState,
             () => decodedMessage
           )
         );
@@ -330,8 +331,24 @@ export class ConfigProvider extends Component<{}, ConfigState> {
       if (Twitch.ext!.configuration.broadcaster!.version === CONFIG_VERSION) {
         ret = {
           ...defaultConfig,
-          ...JSON.parse(Twitch.ext!.configuration.broadcaster!.content || "{}")
+          ...JSON.parse(Twitch.ext!.configuration.broadcaster!.content || "{}"),
         };
+
+        if (!ret.settings.configuredLayouts.length) {
+          ret.settings.configuredLayouts = [defaultLayout];
+        }
+
+        // migrate old button layout items to have align property
+        for (const item of ret.liveState.liveItems) {
+          if (item.type === "button" && !item.align) {
+            item.align = "left";
+          }
+        }
+        for (const item of ret.settings.configuredLayouts[0].positions) {
+          if (item.type === "button" && !item.align) {
+            item.align = "left";
+          }
+        }
 
         // migrate componentHeader to listOptions
         if (!ret.liveState.listOptions) {
@@ -344,10 +361,6 @@ export class ConfigProvider extends Component<{}, ConfigState> {
 
         if (!ret.liveState.styles) {
           ret.liveState.styles = defaultConfig.liveState.styles;
-        }
-
-        if (!ret.settings.configuredLayouts.length) {
-          ret.settings.configuredLayouts = [defaultLayout];
         }
       }
     } finally {

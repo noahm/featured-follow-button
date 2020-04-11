@@ -4,7 +4,7 @@ export enum TrackingEvent {
   FollowConfirmed = "follow-channel-confirm",
   FollowAborted = "follow-channel-abort",
   LiveStateSave = "update-live-state",
-  LayoutSave = "update-layout"
+  LayoutSave = "update-layout",
 }
 
 /**
@@ -26,6 +26,7 @@ export interface PositionedButton {
    * percentage from edge, 0 - 100
    */
   left: number;
+  align: "left" | "right";
 }
 
 export interface PositionedZone {
