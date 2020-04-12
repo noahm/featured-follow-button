@@ -54,8 +54,8 @@ export function FollowButton(props: FBProps) {
   const { disabled, onClick, channelLogin, preview, disableTheme } = props;
   const {
     config: {
-      liveState: { styles: userStyles }
-    }
+      liveState: { styles: userStyles },
+    },
   } = useContext(ConfigContext);
 
   const handleClick = () => {
@@ -66,7 +66,8 @@ export function FollowButton(props: FBProps) {
     Twitch.ext!.tracking.trackEvent(
       TrackingEvent.FollowButtonClick,
       Twitch.ext!.tracking.InteractionTypes.Click,
-      Twitch.ext!.tracking.Categories.Interact
+      Twitch.ext!.tracking.Categories.Interact,
+      `channel:${channelLogin}`
     );
   };
 
@@ -107,7 +108,7 @@ export function FollowButton(props: FBProps) {
         useTheme && styles.custom,
         {
           [styles.empty]: template === "HEART",
-          [styles[`shadow-${userStyles.buttonShadowDirection}`]]: useTheme
+          [styles[`shadow-${userStyles.buttonShadowDirection}`]]: useTheme,
         }
       )}
       style={style}

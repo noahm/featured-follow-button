@@ -66,7 +66,7 @@ declare namespace Twitch {
       Tap,
       Swipe,
       Impression,
-      Other
+      Other,
     }
 
     export enum Categories {
@@ -79,13 +79,21 @@ declare namespace Twitch {
       Configuration,
       StreamManager,
       Error,
-      Other
+      Other,
     }
 
+    /**
+     * Sends a tracking event
+     * @param name
+     * @param interactionType
+     * @param category
+     * @param customMetadata Only supports <= 100 characters length
+     */
     export function trackEvent(
       name: string,
       interactionType: InteractionTypes,
-      category: Categories
+      category: Categories,
+      customMetadata?: string
     ): void;
   }
 

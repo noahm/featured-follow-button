@@ -18,7 +18,7 @@ export function FollowZone(props: Props) {
     zoneBorderRadius,
     zoneTextColor,
     dropShadow,
-    hideText
+    hideText,
   } = config.liveState.styles;
 
   function handleFollow() {
@@ -27,7 +27,8 @@ export function FollowZone(props: Props) {
     Twitch.ext!.tracking.trackEvent(
       TrackingEvent.FollowZoneClick,
       Twitch.ext!.tracking.InteractionTypes.Click,
-      Twitch.ext!.tracking.Categories.Interact
+      Twitch.ext!.tracking.Categories.Interact,
+      `channel:${item.channelName}`
     );
   }
 
@@ -37,18 +38,18 @@ export function FollowZone(props: Props) {
     height: item.height + "%",
     width: item.width + "%",
     borderRadius: zoneBorderRadius || undefined,
-    border: zoneBorder || undefined
+    border: zoneBorder || undefined,
   };
 
   const textStyle = {
-    color: zoneTextColor || undefined
+    color: zoneTextColor || undefined,
   };
 
   return (
     <div
       className={classNames(styles.followZone, {
         [styles.withShadow]: dropShadow,
-        [styles.textOnHover]: !hideText
+        [styles.textOnHover]: !hideText,
       })}
       style={style}
       onClick={!disabled ? handleFollow : undefined}

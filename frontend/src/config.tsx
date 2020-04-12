@@ -378,10 +378,17 @@ export class ConfigProvider extends Component<{}, ConfigState> {
 
   private publishLiveState() {
     Twitch.ext!.send("broadcast", "application/json", this.config.liveState);
+    const channels = new Set(
+      this.config.liveState.liveItems.map((item) => item.channelName)
+    );
+    const customMetadata = Array.from(channels)
+      .map((item) => `channel:${item}`)
+      .join(";");
     Twitch.ext!.tracking.trackEvent(
       TrackingEvent.LiveStateSave,
       Twitch.ext!.tracking.InteractionTypes.Click,
-      Twitch.ext!.tracking.Categories.Configuration
+      Twitch.ext!.tracking.Categories.Configuration,
+      customMetadata.length < 100 ? customMetadata : undefined
     );
   }
 
