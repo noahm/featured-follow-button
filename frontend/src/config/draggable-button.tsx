@@ -69,6 +69,7 @@ export class DraggableButton extends Component<Props, State> {
         })}
         style={style}
         onMouseDown={this.onMouseDown}
+        onContextMenu={this.toggleAlignment}
         title="Right click to toggle L/R growth direction"
       >
         <FollowButton
@@ -91,9 +92,6 @@ export class DraggableButton extends Component<Props, State> {
     switch (e.button) {
       case 0:
         break;
-      case 2:
-        this.toggleAlignment();
-        return;
       default:
         return;
     }
@@ -112,7 +110,8 @@ export class DraggableButton extends Component<Props, State> {
     this.setState({ dragging: true });
   };
 
-  private toggleAlignment = () => {
+  private toggleAlignment = (e: ReactMouseEvent) => {
+    e.preventDefault();
     const selfRect = this.root.current!.getBoundingClientRect();
     const parentRect = this.root.current!.parentElement!.getBoundingClientRect();
     const ownPercentage = (selfRect.width / parentRect.width) * 100;

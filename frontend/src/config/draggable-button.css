@@ -15,8 +15,9 @@
   border-color: black;
   border-width: 1px 1px 0 1px;
   border-style: solid;
-  font-size: 1em;
+  font-size: 12px;
   z-index: 1;
+  padding: 0 3px;
 }
 
 .draggable > * {
