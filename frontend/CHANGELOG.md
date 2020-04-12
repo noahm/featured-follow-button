@@ -4,6 +4,7 @@
 - Added options to display avatars and channel descriptions in list mode (component, panel, and mobile views).
 - Added options to control visual style of follow zones and buttons.
 - Automatically uses current live stream thumbnail as background of layout editor when you are live.
+- Added new option to provide manual control over L/R alignment of buttons in an overlay layout.
 - Changed font to match the rest of twitch.
 
 # v2.3.1

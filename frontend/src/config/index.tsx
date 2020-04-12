@@ -15,10 +15,7 @@ class App extends Component {
           <SettingsPage
             title="Overlay Mode"
             description={`You have this extension activated as an overlay.
-            (Overlay extensions only appear while you are live.)
-        You can configure a custom layout below. Each button and zone acts as a
-        "slot" that can be either filled or left unused and invisible during a
-        stream. Don't forget to save when you're done editing!`}
+            (Overlay extensions only appear while you are live.)`}
           />
         );
       case "component":
@@ -50,7 +47,10 @@ const HotApp = hot(() => (
   </ConfigProvider>
 ));
 
-const appNode = document.createElement("div");
-document.body.appendChild(appNode);
-render(<HotApp />, appNode);
-applyThemeClass();
+if (!document.querySelector("#app")) {
+  const appNode = document.createElement("div");
+  appNode.id = "app";
+  document.body.appendChild(appNode);
+  render(<HotApp />, appNode);
+  applyThemeClass();
+}

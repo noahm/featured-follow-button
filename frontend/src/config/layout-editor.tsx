@@ -67,6 +67,16 @@ export class LayoutEditor extends Component<Props, State> {
   render() {
     return (
       <div>
+        <p>
+          You can configure a custom layout below. Each button and zone acts as
+          a "slot" that can be either filled or left unused and invisible during
+          a stream. Don't forget to save when you're done editing!
+        </p>
+        <p>
+          Buttons will grow in length as longer channel names are used, but you
+          can control the direction they grow in. Right click to toggle whether
+          buttons are positioned by their left or right edge.
+        </p>
         <div className={styles.toolbar}>
           <section>
             <button onClick={this.addButton}>Add Button</button>

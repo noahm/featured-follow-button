@@ -27,7 +27,7 @@ interface State {
 
 class App extends Component<Props, State> {
   state: State = {
-    isBroadcaster: false
+    isBroadcaster: false,
   };
 
   constructor(props: Props) {
@@ -36,7 +36,7 @@ class App extends Component<Props, State> {
       const token = jwt.decode(Auth.token!) as null | Twitch.JwtToken;
       if (token && token.role === "broadcaster") {
         this.setState({
-          isBroadcaster: true
+          isBroadcaster: true,
         });
       }
       Twitch.ext!.actions.onFollow(this.onFollowUiClosed);
@@ -51,7 +51,7 @@ class App extends Component<Props, State> {
       return (
         <main
           className={classNames(styles.componentMode, {
-            [styles.popout]: isPopout
+            [styles.popout]: isPopout,
           })}
         >
           <FollowList />
@@ -80,7 +80,7 @@ class App extends Component<Props, State> {
           style={{
             position: "absolute",
             top: `${item.top}%`,
-            left: `${item.left}%`
+            left: `${item.left}%`,
           }}
           key={item.id + ":" + item.channelName}
         >
@@ -120,7 +120,10 @@ const HotApp = hot(() => (
   </ConfigProvider>
 ));
 
-const appNode = document.createElement("div");
-document.body.appendChild(appNode);
-render(<HotApp />, appNode);
-applyThemeClass();
+if (!document.querySelector("#app")) {
+  const appNode = document.createElement("div");
+  appNode.id = "app";
+  document.body.appendChild(appNode);
+  render(<HotApp />, appNode);
+  applyThemeClass();
+}

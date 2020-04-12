@@ -4,10 +4,35 @@
   cursor: grab;
 }
 
+.draggable:after {
+  display: block;
+  position: absolute;
+  top: -13px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 3px 3px 0 0;
+  height: 12px;
+  line-height: 12px;
+  border-color: black;
+  border-width: 1px 1px 0 1px;
+  border-style: solid;
+  font-size: 1em;
+  z-index: 1;
+}
+
 .draggable > * {
   pointer-events: none;
 }
 
 .dragging {
   cursor: grabbing;
+}
+
+.draggable.rightAligned:after {
+  content: "⬅Grows";
+  left: 0;
+}
+
+.draggable.leftAligned:after {
+  content: "Grows➡";
+  right: 0;
 }
