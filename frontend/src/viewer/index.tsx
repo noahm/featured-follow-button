@@ -1,7 +1,7 @@
 import "../common-styles";
 import jwt from "jsonwebtoken";
 import classNames from "classnames";
-import { Component } from "react";
+import { Component, CSSProperties } from "react";
 import { render } from "react-dom";
 import styles from "./style.css";
 import { Auth } from "../auth";
@@ -75,15 +75,17 @@ class App extends Component<Props, State> {
     }
 
     if (item.type === "button") {
+      const style: CSSProperties = {
+        top: `${item.top}%`,
+        position: "absolute",
+      };
+      if (item.align === "left") {
+        style.left = `${item.left}%`;
+      } else {
+        style.right = `${100 - item.left}%`;
+      }
       return (
-        <div
-          style={{
-            position: "absolute",
-            top: `${item.top}%`,
-            left: `${item.left}%`,
-          }}
-          key={item.id + ":" + item.channelName}
-        >
+        <div style={style} key={item.id + ":" + item.channelName}>
           <FollowButton
             channelLogin={item.channelName}
             channelDisplayName={item.displayName}
