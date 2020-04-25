@@ -6,7 +6,7 @@ import { DraggableButton } from "./draggable-button";
 import styles from "./layout-editor.css";
 import { ConfigState } from "../config";
 import { getRandomID } from "../utils";
-import { Layout, LayoutItem } from "../models";
+import { LayoutItem } from "../models";
 import { Auth } from "../auth";
 
 const startingCharCode = "A".charCodeAt(0);
@@ -17,25 +17,20 @@ interface Props {
 
 interface State {
   background: string | undefined;
-  layout: Layout;
-  isDirty: boolean;
 }
 
 function liveThumbnail(channel: string, height = 480) {
-  const width = (height * 16) / 9;
+  const width = Math.round((height * 16) / 9);
   return `https://static-cdn.jtvnw.net/previews-ttv/live_user_${channel.toLowerCase()}-${width}x${height}.jpg`;
 }
 
 export class LayoutEditor extends Component<Props, State> {
-  dirtyLayout: Layout | undefined;
+  state: State = {
+    background: undefined,
+  };
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      background: undefined,
-      layout: props.config.config.settings.configuredLayouts[0],
-      isDirty: false,
-    };
+  private getLayout(props = this.props) {
+    return props.config.config.settings.configuredLayouts[0];
   }
 
   componentDidMount() {
@@ -50,21 +45,12 @@ export class LayoutEditor extends Component<Props, State> {
       });
   }
 
-  componentDidUpdate(prevProps: Props) {
-    if (
-      !prevProps.config.available &&
-      this.props.config.available &&
-      this.state.layout !==
-        this.props.config.config.settings.configuredLayouts[0] &&
-      !this.dirtyLayout
-    ) {
-      this.setState({
-        layout: this.props.config.config.settings.configuredLayouts[0],
-      });
-    }
-  }
-
   render() {
+    if (!this.props.config.available) {
+      return <p>Waiting for config to be available...</p>;
+    }
+
+    const layout = this.getLayout();
     return (
       <div>
         <p>
@@ -85,7 +71,7 @@ export class LayoutEditor extends Component<Props, State> {
               <option value="initial" disabled>
                 Delete...
               </option>
-              {this.state.layout.positions.map((item, i) => {
+              {layout.positions.map((item, i) => {
                 const label = String.fromCharCode(startingCharCode + i);
                 return (
                   <option key={item.id} value={i}>
@@ -94,9 +80,6 @@ export class LayoutEditor extends Component<Props, State> {
                 );
               })}
             </select>
-          </section>
-          <section>
-            {this.state.isDirty && <button onClick={this.save}>Save</button>}
           </section>
         </div>
         <Dropzone
@@ -116,7 +99,7 @@ export class LayoutEditor extends Component<Props, State> {
           )}
           <div className={styles.layoutContainer}>
             <div className={styles.layoutArea}>
-              {this.state.layout.positions.map((item, i) => {
+              {layout.positions.map((item, i) => {
                 if (item.type === "quick") {
                   return;
                 }
@@ -157,7 +140,7 @@ export class LayoutEditor extends Component<Props, State> {
     );
   }
 
-  addButton = () => {
+  private addButton = () => {
     this.addItem({
       type: "button",
       id: getRandomID(),
@@ -167,7 +150,7 @@ export class LayoutEditor extends Component<Props, State> {
     });
   };
 
-  addZone = () => {
+  private addZone = () => {
     this.addItem({
       type: "zone",
       id: getRandomID(),
@@ -178,65 +161,35 @@ export class LayoutEditor extends Component<Props, State> {
     });
   };
 
-  addItem = (newItem: LayoutItem) => {
-    this.setState((s) => {
-      const layout = iassign(
-        s.layout,
-        (l) => l.positions,
-        (positions) => {
-          positions.push(newItem);
-          return positions;
-        }
-      );
-      if (this.dirtyLayout) {
-        this.dirtyLayout = iassign(
-          this.dirtyLayout,
-          (l) => l.positions,
-          (positions) => {
-            positions.push(newItem);
-            return positions;
-          }
-        );
+  private addItem = (newItem: LayoutItem) => {
+    const layout = iassign(
+      this.getLayout(),
+      (l) => l.positions,
+      (positions) => {
+        positions.push(newItem);
+        return positions;
       }
-      return {
-        layout,
-        isDirty: true,
-      };
-    });
+    );
+    this.props.config.saveLayout(layout);
   };
 
-  handleDelete = (e: ChangeEvent<HTMLSelectElement>) => {
+  private handleDelete = (e: ChangeEvent<HTMLSelectElement>) => {
     const deleteIndex = +e.currentTarget.value;
     if (!Number.isInteger(deleteIndex)) {
       return;
     }
-    this.setState((s) => {
-      const layout = iassign(
-        s.layout,
-        (l) => l.positions,
-        (positions) => {
-          positions.splice(deleteIndex, 1);
-          return positions;
-        }
-      );
-      if (this.dirtyLayout) {
-        this.dirtyLayout = iassign(
-          this.dirtyLayout,
-          (l) => l.positions,
-          (positions) => {
-            positions.splice(deleteIndex, 1);
-            return positions;
-          }
-        );
+    const layout = iassign(
+      this.getLayout(),
+      (l) => l.positions,
+      (positions) => {
+        positions.splice(deleteIndex, 1);
+        return positions;
       }
-      return {
-        layout,
-        isDirty: true,
-      };
-    });
+    );
+    this.props.config.saveLayout(layout);
   };
 
-  onDrop = (files: Blob[]) => {
+  private onDrop = (files: Blob[]) => {
     if (!files || !files.length) {
       return;
     }
@@ -250,30 +203,13 @@ export class LayoutEditor extends Component<Props, State> {
     reader.readAsDataURL(file);
   };
 
-  updateItem = (newItem: LayoutItem) => {
-    const layout =
-      this.state.isDirty && this.dirtyLayout
-        ? this.dirtyLayout
-        : this.state.layout;
-    this.dirtyLayout = iassign(layout, (layout) => {
+  private updateItem = (newItem: LayoutItem) => {
+    const layout = iassign(this.getLayout(), (layout) => {
       layout.positions = layout.positions.map((item) =>
         item.id === newItem.id ? newItem : item
       );
       return layout;
     });
-    if (!this.state.isDirty) {
-      this.setState({
-        isDirty: true,
-      });
-    }
-  };
-
-  save = () => {
-    const newLayout = this.dirtyLayout || this.state.layout;
-    this.props.config.saveLayout(newLayout);
-    this.setState({
-      isDirty: false,
-      layout: newLayout,
-    });
+    this.props.config.saveLayout(layout);
   };
 }

@@ -1,12 +1,7 @@
 import iassign from "immutable-assign";
 import { createContext, Component } from "react";
 import { Auth } from "./auth";
-import {
-  defaultLayout,
-  getRandomID,
-  TWITCH_UNAVAILABLE,
-  debounce,
-} from "./utils";
+import { defaultLayout, getRandomID, TWITCH_UNAVAILABLE } from "./utils";
 import {
   ChannelData,
   LiveItems,
@@ -66,30 +61,36 @@ const defaultConfig: ChannelData = {
 
 export interface ConfigState {
   available: boolean;
+  unpublished: boolean;
   config: ChannelData;
   setLiveItems(liveItems: LiveItems, broadcast?: boolean): void;
   addQuickButton(item: LiveButton): void;
   /**
    * @param {Layout} layout
-   * @param {boolean} localChange if true, change was made in this client, will broadcast to other clients
+   * @param {boolean} localChange if true, change was made in this client, will mark changes as pending save
    */
-  saveLayout(liveItems: Layout, broadcast?: boolean): void;
+  saveLayout(liveItems: Layout, localChange?: boolean): void;
   toggleHideAll(): void;
   saveFavorites(favorites: Array<LiveButton>): void;
   /**
    * Updates display options for list mode.
-   * Delays saving and publishing by 1s
+   * Does not save or publish
    */
   saveListOptions(opts: Partial<ListOptions>): void;
   /**
    * Updates style options for follow zones.
-   * Delays saving and publishing by 1s
+   * Does not save or publish
    */
   saveUserStyles(opts: Partial<UserStyles>): void;
+  /**
+   * Save and publish any unsaved changes in state.
+   */
+  saveAndPublish(): void;
 }
 
 export const ConfigContext = createContext<ConfigState>({
   available: false,
+  unpublished: false,
   config: defaultConfig,
   setLiveItems: () => null,
   addQuickButton: () => null,
@@ -98,11 +99,13 @@ export const ConfigContext = createContext<ConfigState>({
   saveFavorites: () => null,
   saveListOptions: () => null,
   saveUserStyles: () => null,
+  saveAndPublish: () => null,
 });
 
 export class ConfigProvider extends Component<{}, ConfigState> {
   public state: ConfigState = {
     available: false,
+    unpublished: false,
     config: defaultConfig,
 
     setLiveItems: (liveItems, localChange = true) => {
@@ -201,13 +204,12 @@ export class ConfigProvider extends Component<{}, ConfigState> {
         );
       }
 
-      this.setState(newState, () => {
-        if (localChange) {
-          // TODO use debounced save here and delete save button from layout editor
-          this.save();
-          this.publishLayout();
-        }
-      });
+      this.setState(newState);
+      if (localChange) {
+        this.setState({
+          unpublished: true,
+        });
+      }
     },
 
     saveFavorites: (favorites: Array<LiveButton>) => {
@@ -226,34 +228,36 @@ export class ConfigProvider extends Component<{}, ConfigState> {
     },
 
     saveListOptions: (opts: Partial<ListOptions>) => {
-      this.setState(
-        (prevState) =>
-          iassign(
-            prevState,
-            (config) => config.config.liveState.listOptions,
-            (current) => ({ ...current, ...opts })
-          ),
-        this.delayLiveSave
-      );
+      this.setState((prevState) => ({
+        unpublished: true,
+        config: iassign(
+          prevState.config,
+          (config) => config.liveState.listOptions,
+          (current) => ({ ...current, ...opts })
+        ),
+      }));
     },
 
     saveUserStyles: (opts) => {
-      this.setState(
-        (prevState) =>
-          iassign(
-            prevState,
-            (c) => c.config.liveState.styles,
-            (styles) => ({ ...styles, ...opts })
-          ),
-        this.delayLiveSave
-      );
+      this.setState((prevState) => ({
+        unpublished: true,
+        config: iassign(
+          prevState.config,
+          (c) => c.liveState.styles,
+          (styles) => ({ ...styles, ...opts })
+        ),
+      }));
+    },
+
+    saveAndPublish: () => {
+      this.save();
+      this.publishLiveState();
+      this.publishLayout();
+      this.setState({
+        unpublished: false,
+      });
     },
   };
-
-  private delayLiveSave = debounce(() => {
-    this.publishLiveState();
-    this.save();
-  }, 1000);
 
   public componentDidMount() {
     new Promise((resolve) => {

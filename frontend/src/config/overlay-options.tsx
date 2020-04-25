@@ -2,8 +2,6 @@ import { useContext } from "react";
 import { ConfigContext } from "../config";
 import { FollowZone } from "../viewer/follow-zone";
 import { FollowButton } from "../viewer/follow-button";
-import { Auth } from "../auth";
-
 export function OverlayOptions() {
   const { config, saveUserStyles } = useContext(ConfigContext);
   const {
@@ -19,7 +17,7 @@ export function OverlayOptions() {
     buttonShadowColor,
     buttonTextColor,
     buttonBaseColor,
-    buttonBorderRadius
+    buttonBorderRadius,
   } = config.liveState.styles;
 
   return (
@@ -31,7 +29,7 @@ export function OverlayOptions() {
             Border style:{" "}
             <input
               value={zoneBorder}
-              onChange={e => {
+              onChange={(e) => {
                 saveUserStyles({ zoneBorder: e.currentTarget.value });
               }}
               placeholder="2px dashed lightslategray"
@@ -43,7 +41,7 @@ export function OverlayOptions() {
             Border radius:{" "}
             <input
               value={zoneBorderRadius}
-              onChange={e => {
+              onChange={(e) => {
                 saveUserStyles({ zoneBorderRadius: e.currentTarget.value });
               }}
               placeholder="0px"
@@ -55,7 +53,7 @@ export function OverlayOptions() {
             Text color:{" "}
             <input
               value={zoneTextColor}
-              onChange={e => {
+              onChange={(e) => {
                 saveUserStyles({ zoneTextColor: e.currentTarget.value });
               }}
               placeholder="black"
@@ -67,7 +65,7 @@ export function OverlayOptions() {
             <input
               type="checkbox"
               checked={dropShadow}
-              onChange={e => {
+              onChange={(e) => {
                 saveUserStyles({ dropShadow: e.currentTarget.checked });
               }}
             />{" "}
@@ -79,7 +77,7 @@ export function OverlayOptions() {
             <input
               type="checkbox"
               checked={!hideText}
-              onChange={e => {
+              onChange={(e) => {
                 saveUserStyles({ hideText: !e.currentTarget.checked });
               }}
             />{" "}
@@ -92,7 +90,7 @@ export function OverlayOptions() {
             <input
               type="checkbox"
               checked={customButtonStyle}
-              onChange={e => {
+              onChange={(e) => {
                 saveUserStyles({ customButtonStyle: e.currentTarget.checked });
               }}
             />{" "}
@@ -104,7 +102,7 @@ export function OverlayOptions() {
             Base Color:{" "}
             <input
               value={buttonBaseColor}
-              onChange={e => {
+              onChange={(e) => {
                 saveUserStyles({ buttonBaseColor: e.currentTarget.value });
               }}
               placeholder="#9147ff"
@@ -116,7 +114,7 @@ export function OverlayOptions() {
             Text Color:{" "}
             <input
               value={buttonTextColor}
-              onChange={e => {
+              onChange={(e) => {
                 saveUserStyles({ buttonTextColor: e.currentTarget.value });
               }}
               placeholder="#ffffff"
@@ -128,7 +126,7 @@ export function OverlayOptions() {
             Shadow Color:{" "}
             <input
               value={buttonShadowColor}
-              onChange={e => {
+              onChange={(e) => {
                 saveUserStyles({ buttonShadowColor: e.currentTarget.value });
               }}
               placeholder="#ffffff"
@@ -140,9 +138,9 @@ export function OverlayOptions() {
             Shadow Direction:{" "}
             <select
               value={buttonShadowDirection}
-              onChange={e => {
+              onChange={(e) => {
                 saveUserStyles({
-                  buttonShadowDirection: e.currentTarget.value as ""
+                  buttonShadowDirection: e.currentTarget.value as "",
                 });
               }}
             >
@@ -159,7 +157,7 @@ export function OverlayOptions() {
             Border Radius:{" "}
             <input
               value={buttonBorderRadius}
-              onChange={e => {
+              onChange={(e) => {
                 saveUserStyles({ buttonBorderRadius: e.currentTarget.value });
               }}
               placeholder="4px"
@@ -171,7 +169,7 @@ export function OverlayOptions() {
             Button Padding:{" "}
             <input
               value={buttonPadding}
-              onChange={e => {
+              onChange={(e) => {
                 saveUserStyles({ buttonPadding: e.currentTarget.value });
               }}
               placeholder="0.4em 0.7em"
@@ -183,7 +181,7 @@ export function OverlayOptions() {
             Text Template:{" "}
             <input
               value={buttonTemplate}
-              onChange={e => {
+              onChange={(e) => {
                 saveUserStyles({ buttonTemplate: e.currentTarget.value });
               }}
               placeholder="HEART Follow CHANNEL_NAME"
@@ -206,7 +204,7 @@ function FollowZonePreview() {
         height: "10rem",
         width: "10rem",
         position: "relative",
-        margin: "2rem"
+        margin: "2rem",
       }}
     >
       <FollowZone
@@ -218,7 +216,7 @@ function FollowZonePreview() {
           left: 0,
           top: 0,
           height: 100,
-          width: 100
+          width: 100,
         }}
       />
     </div>

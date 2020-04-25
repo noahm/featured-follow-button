@@ -1,0 +1,31 @@
+@keyframes tada {
+  from,
+  2%,
+  16% {
+    transform: scale3d(1, 1, 1);
+  }
+
+  6%,
+  10%,
+  14% {
+    transform: rotate3d(0, 0, 1, 3deg);
+  }
+
+  4%,
+  8%,
+  12% {
+    transform: rotate3d(0, 0, 1, -3deg);
+  }
+}
+
+.button {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  font-size: 14px;
+  animation-name: tada;
+  animation-duration: 6s;
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+}

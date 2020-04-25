@@ -18,7 +18,7 @@ export function ComponentOptions(props: Props) {
           Heading:{" "}
           <input
             value={title}
-            onChange={e => {
+            onChange={(e) => {
               const newValue = e.currentTarget.value;
               saveListOptions({ title: newValue });
             }}
@@ -30,7 +30,7 @@ export function ComponentOptions(props: Props) {
           <input
             type="checkbox"
             checked={showAvatars}
-            onChange={e => {
+            onChange={(e) => {
               const newValue = e.currentTarget.checked;
               saveListOptions({ showAvatars: newValue });
             }}
@@ -43,7 +43,7 @@ export function ComponentOptions(props: Props) {
           <input
             type="checkbox"
             checked={showDescriptions}
-            onChange={e => {
+            onChange={(e) => {
               const newValue = e.currentTarget.checked;
               saveListOptions({ showDescriptions: newValue });
             }}

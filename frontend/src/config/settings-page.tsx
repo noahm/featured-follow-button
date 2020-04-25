@@ -7,6 +7,7 @@ import { ComponentOptions } from "./component-options";
 import { OverlayOptions } from "./overlay-options";
 import styles from "./settings-page.css";
 import { TabNav } from "../common/tab-nav";
+import { DynamicSaveButton } from "./dynamic-save-button";
 
 const anchorMode = getAnchorMode();
 
@@ -14,7 +15,7 @@ enum SettingsTab {
   LiveState,
   Layout,
   OverlaySettings,
-  ListSettings
+  ListSettings,
 }
 
 interface Props {
@@ -52,6 +53,7 @@ export function SettingsPage(props: Props) {
   return (
     <div className={styles.settingsPage}>
       <div className={styles.maxWidth}>
+        <DynamicSaveButton />
         <h2>{props.title}</h2>
         <p>{props.description}</p>
         {isOverlay && (
@@ -60,7 +62,7 @@ export function SettingsPage(props: Props) {
               ["Live State", SettingsTab.LiveState],
               ["Layout", SettingsTab.Layout],
               ["Overlay Appearance", SettingsTab.OverlaySettings],
-              ["Mobile Appearance", SettingsTab.ListSettings]
+              ["Mobile Appearance", SettingsTab.ListSettings],
             ]}
             activeTab={tab}
             onTabChanged={setTab}
