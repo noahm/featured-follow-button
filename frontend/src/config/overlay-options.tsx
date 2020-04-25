@@ -2,6 +2,8 @@ import { useContext } from "react";
 import { ConfigContext } from "../config";
 import { FollowZone } from "../viewer/follow-zone";
 import { FollowButton } from "../viewer/follow-button";
+import styles from "./overlay-options.css";
+
 export function OverlayOptions() {
   const { config, saveUserStyles } = useContext(ConfigContext);
   const {
@@ -199,24 +201,17 @@ export function OverlayOptions() {
 
 function FollowZonePreview() {
   return (
-    <div
-      style={{
-        height: "10rem",
-        width: "10rem",
-        position: "relative",
-        margin: "2rem",
-      }}
-    >
+    <div className={styles.zonePreview}>
       <FollowZone
         disabled
         item={{
           channelName: "ChannelName",
           id: "",
           type: "zone",
-          left: 0,
-          top: 0,
-          height: 100,
-          width: 100,
+          left: 10,
+          top: 10,
+          height: 80,
+          width: 80,
         }}
       />
     </div>
