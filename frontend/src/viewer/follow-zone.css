@@ -6,16 +6,19 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  border: 2px dashed lightslategray;
+  border-width: 2px;
+  border-style: dashed;
+  border-color: #778899;
   border-radius: 2px;
   user-select: none;
-  text-shadow: 0 0 4px white;
   padding: 0.5em;
   font-size: 1em;
   font-weight: bold;
   box-sizing: border-box;
   color: black;
   font-weight: bold;
+  --shadow-color: white;
+  --shadow-strength: 4px;
 }
 
 .text {
@@ -23,13 +26,13 @@
 }
 
 .withShadow {
-  box-shadow: 0px 0px 4px white;
+  text-shadow: 0 0 var(--shadow-strength) var(--shadow-color);
+  box-shadow: 0px 0px var(--shadow-strength) var(--shadow-color);
 }
 
 .followZone:hover {
   opacity: 0.9;
   border-color: darkslategray;
-  box-shadow: 0px 0px 4px white;
   background-color: rgba(128, 128, 128, 0.2);
 }
 

@@ -77,11 +77,17 @@ export interface LiveState {
 }
 
 export interface UserStyles {
-  zoneBorder: string;
+  zoneBorderWidth: number;
+  zoneBorderStyle: string;
+  zoneBorderColor: string;
   zoneBorderRadius: string;
+  zoneShadowStrength: number;
+  zoneShadowColor: string;
+  zoneTextHidden: boolean;
+  zoneTextAlign: "NW" | "N" | "NE" | "E" | "SE" | "S" | "SW" | "W" | "C";
   zoneTextColor: string;
-  dropShadow: boolean;
-  hideText: boolean;
+  zoneTextSize: number;
+  zoneTextWeight: string;
   customButtonStyle: boolean;
   buttonBaseColor: string;
   buttonTextColor: string;

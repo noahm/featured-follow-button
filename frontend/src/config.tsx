@@ -20,18 +20,24 @@ const defaultConfig: ChannelData = {
     liveItems: [],
     hideAll: false,
     styles: {
-      zoneBorder: "",
-      zoneBorderRadius: "",
-      zoneTextColor: "",
-      dropShadow: false,
-      hideText: false,
+      zoneBorderColor: "#778899",
+      zoneBorderStyle: "dashed",
+      zoneBorderWidth: 2,
+      zoneBorderRadius: "0%",
+      zoneTextColor: "#000000",
+      zoneShadowStrength: 0,
+      zoneShadowColor: "#ffffff",
+      zoneTextHidden: false,
+      zoneTextAlign: "C",
+      zoneTextSize: 1,
+      zoneTextWeight: "bold",
       customButtonStyle: false,
       buttonBaseColor: "#9147ff",
       buttonTextColor: "#ffffff",
       buttonShadowColor: "#ffffff",
       buttonShadowDirection: "",
-      buttonPadding: "",
-      buttonBorderRadius: "4px",
+      buttonPadding: "0.4em 0.7em",
+      buttonBorderRadius: "0.4em",
       buttonTemplate: "",
     },
     listOptions: {
@@ -365,6 +371,12 @@ export class ConfigProvider extends Component<{}, ConfigState> {
 
         if (!ret.liveState.styles) {
           ret.liveState.styles = defaultConfig.liveState.styles;
+        } else {
+          // fill in possibly missing style values
+          ret.liveState.styles = {
+            ...defaultConfig.liveState.styles,
+            ...ret.liveState.styles,
+          };
         }
       }
     } finally {

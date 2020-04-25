@@ -11,12 +11,12 @@ svg {
 
 .button {
   --bg-color: hsl(264, 100%, 64%);
-  --border-radius: 4px;
+  --border-radius: 0.4em;
   --text-color: white;
   --shadow-color: white;
   --text-padding: 0.4em 0.7em;
 
-  border-radius: 4px;
+  border-radius: 0.4em;
   border-radius: var(--border-radius);
   border-width: 0;
   background-color: hsl(264, 100%, 64%);

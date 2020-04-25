@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { useContext } from "react";
+import { useContext, CSSProperties } from "react";
 import styles from "./follow-zone.css";
 import { LiveButton, PositionedZone, TrackingEvent } from "../models";
 import { ConfigContext } from "../config";
@@ -14,11 +14,14 @@ export function FollowZone(props: Props) {
   const { item, disabled, onClick } = props;
   const { config } = useContext(ConfigContext);
   const {
-    zoneBorder,
+    zoneBorderColor,
+    zoneBorderStyle,
+    zoneBorderWidth,
     zoneBorderRadius,
     zoneTextColor,
-    dropShadow,
-    hideText,
+    zoneShadowColor,
+    zoneShadowStrength,
+    zoneTextHidden,
   } = config.liveState.styles;
 
   function handleFollow() {
@@ -32,14 +35,22 @@ export function FollowZone(props: Props) {
     );
   }
 
-  const style = {
+  const style: Record<string, string | undefined> = {
     top: item.top + "%",
     left: item.left + "%",
     height: item.height + "%",
     width: item.width + "%",
     borderRadius: zoneBorderRadius || undefined,
-    border: zoneBorder || undefined,
+    borderWidth: `${zoneBorderWidth}px`,
+    borderStyle: zoneBorderStyle,
+    borderColor: zoneBorderColor,
   };
+  if (zoneShadowColor) {
+    style["--shadow-color"] = zoneShadowColor;
+  }
+  if (zoneShadowStrength) {
+    style["--shadow-strength"] = `${zoneShadowStrength}px`;
+  }
 
   const textStyle = {
     color: zoneTextColor || undefined,
@@ -48,8 +59,8 @@ export function FollowZone(props: Props) {
   return (
     <div
       className={classNames(styles.followZone, {
-        [styles.withShadow]: dropShadow,
-        [styles.textOnHover]: !hideText,
+        [styles.withShadow]: !!zoneShadowStrength,
+        [styles.textOnHover]: !zoneTextHidden,
       })}
       style={style}
       onClick={!disabled ? handleFollow : undefined}
