@@ -1,0 +1,7 @@
+.buttonPaddingControl > * {
+  width: 3em;
+  font-size: 12px;
+  display: inline-block;
+  box-sizing: border-box;
+  margin: 0.1em;
+}

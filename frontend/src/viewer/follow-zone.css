@@ -19,6 +19,7 @@
   font-weight: bold;
   --shadow-color: white;
   --shadow-strength: 4px;
+  text-shadow: 0 0 calc(var(--shadow-strength) + 1px) var(--shadow-color);
 }
 
 .text {

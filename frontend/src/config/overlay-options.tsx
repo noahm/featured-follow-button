@@ -4,6 +4,7 @@ import { ConfigContext } from "../config";
 import { FollowZone } from "../viewer/follow-zone";
 import { FollowButton } from "../viewer/follow-button";
 import styles from "./overlay-options.css";
+import { ButtonPaddingControl } from "./button-padding";
 
 export function OverlayOptions() {
   const { config, saveUserStyles } = useContext(ConfigContext);
@@ -216,17 +217,14 @@ export function OverlayOptions() {
           </label>
         </p>
         <p>
-          <label title="Allows up to four values for each side, in clockwise order. Always use EM units!">
-            Button Padding:{" "}
-            <input
-              value={buttonPadding}
-              onChange={(e) => {
-                saveUserStyles({ buttonPadding: e.currentTarget.value });
-              }}
-              placeholder="0.4em 0.7em"
-            />
-          </label>
+          <label>Button Padding:</label>
         </p>
+        <ButtonPaddingControl
+          value={buttonPadding}
+          onChange={(newValue) => {
+            saveUserStyles({ buttonPadding: newValue });
+          }}
+        />
         <p>
           <label title="Available tokens are: HEART, CHANNEL_NAME, CHANNEL_LOGIN">
             Text Template:{" "}
