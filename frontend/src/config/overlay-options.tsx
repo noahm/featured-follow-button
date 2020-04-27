@@ -334,17 +334,22 @@ export function OverlayOptions() {
           }}
         />
         <p>
-          <label title="Available tokens are: HEART, CHANNEL_NAME, CHANNEL_LOGIN">
+          <label>
             Text Template:{" "}
             <input
               value={buttonTemplate}
               onChange={(e) => {
                 saveUserStyles({ buttonTemplate: e.currentTarget.value });
               }}
-              placeholder="HEART Follow CHANNEL_NAME"
             />
           </label>
+          <br />
+          Try things like:
         </p>
+        <ul>
+          <li>HEART Follow CHANNEL_NAME</li>
+          <li>follow /CHANNEL_LOGIN</li>
+        </ul>
       </div>
       <Previews fontFamily={fontFamily} />
     </div>
