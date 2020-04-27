@@ -21,7 +21,10 @@ export function FollowZone(props: Props) {
     zoneTextColor,
     zoneShadowColor,
     zoneShadowStrength,
-    zoneTextHidden,
+    zoneTextVisible,
+    zoneTextWeight,
+    zoneTextAlign,
+    zoneTextSize,
   } = config.liveState.styles;
 
   function handleFollow() {
@@ -44,12 +47,28 @@ export function FollowZone(props: Props) {
     borderWidth: `${zoneBorderWidth}px`,
     borderStyle: zoneBorderStyle,
     borderColor: zoneBorderColor,
+    fontWeight: zoneTextWeight,
+    fontSize: zoneTextSize / 100 + "em",
   };
   if (zoneShadowColor) {
     style["--shadow-color"] = zoneShadowColor;
   }
   if (zoneShadowStrength) {
     style["--shadow-strength"] = `${zoneShadowStrength}px`;
+  }
+  if (zoneTextAlign !== "C") {
+    if (zoneTextAlign.match(/N/)) {
+      style.alignItems = "flex-start";
+    } else if (zoneTextAlign.match(/S/)) {
+      style.alignItems = "flex-end";
+    }
+    if (zoneTextAlign.match(/W/)) {
+      style.textAlign = "left";
+      style.justifyContent = "flex-start";
+    } else if (zoneTextAlign.match(/E/)) {
+      style.textAlign = "right";
+      style.justifyContent = "flex-end";
+    }
   }
 
   const textStyle = {
@@ -60,7 +79,8 @@ export function FollowZone(props: Props) {
     <div
       className={classNames(styles.followZone, {
         [styles.withShadow]: !!zoneShadowStrength,
-        [styles.textOnHover]: !zoneTextHidden,
+        [styles.textOnHover]: zoneTextVisible === "hover",
+        [styles.textAlways]: zoneTextVisible === "always",
       })}
       style={style}
       onClick={!disabled ? handleFollow : undefined}

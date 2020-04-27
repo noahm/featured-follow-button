@@ -1,18 +1,17 @@
 import "../common-styles";
 import jwt from "jsonwebtoken";
 import classNames from "classnames";
-import { Component, CSSProperties } from "react";
+import { Component } from "react";
 import { render } from "react-dom";
 import styles from "./style.css";
 import { Auth } from "../auth";
 import { ConfigProvider, ConfigContext } from "../config";
 import { getAnchorMode, getIsPopout } from "../utils";
-import { FollowZone } from "./follow-zone";
-import { LiveLayoutItem, ChannelData, TrackingEvent } from "../models";
+import { ChannelData, TrackingEvent } from "../models";
 import { FollowList } from "./follow-list";
 import { applyThemeClass, setTransparentBg } from "../common-styles";
 import { hot } from "react-hot-loader/root";
-import { FollowButton } from "./follow-button";
+import { OverlayView } from "./overlay";
 
 const anchorType = getAnchorMode();
 const isPopout = getIsPopout();
@@ -60,42 +59,12 @@ class App extends Component<Props, State> {
     }
 
     return (
-      <main className={styles.overlay}>
-        {this.props.config.liveState.liveItems.map(this.renderItem)}
-      </main>
+      <OverlayView
+        isBroadcaster={this.state.isBroadcaster}
+        liveState={this.props.config.liveState}
+      />
     );
   }
-
-  private renderItem = (item?: LiveLayoutItem) => {
-    const { isBroadcaster } = this.state;
-    const itemsHidden = this.props.config.liveState.hideAll && !isBroadcaster;
-
-    if (itemsHidden || !item || !item.channelName) {
-      return null;
-    }
-
-    if (item.type === "button") {
-      const style: CSSProperties = {
-        top: `${item.top}%`,
-        position: "absolute",
-      };
-      if (item.align === "left") {
-        style.left = `${item.left}%`;
-      } else {
-        style.right = `${100 - item.left}%`;
-      }
-      return (
-        <div style={style} key={item.id + ":" + item.channelName}>
-          <FollowButton
-            channelLogin={item.channelName}
-            channelDisplayName={item.displayName}
-          />
-        </div>
-      );
-    } else if (item.type === "zone") {
-      return <FollowZone key={item.id} item={item} />;
-    }
-  };
 
   private onFollowUiClosed = (didFollow: boolean) => {
     if (didFollow) {

@@ -77,19 +77,20 @@ export interface LiveState {
 }
 
 export interface UserStyles {
+  fontFamily: string;
   zoneBorderWidth: number;
   zoneBorderStyle: string;
   zoneBorderColor: string;
   zoneBorderRadius: string;
   zoneShadowStrength: number;
   zoneShadowColor: string;
-  zoneTextHidden: boolean;
+  zoneTextVisible: "never" | "hover" | "always";
   zoneTextAlign: "NW" | "N" | "NE" | "E" | "SE" | "S" | "SW" | "W" | "C";
   zoneTextColor: string;
   zoneTextSize: number;
   zoneTextWeight: string;
-  customButtonStyle: boolean;
   buttonBaseColor: string;
+  buttonTextSize: number;
   buttonTextColor: string;
   buttonShadowColor: string;
   buttonShadowDirection: "SW" | "SE" | "NW" | "NE" | "";

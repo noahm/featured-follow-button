@@ -11,17 +11,17 @@ interface Props {
   disableEdits?: boolean;
 }
 
-export const FollowList: FC<Props> = props => {
+export const FollowList: FC<Props> = (props) => {
   const [userInfo, setUserInfo] = useState<Record<string, HelixUser>>({});
   const { config, addQuickButton, setLiveItems } = useContext(ConfigContext);
   const channelNames = new Set(
-    config.liveState.liveItems.map(item => item.channelName)
+    config.liveState.liveItems.map((item) => item.channelName)
   );
   useEffect(() => {
     if (!config.liveState.liveItems.length) {
       return;
     }
-    getUserInfo([...channelNames]).then(info => {
+    getUserInfo([...channelNames]).then((info) => {
       const userInfo: Record<string, HelixUser> = {};
       for (const channel of info) {
         if (channel) {
@@ -32,13 +32,17 @@ export const FollowList: FC<Props> = props => {
     });
   }, [Array.from(channelNames).join(":")]);
   const isBroadcaster = Auth.isBroadcaster && !props.disableEdits;
-  const { liveItems: items, listOptions } = config.liveState;
+  const {
+    liveItems: items,
+    listOptions,
+    styles: { fontFamily },
+  } = config.liveState;
 
   return (
-    <div className={styles.followList}>
+    <div className={styles.followList} style={{ fontFamily }}>
       {listOptions.title && <h3>{listOptions.title}</h3>}
       <ul>
-        {items.map(item => {
+        {items.map((item) => {
           return (
             <li key={item.id}>
               <FollowButton
@@ -57,7 +61,7 @@ export const FollowList: FC<Props> = props => {
               {isBroadcaster && (
                 <button
                   onClick={() =>
-                    setLiveItems(items.filter(i => i.id !== item.id))
+                    setLiveItems(items.filter((i) => i.id !== item.id))
                   }
                 >
                   x

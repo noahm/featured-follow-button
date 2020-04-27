@@ -1,25 +1,44 @@
 import * as cn from "classnames";
-import { useContext, useState } from "react";
+import { useContext, useState, Fragment } from "react";
 import { ConfigContext } from "../config";
 import { FollowZone } from "../viewer/follow-zone";
 import { FollowButton } from "../viewer/follow-button";
 import styles from "./overlay-options.css";
 import { ButtonPaddingControl } from "./button-padding";
 
+const fontLibrary: Record<string, string> = {
+  Roobert: "Roobert, Helvetica Neue, Helvetica, Arial, sans-serif",
+  Georgia: "Georgia, serif",
+  Arial: "Arial, Helvetica, sans-serif",
+  "Comic Sans": '"Comic Sans MS", cursive, sans-serif',
+  Console: "Consolas, Courier, monospace",
+  Impact: "Impact, Charcoal, sans-serif",
+  Lucida: '"Lucida Sans Unicode", "Lucida Grande", sans-serif',
+  Palatino: '"Palatino Linotype", "Book Antiqua", Palatino, serif',
+  Tahoma: "Tahoma, Geneva, sans-serif",
+  Times: '"Times New Roman", Times, serif',
+  Trebuchet: '"Trebuchet MS", Helvetica, sans-serif',
+  Verdanda: "Verdanda, Geneva, sans-serif",
+};
+
 export function OverlayOptions() {
   const { config, saveUserStyles } = useContext(ConfigContext);
   const {
+    fontFamily,
     zoneBorderColor,
     zoneBorderStyle,
     zoneBorderWidth,
     zoneBorderRadius,
     zoneTextColor,
+    zoneTextWeight,
+    zoneTextSize,
+    zoneTextAlign,
     zoneShadowStrength,
     zoneShadowColor,
-    zoneTextHidden,
-    customButtonStyle,
+    zoneTextVisible,
     buttonTemplate,
     buttonPadding,
+    buttonTextSize,
     buttonShadowDirection,
     buttonShadowColor,
     buttonTextColor,
@@ -30,6 +49,28 @@ export function OverlayOptions() {
   return (
     <div style={{ display: "flex", flexDirection: "row" }}>
       <div>
+        <h3>General</h3>
+        <p>
+          <label>
+            Font:{" "}
+            <select
+              value={fontFamily}
+              onChange={(e) => {
+                saveUserStyles({ fontFamily: e.currentTarget.value });
+              }}
+            >
+              {Object.keys(fontLibrary).map((name) => (
+                <option
+                  key={name}
+                  style={{ fontFamily: fontLibrary[name] }}
+                  value={fontLibrary[name]}
+                >
+                  {name}
+                </option>
+              ))}
+            </select>
+          </label>
+        </p>
         <h3>Zone Appearance</h3>
         <p>
           Border style:{" "}
@@ -52,11 +93,11 @@ export function OverlayOptions() {
               saveUserStyles({ zoneBorderStyle: e.currentTarget.value });
             }}
           >
-            <option value="solid">solid</option>
-            <option value="dashed">dashed</option>
-            <option value="dotted">dotted</option>
-            <option value="inset">inset</option>
-            <option value="outset">outset</option>
+            <option value="solid">Solid</option>
+            <option value="dashed">Dashed</option>
+            <option value="dotted">Dotted</option>
+            <option value="inset">Inset</option>
+            <option value="outset">Outset</option>
           </select>{" "}
           <input
             value={zoneBorderColor}
@@ -64,7 +105,6 @@ export function OverlayOptions() {
             onChange={(e) => {
               saveUserStyles({ zoneBorderColor: e.currentTarget.value });
             }}
-            placeholder="#778899"
           />
         </p>
         <p>
@@ -81,19 +121,6 @@ export function OverlayOptions() {
                   zoneBorderRadius: `${e.currentTarget.value}%`,
                 });
               }}
-            />
-          </label>
-        </p>
-        <p>
-          <label>
-            Text color:{" "}
-            <input
-              type="color"
-              value={zoneTextColor}
-              onChange={(e) => {
-                saveUserStyles({ zoneTextColor: e.currentTarget.value });
-              }}
-              placeholder="black"
             />
           </label>
         </p>
@@ -119,31 +146,96 @@ export function OverlayOptions() {
             />
           </label>
         </p>
+        <h4>Text</h4>
         <p>
           <label>
-            <input
-              type="checkbox"
-              checked={!zoneTextHidden}
+            Show text:{" "}
+            <select
+              value={zoneTextVisible}
               onChange={(e) => {
-                saveUserStyles({ zoneTextHidden: !e.currentTarget.checked });
+                saveUserStyles({
+                  zoneTextVisible: e.currentTarget
+                    .value as typeof zoneTextVisible,
+                });
               }}
-            />{" "}
-            Show text on hover
+            >
+              <option value="always">Always</option>
+              <option value="hover">On Hover</option>
+              <option value="never">Never</option>
+            </select>
           </label>
         </p>
+        {zoneTextVisible !== "never" && (
+          <Fragment>
+            <p>
+              <label>
+                Text color:{" "}
+                <input
+                  type="color"
+                  value={zoneTextColor}
+                  onChange={(e) => {
+                    saveUserStyles({ zoneTextColor: e.currentTarget.value });
+                  }}
+                />
+              </label>
+            </p>
+            <p>
+              <label>
+                Text size:{" "}
+                <input
+                  type="number"
+                  min="0"
+                  max="1000"
+                  value={zoneTextSize}
+                  onChange={(e) => {
+                    saveUserStyles({ zoneTextSize: +e.currentTarget.value });
+                  }}
+                />
+                %
+              </label>
+            </p>
+            <p>
+              <label>
+                Text weight:{" "}
+                <select
+                  value={zoneTextWeight}
+                  onChange={(e) => {
+                    saveUserStyles({ zoneTextWeight: e.currentTarget.value });
+                  }}
+                >
+                  <option value="normal">Normal</option>
+                  <option value="bold">Bold</option>
+                </select>
+              </label>
+            </p>
+            <p>
+              <label>
+                Text alignment:{" "}
+                <select
+                  value={zoneTextAlign}
+                  onChange={(e) => {
+                    saveUserStyles({
+                      zoneTextAlign: e.currentTarget
+                        .value as typeof zoneTextAlign,
+                    });
+                  }}
+                >
+                  <option value="C">Center</option>
+                  <option value="NW">NW</option>
+                  <option value="N">N</option>
+                  <option value="NE">NE</option>
+                  <option value="E">E</option>
+                  <option value="SE">SE</option>
+                  <option value="S">S</option>
+                  <option value="SW">SW</option>
+                  <option value="W">W</option>
+                </select>
+              </label>
+            </p>
+          </Fragment>
+        )}
+
         <h3>Button Appearance</h3>
-        <p>
-          <label>
-            <input
-              type="checkbox"
-              checked={customButtonStyle}
-              onChange={(e) => {
-                saveUserStyles({ customButtonStyle: e.currentTarget.checked });
-              }}
-            />{" "}
-            Use custom button style
-          </label>
-        </p>
         <p>
           <label>
             Base Color:{" "}
@@ -170,14 +262,17 @@ export function OverlayOptions() {
         </p>
         <p>
           <label>
-            Shadow Color:{" "}
+            Text size:{" "}
             <input
-              type="color"
-              value={buttonShadowColor}
+              type="number"
+              min="0"
+              max="1000"
+              value={buttonTextSize}
               onChange={(e) => {
-                saveUserStyles({ buttonShadowColor: e.currentTarget.value });
+                saveUserStyles({ buttonTextSize: +e.currentTarget.value });
               }}
             />
+            %
           </label>
         </p>
         <p>
@@ -201,7 +296,20 @@ export function OverlayOptions() {
         </p>
         <p>
           <label>
-            Border Radius:{" "}
+            Shadow Color:{" "}
+            <input
+              type="color"
+              value={buttonShadowColor}
+              onChange={(e) => {
+                saveUserStyles({ buttonShadowColor: e.currentTarget.value });
+              }}
+            />
+          </label>
+        </p>
+        <p>
+          <label>
+            Border Radius:
+            <br />
             <input
               type="range"
               step="0.1"
@@ -238,12 +346,12 @@ export function OverlayOptions() {
           </label>
         </p>
       </div>
-      <Previews />
+      <Previews fontFamily={fontFamily} />
     </div>
   );
 }
 
-function Previews() {
+function Previews({ fontFamily }: { fontFamily: string }) {
   const [bgClass, setBackgroundClass] = useState("custom");
   const [bgColor, setBgColor] = useState("#000000");
   return (
@@ -265,7 +373,7 @@ function Previews() {
         onChange={(e) => setBgColor(e.currentTarget.value)}
       />
       <div
-        style={{ backgroundColor: bgColor }}
+        style={{ backgroundColor: bgColor, fontFamily }}
         className={cn(styles.squarePreview, {
           [styles.rainbowBg]: bgClass === "rainbow",
         })}
@@ -273,7 +381,7 @@ function Previews() {
         <FollowZone
           disabled
           item={{
-            channelName: "ChannelName",
+            channelName: "Twitch",
             id: "",
             type: "zone",
             left: 10,
@@ -284,7 +392,7 @@ function Previews() {
         />
       </div>
       <div
-        style={{ backgroundColor: bgColor }}
+        style={{ backgroundColor: bgColor, fontFamily }}
         className={cn(styles.squarePreview, styles.buttonPreview, {
           [styles.rainbowBg]: bgClass === "rainbow",
         })}

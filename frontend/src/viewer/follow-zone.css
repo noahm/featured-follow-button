@@ -15,9 +15,9 @@
   font-size: 1em;
   font-weight: bold;
   box-sizing: border-box;
-  color: black;
+  color: white;
   font-weight: bold;
-  --shadow-color: white;
+  --shadow-color: black;
   --shadow-strength: 4px;
   text-shadow: 0 0 calc(var(--shadow-strength) + 1px) var(--shadow-color);
 }
@@ -38,5 +38,9 @@
 }
 
 .followZone.textOnHover:hover .text {
+  opacity: 0.9;
+}
+
+.followZone.textAlways .text {
   opacity: 0.9;
 }

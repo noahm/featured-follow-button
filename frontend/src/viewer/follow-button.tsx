@@ -71,7 +71,7 @@ export function FollowButton(props: FBProps) {
     );
   };
 
-  const useTheme = !disableTheme && userStyles.customButtonStyle;
+  const useTheme = !disableTheme;
 
   const template =
     props.forceTemplate ||
@@ -97,6 +97,7 @@ export function FollowButton(props: FBProps) {
     style["--shadow-color"] = userStyles.buttonShadowColor;
     style["--text-color"] = userStyles.buttonTextColor;
     style["--text-padding"] = userStyles.buttonPadding;
+    style.fontSize = userStyles.buttonTextSize / 100 + "em";
   }
 
   return (
