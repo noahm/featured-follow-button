@@ -370,14 +370,9 @@ export class ConfigProvider extends Component<{}, ConfigState> {
           delete ret.liveState.componentHeader;
         }
 
-        if (!ret.liveState.styles) {
+        // Second condition is to replace old test versions of styles
+        if (!ret.liveState.styles || !ret.liveState.styles.fontFamily) {
           ret.liveState.styles = defaultConfig.liveState.styles;
-        } else {
-          // fill in possibly missing style values
-          ret.liveState.styles = {
-            ...defaultConfig.liveState.styles,
-            ...ret.liveState.styles,
-          };
         }
       }
     } finally {
