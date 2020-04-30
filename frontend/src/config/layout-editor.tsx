@@ -8,6 +8,7 @@ import { ConfigState } from "../config";
 import { getRandomID } from "../utils";
 import { LayoutItem } from "../models";
 import { Auth } from "../auth";
+import { AsyncButton } from "../common/async-button";
 
 const startingCharCode = "A".charCodeAt(0);
 
@@ -21,7 +22,7 @@ interface State {
 
 function liveThumbnail(channel: string, height = 480) {
   const width = Math.round((height * 16) / 9);
-  return `https://static-cdn.jtvnw.net/previews-ttv/live_user_${channel.toLowerCase()}-${width}x${height}.jpg`;
+  return `https://static-cdn.jtvnw.net/previews-ttv/live_user_${channel.toLowerCase()}-${width}x${height}.jpg?t=${Date.now()}`;
 }
 
 export class LayoutEditor extends Component<Props, State> {
@@ -29,20 +30,8 @@ export class LayoutEditor extends Component<Props, State> {
     background: undefined,
   };
 
-  private getLayout(props = this.props) {
-    return props.config.config.settings.configuredLayouts[0];
-  }
-
   componentDidMount() {
-    Auth.authAvailable
-      .then(() => fetch(liveThumbnail(Auth.userLogin!, 1080)))
-      .then((resp) => {
-        if (resp.url.match(/previews-ttv/)) {
-          this.setState({
-            background: resp.url,
-          });
-        }
-      });
+    Auth.authAvailable.then(this.refreshBackground);
   }
 
   render() {
@@ -80,6 +69,14 @@ export class LayoutEditor extends Component<Props, State> {
                 );
               })}
             </select>
+          </section>
+          <section>
+            <AsyncButton
+              onClick={this.refreshBackground}
+              title="Try to grab an updated thumbnail from your live stream. (Twitch updates these every ~5min)"
+            >
+              Refresh Background
+            </AsyncButton>
           </section>
         </div>
         <Dropzone
@@ -139,6 +136,22 @@ export class LayoutEditor extends Component<Props, State> {
       </div>
     );
   }
+
+  private getLayout(props = this.props) {
+    return props.config.config.settings.configuredLayouts[0];
+  }
+
+  private refreshBackground = async () => {
+    if (!Auth.userLogin) {
+      return;
+    }
+    const resp = await fetch(liveThumbnail(Auth.userLogin, 1080));
+    if (resp?.url?.match(/previews-ttv/)) {
+      this.setState({
+        background: resp.url,
+      });
+    }
+  };
 
   private addButton = () => {
     this.addItem({
