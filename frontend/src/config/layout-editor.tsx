@@ -49,8 +49,11 @@ export class LayoutEditor extends Component<Props, State> {
         </p>
         <p>
           Buttons will grow in length as longer channel names are used, but you
-          can control the direction they grow in. Right click to toggle whether
-          buttons are positioned by their left or right edge.
+          can control the direction they grow in.{" "}
+          <strong>
+            Right click to toggle whether buttons are positioned by their left
+            or right edge.
+          </strong>
         </p>
         <div className={styles.toolbar}>
           <section>
