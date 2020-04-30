@@ -21,7 +21,8 @@ export class Status extends Component<Props> {
     }
     return (
       <div className={style.Status}>
-        {statusLine} {channelName && <button onClick={onClear}>Clear</button>}
+        {statusLine}{" "}
+        {channelName && <button onClick={onClear}>Deactivate</button>}
       </div>
     );
   }

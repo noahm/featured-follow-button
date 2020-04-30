@@ -97,7 +97,7 @@ export class LiveConfig extends Component<Props, State> {
             })}
           </select>
           {liveItem.channelName && (
-            <button onClick={this.clearChannel}>Clear</button>
+            <button onClick={this.clearChannel}>Deactivate</button>
           )}
         </div>
       );
