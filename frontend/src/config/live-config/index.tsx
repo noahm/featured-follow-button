@@ -20,14 +20,14 @@ interface State {
 
 export class LiveConfig extends Component<Props, State> {
   state: State = {
-    editingPosition: 0
+    editingPosition: 0,
   };
 
   componentDidUpdate() {
     const layout = this.props.config.config.settings.configuredLayouts[0];
     if (this.state.editingPosition >= layout.positions.length) {
       this.setState({
-        editingPosition: layout.positions.length - 1
+        editingPosition: layout.positions.length - 1,
       });
     }
   }
@@ -71,7 +71,7 @@ export class LiveConfig extends Component<Props, State> {
     const layoutItem = this.getLayoutItem();
     const liveItem: Partial<LiveLayoutItem> =
       (layoutItem &&
-        this.getLiveItems().find(item => item.id === layoutItem.id)) ||
+        this.getLiveItems().find((item) => item.id === layoutItem.id)) ||
       {};
     const layout = this.getLayout();
 
@@ -80,13 +80,14 @@ export class LiveConfig extends Component<Props, State> {
         <div className={styles.slotSelect}>
           Editing position: <br />
           <select
+            size={layout.positions.length}
             value={this.state.editingPosition}
             onChange={this.updateEditingPosition}
           >
             {layout.positions.map((layoutPosition, i) => {
               const label = String.fromCharCode(startingCharCode + i);
               const channel = this.getLiveItems().find(
-                liveItem => layoutPosition.id === liveItem.id
+                (liveItem) => layoutPosition.id === liveItem.id
               );
               return (
                 <option key={layoutPosition.id} value={i}>
@@ -96,6 +97,7 @@ export class LiveConfig extends Component<Props, State> {
               );
             })}
           </select>
+          <br />
           {liveItem.channelName && (
             <button onClick={this.clearChannel}>Deactivate</button>
           )}
@@ -116,7 +118,7 @@ export class LiveConfig extends Component<Props, State> {
     const newPosition = +e.currentTarget.value;
     if (Number.isInteger(newPosition)) {
       this.setState({
-        editingPosition: newPosition
+        editingPosition: newPosition,
       });
     }
   };
@@ -136,12 +138,12 @@ export class LiveConfig extends Component<Props, State> {
     const layoutItem = this.getLayoutItem();
     const liveItem = {
       ...layoutItem,
-      ...liveInfo
+      ...liveInfo,
     };
 
     const liveItems = this.getLiveItems().slice();
     const editIndex = liveItems.findIndex(
-      existingItem => existingItem.id === liveItem.id
+      (existingItem) => existingItem.id === liveItem.id
     );
     if (editIndex >= 0) {
       liveItems[editIndex] = liveItem;
@@ -155,7 +157,7 @@ export class LiveConfig extends Component<Props, State> {
   clearChannel = () => {
     const layoutItem = this.getLayout().positions[this.state.editingPosition];
     const liveItems = this.getLiveItems().filter(
-      item => item.id !== layoutItem.id
+      (item) => item.id !== layoutItem.id
     );
     this.props.config.setLiveItems(liveItems);
   };
