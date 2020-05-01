@@ -350,8 +350,9 @@ export function OverlayOptions() {
         />
         <p>
           <label>
-            Text Template:{" "}
+            Text Template: <br />
             <input
+              size={40}
               value={buttonTemplate}
               onChange={(e) => {
                 saveUserStyles({ buttonTemplate: e.currentTarget.value });
@@ -359,8 +360,10 @@ export function OverlayOptions() {
             />
           </label>
           <br />
-          Try things like:
+          <code>HEART</code>, <code>CHANNEL_NAME</code>, and{" "}
+          <code>CHANNEL_LOGIN</code> are special values.
         </p>
+        <p>Try combinations like:</p>
         <ul>
           <li>HEART Follow CHANNEL_NAME</li>
           <li>follow /CHANNEL_LOGIN</li>

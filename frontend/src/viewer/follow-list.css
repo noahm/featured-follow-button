@@ -9,7 +9,7 @@
   text-align: center;
 }
 
-ul {
+.followList ul {
   flex: 1 1 auto;
   list-style: none;
   margin: 0;
