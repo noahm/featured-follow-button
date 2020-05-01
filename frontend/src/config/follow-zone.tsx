@@ -1,10 +1,5 @@
 import cn from "classnames";
-import {
-  Component,
-  CSSProperties,
-  createRef,
-  MouseEvent as ReactMouseEvent,
-} from "react";
+import { Component, createRef, MouseEvent as ReactMouseEvent } from "react";
 import styles from "./follow-zone.css";
 import { PositionedZone, UserStyles } from "../models";
 import { clamp, getZoneStyles } from "../utils";

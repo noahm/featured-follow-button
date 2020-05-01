@@ -38,6 +38,17 @@ svg {
   margin: 0;
   padding: 0;
   outline: 0px solid var(--bg-color);
+  transform-origin: center;
+  transform: scale(1);
+  transition: transform 0.1s ease-out;
+}
+
+.button:hover {
+  transform: scale(1.05);
+}
+
+.button:active {
+  transform: scale(1);
 }
 
 .button.shadow-SE {
@@ -67,18 +78,6 @@ svg {
   padding: 0.4em 0.7em;
   padding: var(--text-padding);
   text-align: center;
-}
-
-.button:hover:not(.custom) {
-  background-color: hsl(264, 80%, 54%);
-}
-
-.button:focus:not(.custom) {
-  background-color: hsl(264, 80%, 54%);
-}
-
-.button:active:not(.custom) {
-  background-color: hsl(264, 80%, 43%);
 }
 
 .button.shadow-SE:hover:not(:active) {
