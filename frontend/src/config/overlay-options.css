@@ -8,10 +8,19 @@
   }
 }
 
+.options {
+  display: flex;
+  flex-direction: row;
+}
+
+.options h3:not(:first-child) {
+  margin-top: 3em;
+}
+
 .previews {
   margin: 2rem;
   position: fixed;
-  right: 6em;
+  left: 22em;
 }
 
 .squarePreview {

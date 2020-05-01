@@ -18,6 +18,7 @@ export function FollowZone(props: Props) {
     zoneBorderStyle,
     zoneBorderWidth,
     zoneBorderRadius,
+    zoneBorderVisible,
     zoneTextColor,
     zoneShadowColor,
     zoneShadowStrength,
@@ -46,16 +47,12 @@ export function FollowZone(props: Props) {
     borderRadius: zoneBorderRadius || undefined,
     borderWidth: `${zoneBorderWidth}px`,
     borderStyle: zoneBorderStyle,
-    borderColor: zoneBorderColor,
     fontWeight: zoneTextWeight,
     fontSize: zoneTextSize / 100 + "em",
+    "--border-color": zoneBorderColor,
+    "--shadow-color": zoneShadowColor,
+    "--shadow-strength": `${zoneShadowStrength}px`,
   };
-  if (zoneShadowColor) {
-    style["--shadow-color"] = zoneShadowColor;
-  }
-  if (zoneShadowStrength) {
-    style["--shadow-strength"] = `${zoneShadowStrength}px`;
-  }
   if (zoneTextAlign !== "C") {
     if (zoneTextAlign.match(/N/)) {
       style.alignItems = "flex-start";
@@ -81,6 +78,8 @@ export function FollowZone(props: Props) {
         [styles.withShadow]: !!zoneShadowStrength,
         [styles.textOnHover]: zoneTextVisible === "hover",
         [styles.textAlways]: zoneTextVisible === "always",
+        [styles.borderOnHover]: zoneBorderVisible === "hover",
+        [styles.borderAlways]: zoneBorderVisible === "always",
       })}
       style={style}
       onClick={!disabled ? handleFollow : undefined}

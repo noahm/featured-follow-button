@@ -84,6 +84,7 @@ export interface UserStyles {
   zoneBorderRadius: string;
   zoneShadowStrength: number;
   zoneShadowColor: string;
+  zoneBorderVisible: "never" | "hover" | "always";
   zoneTextVisible: "never" | "hover" | "always";
   zoneTextAlign: "NW" | "N" | "NE" | "E" | "SE" | "S" | "SW" | "W" | "C";
   zoneTextColor: string;

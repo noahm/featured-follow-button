@@ -29,6 +29,7 @@ export function OverlayOptions() {
     zoneBorderStyle,
     zoneBorderWidth,
     zoneBorderRadius,
+    zoneBorderVisible,
     zoneTextColor,
     zoneTextWeight,
     zoneTextSize,
@@ -47,7 +48,7 @@ export function OverlayOptions() {
   } = config.liveState.styles;
 
   return (
-    <div style={{ display: "flex", flexDirection: "row" }}>
+    <div className={styles.options}>
       <div>
         <h3>General</h3>
         <p>
@@ -73,11 +74,25 @@ export function OverlayOptions() {
         </p>
         <h3>Zone Appearance</h3>
         <p>
-          Border style:{" "}
-          <code>
-            {zoneBorderWidth}px {zoneBorderStyle} {zoneBorderColor}
-          </code>
-          <br />
+          <label>
+            Show border:{" "}
+            <select
+              value={zoneBorderVisible}
+              onChange={(e) => {
+                saveUserStyles({
+                  zoneBorderVisible: e.currentTarget
+                    .value as typeof zoneTextVisible,
+                });
+              }}
+            >
+              <option value="always">Always</option>
+              <option value="hover">On Hover</option>
+              <option value="never">Never</option>
+            </select>
+          </label>
+        </p>
+        <p>
+          Border style: <br />
           <input
             value={zoneBorderWidth}
             type="range"

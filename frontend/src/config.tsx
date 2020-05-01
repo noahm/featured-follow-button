@@ -28,6 +28,7 @@ const defaultConfig: ChannelData = {
       zoneTextColor: "#ffffff",
       zoneShadowStrength: 0,
       zoneShadowColor: "#000000",
+      zoneBorderVisible: "always",
       zoneTextVisible: "hover",
       zoneTextAlign: "C",
       zoneTextSize: 100,

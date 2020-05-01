@@ -8,7 +8,7 @@
   text-align: center;
   border-width: 2px;
   border-style: dashed;
-  border-color: #778899;
+  border-color: transparent;
   border-radius: 2px;
   user-select: none;
   padding: 0.5em;
@@ -19,11 +19,18 @@
   font-weight: bold;
   --shadow-color: black;
   --shadow-strength: 4px;
+  --border-color: #778899;
   text-shadow: 0 0 calc(var(--shadow-strength) + 1px) var(--shadow-color);
 }
 
 .text {
   opacity: 0;
+}
+
+.borderAlways,
+.borderOnHover:hover {
+  border-color: #778899;
+  border-color: var(--border-color);
 }
 
 .withShadow {
@@ -33,7 +40,6 @@
 
 .followZone:hover {
   opacity: 0.9;
-  border-color: darkslategray;
   background-color: rgba(128, 128, 128, 0.2);
 }
 
