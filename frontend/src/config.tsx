@@ -91,6 +91,11 @@ export interface ConfigState {
    */
   saveUserStyles(opts: Partial<UserStyles>): void;
   /**
+   * Resets user styles to the defaults.
+   * Does not save or publish
+   */
+  resetUserStyles(): void;
+  /**
    * Save and publish any unsaved changes in state.
    */
   saveAndPublish(): void;
@@ -107,6 +112,7 @@ export const ConfigContext = createContext<ConfigState>({
   saveFavorites: () => null,
   saveListOptions: () => null,
   saveUserStyles: () => null,
+  resetUserStyles: () => null,
   saveAndPublish: () => null,
 });
 
@@ -253,6 +259,17 @@ export class ConfigProvider extends Component<{}, ConfigState> {
           prevState.config,
           (c) => c.liveState.styles,
           (styles) => ({ ...styles, ...opts })
+        ),
+      }));
+    },
+
+    resetUserStyles: () => {
+      this.setState((prevState) => ({
+        unpublished: true,
+        config: iassign(
+          prevState.config,
+          (c) => c.liveState.styles,
+          () => defaultConfig.liveState.styles
         ),
       }));
     },

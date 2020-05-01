@@ -22,7 +22,7 @@ const fontLibrary: Record<string, string> = {
 };
 
 export function OverlayOptions() {
-  const { config, saveUserStyles } = useContext(ConfigContext);
+  const { config, saveUserStyles, resetUserStyles } = useContext(ConfigContext);
   const {
     fontFamily,
     zoneBorderColor,
@@ -71,6 +71,9 @@ export function OverlayOptions() {
               ))}
             </select>
           </label>
+        </p>
+        <p>
+          <button onClick={resetUserStyles}>Reset all to defaults</button>
         </p>
         <h3>Zone Appearance</h3>
         <p>
