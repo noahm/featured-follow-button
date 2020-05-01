@@ -1,6 +1,6 @@
 import "regenerator-runtime/runtime";
 import { parse, stringify } from "querystringify";
-import { Layout } from "./models";
+import { Layout, UserStyles } from "./models";
 import { Auth } from "./auth";
 
 /**
@@ -30,6 +30,69 @@ export function getRandomID() {
     return ("00000000" + id).slice(-8);
   }
   return id;
+}
+
+/**
+ * Clamp a value between a lower-bound and upper-bound
+ */
+export function clamp(lb: number, n: number, ub: number) {
+  return Math.min(Math.max(lb, n), ub);
+}
+
+interface Position {
+  top: number;
+  left: number;
+  height: number;
+  width: number;
+}
+
+export function getZoneStyles(position: Position, styles: UserStyles) {
+  const {
+    zoneBorderColor,
+    zoneBorderRadius,
+    zoneBorderWidth,
+    zoneBorderStyle,
+    zoneTextWeight,
+    zoneTextSize,
+    zoneShadowColor,
+    zoneShadowStrength,
+    zoneTextAlign,
+    zoneTextColor,
+    zoneBorderVisible,
+  } = styles;
+  const style: Record<string, string | undefined> = {
+    top: position.top + "%",
+    left: position.left + "%",
+    height: position.height + "%",
+    width: position.width + "%",
+    borderRadius: zoneBorderRadius || undefined,
+    borderWidth: `${zoneBorderWidth}px`,
+    borderStyle: zoneBorderStyle,
+    fontWeight: zoneTextWeight,
+    fontSize: zoneTextSize / 100 + "em",
+    color: zoneTextColor,
+    "--border-color": zoneBorderColor,
+    "--shadow-color": zoneShadowColor,
+    "--shadow-strength": `${zoneShadowStrength}px`,
+  };
+  if (zoneBorderVisible === "never") {
+    style.borderColor = "transparent";
+  }
+  if (zoneTextAlign !== "C") {
+    if (zoneTextAlign.match(/N/)) {
+      style.alignItems = "flex-start";
+    } else if (zoneTextAlign.match(/S/)) {
+      style.alignItems = "flex-end";
+    }
+    if (zoneTextAlign.match(/W/)) {
+      style.textAlign = "left";
+      style.justifyContent = "flex-start";
+    } else if (zoneTextAlign.match(/E/)) {
+      style.textAlign = "right";
+      style.justifyContent = "flex-end";
+    }
+  }
+  return style;
 }
 
 export function getAnchorMode():

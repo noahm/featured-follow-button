@@ -24,14 +24,34 @@
 
 .resizeHandle {
   position: absolute;
+  height: 10px;
+  width: 10px;
+  border-style: solid;
+  border-color: white;
+}
+.se {
   bottom: -2px;
   right: -2px;
   border-width: 0 3px 3px 0;
-  border-style: solid;
-  border-color: white;
   cursor: nwse-resize;
-  height: 10px;
-  width: 10px;
+}
+.sw {
+  bottom: -2px;
+  left: -2px;
+  border-width: 0 0 3px 3px;
+  cursor: nesw-resize;
+}
+.ne {
+  top: -2px;
+  right: -2px;
+  border-width: 3px 3px 0 0;
+  cursor: nesw-resize;
+}
+.nw {
+  top: -2px;
+  left: -2px;
+  border-width: 3px 0 0 3px;
+  cursor: nwse-resize;
 }
 
 .followZone:hover .resizeHandle {

@@ -127,6 +127,7 @@ export class LayoutEditor extends Component<Props, State> {
                       onChange={this.updateItem}
                       defaultPosition={defaultPosition}
                       defaultSize={defaultSize}
+                      styles={this.props.config.config.liveState.styles}
                     >
                       {label}
                     </FollowZone>

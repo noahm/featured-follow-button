@@ -8,6 +8,7 @@ import {
 import styles from "./draggable-button.css";
 import { PositionedButton } from "../models";
 import { FollowButton } from "../viewer/follow-button";
+import { clamp } from "../utils";
 
 interface Props {
   item: PositionedButton;
@@ -24,10 +25,6 @@ interface State {
   left: number;
   align: "right" | "left";
   dragging: boolean;
-}
-
-function clamp(lb: number, n: number, ub: number) {
-  return Math.min(Math.max(lb, n), ub);
 }
 
 export class DraggableButton extends Component<Props, State> {

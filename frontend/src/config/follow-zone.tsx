@@ -1,12 +1,13 @@
-import classNames from "classnames";
+import cn from "classnames";
 import {
   Component,
   CSSProperties,
   createRef,
-  MouseEvent as ReactMouseEvent
+  MouseEvent as ReactMouseEvent,
 } from "react";
 import styles from "./follow-zone.css";
-import { PositionedZone } from "../models";
+import { PositionedZone, UserStyles } from "../models";
+import { clamp, getZoneStyles } from "../utils";
 
 interface Props {
   item: PositionedZone;
@@ -19,6 +20,7 @@ interface Props {
     width: number;
   };
   onChange: (item: PositionedZone) => void;
+  styles: UserStyles;
 }
 
 interface State {
@@ -35,9 +37,9 @@ export class FollowZone extends Component<Props, State> {
     width: this.props.defaultSize ? this.props.defaultSize.width : 25,
     top: this.props.defaultPosition ? this.props.defaultPosition.top : 50,
     left: this.props.defaultPosition ? this.props.defaultPosition.left : 50,
-    dragging: false
+    dragging: false,
   };
-  root = createRef<HTMLDivElement>();
+  private root = createRef<HTMLDivElement>();
 
   componentDidUpdate(pProps: Props, pState: State) {
     if (pState !== this.state && !this.state.dragging) {
@@ -46,34 +48,48 @@ export class FollowZone extends Component<Props, State> {
         height: this.state.height,
         width: this.state.width,
         top: this.state.top,
-        left: this.state.left
+        left: this.state.left,
       });
     }
   }
 
   render() {
-    const style: CSSProperties = {
-      top: `${this.state.top}%`,
-      left: `${this.state.left}%`,
-      height: `${this.state.height}%`,
-      width: `${this.state.width}%`
-    };
+    const style = getZoneStyles(this.state, this.props.styles);
     return (
       <div
-        className={classNames(styles.followZone, {
-          [styles.dragging]: this.state.dragging
+        className={cn(styles.followZone, {
+          [styles.dragging]: this.state.dragging,
         })}
         style={style}
         ref={this.root}
         onMouseDown={this.onMoveStart}
       >
-        Follow {this.props.children}
-        <div className={styles.resizeHandle} onMouseDown={this.onResizeStart} />
+        <span style={{ opacity: 0.9 }}>zone {this.props.children}</span>
+        <div
+          className={cn(styles.resizeHandle, styles.se)}
+          data-dir="se"
+          onMouseDown={this.onResizeStart}
+        />
+        <div
+          className={cn(styles.resizeHandle, styles.sw)}
+          data-dir="sw"
+          onMouseDown={this.onResizeStart}
+        />
+        <div
+          className={cn(styles.resizeHandle, styles.ne)}
+          data-dir="ne"
+          onMouseDown={this.onResizeStart}
+        />
+        <div
+          className={cn(styles.resizeHandle, styles.nw)}
+          data-dir="nw"
+          onMouseDown={this.onResizeStart}
+        />
       </div>
     );
   }
 
-  dragGrabLocation = {
+  private dragGrabLocation = {
     /**
      * x position within the button the cursor grabbed at
      */
@@ -83,10 +99,10 @@ export class FollowZone extends Component<Props, State> {
      */
     y: 0,
     top: this.state.top,
-    left: this.state.left
+    left: this.state.left,
   };
 
-  onMoveStart = (e: ReactMouseEvent) => {
+  private onMoveStart = (e: ReactMouseEvent) => {
     this.root.current!.parentElement!.addEventListener(
       "mousemove",
       this.onDragMove
@@ -96,37 +112,33 @@ export class FollowZone extends Component<Props, State> {
       x: e.clientX,
       y: e.clientY,
       top: this.state.top,
-      left: this.state.left
+      left: this.state.left,
     };
     this.setState({ dragging: true });
   };
 
-  onDragMove = (e: MouseEvent) => {
+  private onDragMove = (e: MouseEvent) => {
     const parentElement = this.root.current!.parentElement!;
     const parent = parentElement.getBoundingClientRect();
     const deltaX = e.clientX - this.dragGrabLocation.x;
     const deltaY = e.clientY - this.dragGrabLocation.y;
-    const newLeft = Math.max(
-      Math.min(
-        100 - this.state.width,
-        (deltaX / parent.width) * 100 + this.dragGrabLocation.left
-      ),
-      0
+    const newLeft = clamp(
+      0,
+      (deltaX / parent.width) * 100 + this.dragGrabLocation.left,
+      100 - this.state.width
     );
-    const newTop = Math.max(
-      Math.min(
-        100 - this.state.height,
-        (deltaY / parent.height) * 100 + this.dragGrabLocation.top
-      ),
-      0
+    const newTop = clamp(
+      0,
+      (deltaY / parent.height) * 100 + this.dragGrabLocation.top,
+      100 - this.state.height
     );
     this.setState({
       top: newTop,
-      left: newLeft
+      left: newLeft,
     });
   };
 
-  endMove = () => {
+  private endMove = () => {
     this.root.current!.parentElement!.removeEventListener(
       "mousemove",
       this.onDragMove
@@ -135,46 +147,73 @@ export class FollowZone extends Component<Props, State> {
     this.setState({ dragging: false });
   };
 
-  onResizeStart = (e: ReactMouseEvent) => {
-    this.root.current!.parentElement!.addEventListener(
-      "mousemove",
-      this.onDragResize
+  onResizeStart = (e: ReactMouseEvent<HTMLDivElement>) => {
+    const dir = e.currentTarget.dataset["dir"]!;
+    const xIsWidth = !!dir.match(/e/);
+    const yIsHeight = !!dir.match(/s/);
+    const boundResizeHandler = this.onDragResize.bind(
+      this,
+      xIsWidth,
+      yIsHeight
     );
-    document.addEventListener("mouseup", this.endDrag);
+    const parent = this.root.current!.parentElement!;
+    parent.addEventListener("mousemove", boundResizeHandler);
+    function endResize() {
+      parent.removeEventListener("mousemove", boundResizeHandler);
+      document.removeEventListener("mouseup", endResize);
+    }
+    document.addEventListener("mouseup", endResize);
     e.stopPropagation();
   };
 
-  onDragResize = (e: MouseEvent) => {
+  private onDragResize = (
+    xIsWidth: boolean,
+    yIsHeight: boolean,
+    e: MouseEvent
+  ) => {
     const parentElement = this.root.current!.parentElement!;
     const parent = parentElement.getBoundingClientRect();
+    // position of cursor, in px, within the layout bounding box
     const domainX = e.clientX - parent.left;
     const domainY = e.clientY - parent.top;
-    const newWidth = Math.max(
-      Math.min(
-        100 - this.state.left,
-        (domainX / parent.width) * 100 - this.state.left
-      ),
-      5
-    );
-    const newHeight = Math.max(
-      Math.min(
-        100 - this.state.top,
-        (domainY / parent.height) * 100 - this.state.top
-      ),
-      5
-    );
-    // console.log({ newWidth, newHeight });
-    this.setState({
-      height: newHeight,
-      width: newWidth
-    });
-  };
+    // position of cursor in percentage from top left corner of bounding box
+    const pctX = (domainX / parent.width) * 100;
+    const pctY = (domainY / parent.height) * 100;
 
-  endDrag = () => {
-    this.root.current!.parentElement!.removeEventListener(
-      "mousemove",
-      this.onDragResize
+    const newX = clamp(
+      5,
+      xIsWidth ? pctX - this.state.left : pctX,
+      xIsWidth ? 100 - this.state.left : this.state.width + this.state.left
     );
-    document.removeEventListener("mouseup", this.endDrag);
+    const newY = clamp(
+      5,
+      yIsHeight ? pctY - this.state.top : pctY,
+      yIsHeight ? 100 - this.state.top : this.state.height + this.state.top
+    );
+
+    const newState: Partial<State> = {};
+    newState[yIsHeight ? "height" : "top"] = newY;
+    if (yIsHeight) {
+      newState.height = newY;
+    } else {
+      newState.top = newY;
+      newState.height = clamp(
+        0,
+        this.state.height - (newY - this.state.top),
+        100 - newY
+      );
+    }
+    if (xIsWidth) {
+      newState.width = newX;
+    } else {
+      newState.left = newX;
+      newState.width = clamp(
+        0,
+        this.state.width - (newX - this.state.left),
+        100 - newX
+      );
+    }
+    // @ts-ignore
+    this.setState(newState);
   };
 }

@@ -161,7 +161,7 @@ export function OverlayOptions() {
             />
           </label>
         </p>
-        <h4>Text</h4>
+        <h4>Zone Text</h4>
         <p>
           <label>
             Show text:{" "}
