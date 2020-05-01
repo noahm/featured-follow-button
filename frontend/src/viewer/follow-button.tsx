@@ -76,14 +76,14 @@ export function FollowButton(props: FBProps) {
   const template =
     props.forceTemplate ||
     (useTheme && userStyles.buttonTemplate) ||
-    "HEART Follow CHANNEL_NAME";
+    "HEART Follow DISPLAYNAME";
   const contents = tokenizeTemplate(template).map((token, index) => {
     switch (token) {
       case "HEART":
         return <Heart key={index} />;
-      case "CHANNEL_NAME":
+      case "DISPLAYNAME":
         return props.channelDisplayName || props.channelLogin;
-      case "CHANNEL_LOGIN":
+      case "USERNAME":
         return props.channelLogin;
       default:
         return token;

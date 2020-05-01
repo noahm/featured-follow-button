@@ -363,13 +363,13 @@ export function OverlayOptions() {
             />
           </label>
           <br />
-          <code>HEART</code>, <code>CHANNEL_NAME</code>, and{" "}
-          <code>CHANNEL_LOGIN</code> are special values.
+          <code>HEART</code>, <code>USERNAME</code>, and{" "}
+          <code>DISPLAYNAME</code> are special values.
         </p>
         <p>Try combinations like:</p>
         <ul>
-          <li>HEART Follow CHANNEL_NAME</li>
-          <li>follow /CHANNEL_LOGIN</li>
+          <li>HEART Follow DISPLAYNAME</li>
+          <li>follow /USERNAME</li>
         </ul>
       </div>
       <Previews fontFamily={fontFamily} />

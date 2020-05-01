@@ -40,7 +40,7 @@ const defaultConfig: ChannelData = {
       buttonShadowDirection: "",
       buttonPadding: "0.4em 0.7em",
       buttonBorderRadius: "0.4em",
-      buttonTemplate: "HEART Follow CHANNEL_NAME",
+      buttonTemplate: "HEART Follow DISPLAYNAME",
     },
     listOptions: {
       title: "",
