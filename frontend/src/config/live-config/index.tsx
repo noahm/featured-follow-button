@@ -1,14 +1,11 @@
-import "../common-styles.css";
 import styles from "./style.css";
-import { applyThemeClass } from "../common-styles";
 import { Component, ChangeEvent } from "react";
-import { render } from "react-dom";
-import { ConfigProvider, ConfigContext, ConfigState } from "../config";
-import { defaultLayout, getAnchorMode } from "../utils";
-import { Status } from "./components/status";
-import { ChannelQueue } from "./components/channel-queue";
-import { LiveLayoutItem, LiveButton } from "../models";
-import { FollowList } from "../viewer/follow-list";
+import { ConfigState } from "../../config";
+import { defaultLayout, getAnchorMode } from "../../utils";
+import { Status } from "./status";
+import { ChannelQueue } from "./channel-queue";
+import { LiveLayoutItem, LiveButton } from "../../models";
+import { FollowList } from "../../viewer/follow-list";
 
 const anchorType = getAnchorMode();
 const startingCharCode = "A".charCodeAt(0);
@@ -21,16 +18,16 @@ interface State {
   editingPosition: number;
 }
 
-class App extends Component<Props, State> {
+export class LiveConfig extends Component<Props, State> {
   state: State = {
-    editingPosition: 0
+    editingPosition: 0,
   };
 
   componentDidUpdate() {
     const layout = this.props.config.config.settings.configuredLayouts[0];
     if (this.state.editingPosition >= layout.positions.length) {
       this.setState({
-        editingPosition: layout.positions.length - 1
+        editingPosition: layout.positions.length - 1,
       });
     }
   }
@@ -51,7 +48,7 @@ class App extends Component<Props, State> {
             checked={!!this.props.config.config.liveState.hideAll}
             onChange={this.toggleHide}
           />{" "}
-          Hide All
+          Hide Overlay
         </label>
         {this.renderStatus()}
         <ChannelQueue
@@ -74,7 +71,7 @@ class App extends Component<Props, State> {
     const layoutItem = this.getLayoutItem();
     const liveItem: Partial<LiveLayoutItem> =
       (layoutItem &&
-        this.getLiveItems().find(item => item.id === layoutItem.id)) ||
+        this.getLiveItems().find((item) => item.id === layoutItem.id)) ||
       {};
     const layout = this.getLayout();
 
@@ -83,13 +80,14 @@ class App extends Component<Props, State> {
         <div className={styles.slotSelect}>
           Editing position: <br />
           <select
+            size={layout.positions.length}
             value={this.state.editingPosition}
             onChange={this.updateEditingPosition}
           >
             {layout.positions.map((layoutPosition, i) => {
               const label = String.fromCharCode(startingCharCode + i);
               const channel = this.getLiveItems().find(
-                liveItem => layoutPosition.id === liveItem.id
+                (liveItem) => layoutPosition.id === liveItem.id
               );
               return (
                 <option key={layoutPosition.id} value={i}>
@@ -99,8 +97,9 @@ class App extends Component<Props, State> {
               );
             })}
           </select>
+          <br />
           {liveItem.channelName && (
-            <button onClick={this.clearChannel}>Clear</button>
+            <button onClick={this.clearChannel}>Deactivate</button>
           )}
         </div>
       );
@@ -119,7 +118,7 @@ class App extends Component<Props, State> {
     const newPosition = +e.currentTarget.value;
     if (Number.isInteger(newPosition)) {
       this.setState({
-        editingPosition: newPosition
+        editingPosition: newPosition,
       });
     }
   };
@@ -139,12 +138,12 @@ class App extends Component<Props, State> {
     const layoutItem = this.getLayoutItem();
     const liveItem = {
       ...layoutItem,
-      ...liveInfo
+      ...liveInfo,
     };
 
     const liveItems = this.getLiveItems().slice();
     const editIndex = liveItems.findIndex(
-      existingItem => existingItem.id === liveItem.id
+      (existingItem) => existingItem.id === liveItem.id
     );
     if (editIndex >= 0) {
       liveItems[editIndex] = liveItem;
@@ -158,20 +157,8 @@ class App extends Component<Props, State> {
   clearChannel = () => {
     const layoutItem = this.getLayout().positions[this.state.editingPosition];
     const liveItems = this.getLiveItems().filter(
-      item => item.id !== layoutItem.id
+      (item) => item.id !== layoutItem.id
     );
     this.props.config.setLiveItems(liveItems);
   };
 }
-
-const appNode = document.createElement("div");
-document.body.appendChild(appNode);
-render(
-  <ConfigProvider>
-    <ConfigContext.Consumer>
-      {config => <App config={config} />}
-    </ConfigContext.Consumer>
-  </ConfigProvider>,
-  appNode
-);
-applyThemeClass();

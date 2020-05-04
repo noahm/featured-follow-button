@@ -1,10 +1,18 @@
-import classNames from 'classnames';
-import { Component, MouseEvent as ReactMouseEvent, createRef, CSSProperties } from 'react';
-import styles from './draggable-button.css';
-import { PositionedButton } from '../models';
+import classNames from "classnames";
+import {
+  Component,
+  MouseEvent as ReactMouseEvent,
+  createRef,
+  CSSProperties,
+} from "react";
+import styles from "./draggable-button.css";
+import { PositionedButton } from "../models";
+import { FollowButton } from "../viewer/follow-button";
+import { clamp } from "../utils";
 
 interface Props {
   item: PositionedButton;
+  identifier: string;
   defaultPosition: {
     top: number;
     left: number;
@@ -15,14 +23,16 @@ interface Props {
 interface State {
   top: number;
   left: number;
+  align: "right" | "left";
   dragging: boolean;
 }
 
 export class DraggableButton extends Component<Props, State> {
-  root = createRef<HTMLButtonElement>()
+  private root = createRef<HTMLDivElement>();
   state: State = {
     top: this.props.defaultPosition ? this.props.defaultPosition.top : 25,
     left: this.props.defaultPosition ? this.props.defaultPosition.left : 25,
+    align: this.props.item.align,
     dragging: false,
   };
 
@@ -32,6 +42,7 @@ export class DraggableButton extends Component<Props, State> {
         ...this.props.item,
         top: this.state.top,
         left: this.state.left,
+        align: this.state.align,
       });
     }
   }
@@ -39,30 +50,54 @@ export class DraggableButton extends Component<Props, State> {
   render() {
     const style: CSSProperties = {
       top: `${this.state.top}%`,
-      left: `${this.state.left}%`,
     };
+    if (this.state.align === "left") {
+      style.left = `${this.state.left}%`;
+    } else {
+      style.right = `${100 - this.state.left}%`;
+    }
     return (
-      <button ref={this.root} className={classNames(styles.button, { [styles.dragging]: this.state.dragging })} style={style} onMouseDown={this.onMoveStart}>
-        <span className={styles.buttonText}>
-          <svg width="16px" height="16px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
-            <path clipRule="evenodd" d="M8,14L1,7V4l2-2h3l2,2l2-2h3l2,2v3L8,14z" fillRule="evenodd" />
-          </svg>
-          Follow {this.props.children}
-        </span>
-      </button>
+      <div
+        ref={this.root}
+        className={classNames(styles.draggable, {
+          [styles.dragging]: this.state.dragging,
+          [styles.leftAligned]: this.state.align === "left",
+          [styles.rightAligned]: this.state.align === "right",
+        })}
+        style={style}
+        onMouseDown={this.onMouseDown}
+        onContextMenu={this.toggleAlignment}
+        title="Right click to toggle L/R growth direction"
+      >
+        <FollowButton
+          channelLogin={this.props.identifier.toLowerCase()}
+          channelDisplayName={this.props.identifier}
+          preview
+        />
+      </div>
     );
   }
 
-  dragGrabLocation = {
+  private dragGrabLocation = {
     x: 0,
     y: 0,
     top: this.state.top,
     left: this.state.left,
   };
 
-  onMoveStart = (e: ReactMouseEvent) => {
-    this.root.current!.parentElement!.addEventListener('mousemove', this.onDragMove);
-    document.addEventListener('mouseup', this.endMove);
+  private onMouseDown = (e: ReactMouseEvent) => {
+    switch (e.button) {
+      case 0:
+        break;
+      default:
+        return;
+    }
+    // allow button 1 to fall through
+    this.root.current!.parentElement!.addEventListener(
+      "mousemove",
+      this.onDragMove
+    );
+    document.addEventListener("mouseup", this.endMove);
     this.dragGrabLocation = {
       x: e.clientX,
       y: e.clientY,
@@ -70,24 +105,47 @@ export class DraggableButton extends Component<Props, State> {
       left: this.state.left,
     };
     this.setState({ dragging: true });
-  }
+  };
 
-  onDragMove = (e: MouseEvent) => {
-    const parentElement = this.root.current!.parentElement!;
-    const parent = parentElement.getBoundingClientRect();
-    const deltaX = e.clientX - this.dragGrabLocation.x;
+  private toggleAlignment = (e: ReactMouseEvent) => {
+    e.preventDefault();
+    const selfRect = this.root.current!.getBoundingClientRect();
+    const parentRect = this.root.current!.parentElement!.getBoundingClientRect();
+    const ownPercentage = (selfRect.width / parentRect.width) * 100;
+    this.setState((s) => {
+      return {
+        align: s.align === "left" ? "right" : "left",
+        left: s.left + ownPercentage * (s.align === "left" ? 1 : -1),
+      };
+    });
+  };
+
+  private onDragMove = (e: MouseEvent) => {
+    const parentRect = this.root.current!.parentElement!.getBoundingClientRect();
+    let deltaX = e.clientX - this.dragGrabLocation.x;
     const deltaY = e.clientY - this.dragGrabLocation.y;
-    const newLeft = Math.max(Math.min(95, deltaX / parent.width * 100 + this.dragGrabLocation.left), 0);
-    const newTop = Math.max(Math.min(95, deltaY / parent.height * 100 + this.dragGrabLocation.top), 0);
+    const newLeft = clamp(
+      0,
+      (deltaX / parentRect.width) * 100 + this.dragGrabLocation.left,
+      100
+    );
+    const newTop = clamp(
+      0,
+      (deltaY / parentRect.height) * 100 + this.dragGrabLocation.top,
+      95
+    );
     this.setState({
       top: newTop,
       left: newLeft,
     });
-  }
+  };
 
-  endMove = () => {
-    this.root.current!.parentElement!.removeEventListener('mousemove', this.onDragMove);
-    document.removeEventListener('mouseup', this.endMove);
+  private endMove = () => {
+    this.root.current!.parentElement!.removeEventListener(
+      "mousemove",
+      this.onDragMove
+    );
+    document.removeEventListener("mouseup", this.endMove);
     this.setState({ dragging: false });
-  }
+  };
 }

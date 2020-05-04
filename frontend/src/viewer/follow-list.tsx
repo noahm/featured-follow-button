@@ -1,41 +1,74 @@
-import { FC, useContext } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { FollowButton } from "./follow-button";
 import styles from "./follow-list.css";
 import { ConfigContext } from "../config";
 import { Auth } from "../auth";
-import { ChannelInput } from "../dashboard/components/channel-input";
+import { ChannelInput } from "../config/live-config/channel-input";
+import { getUserInfo, HelixUser } from "../utils";
 
 interface Props {
-  disabled?: boolean;
   onFollowClick?: () => void;
+  disableEdits?: boolean;
 }
 
-export const FollowList: FC<Props> = props => {
+export const FollowList: FC<Props> = (props) => {
+  const [userInfo, setUserInfo] = useState<Record<string, HelixUser>>({});
   const { config, addQuickButton, setLiveItems } = useContext(ConfigContext);
-  const isBroadcaster = Auth.isBroadcaster;
-  const { liveItems: items, componentHeader: title } = config.liveState;
+  const channelNames = new Set(
+    config.liveState.liveItems.map((item) => item.channelName)
+  );
+  useEffect(() => {
+    if (!config.liveState.liveItems.length) {
+      return;
+    }
+    getUserInfo([...channelNames]).then((info) => {
+      const userInfo: Record<string, HelixUser> = {};
+      for (const channel of info) {
+        if (channel) {
+          userInfo[channel.login] = channel;
+        }
+      }
+      setUserInfo(userInfo);
+    });
+  }, [Array.from(channelNames).join(":")]);
+  const isBroadcaster = Auth.isBroadcaster && !props.disableEdits;
+  const {
+    liveItems: items,
+    listOptions,
+    styles: { fontFamily },
+  } = config.liveState;
 
   return (
-    <div className={styles.followList}>
-      {title && <h3>{title}</h3>}
+    <div className={styles.followList} style={{ fontFamily }}>
+      {listOptions.title && <h3>{listOptions.title}</h3>}
       <ul>
-        {items.map(item => {
+        {items.map((item) => {
           return (
             <li key={item.id}>
               <FollowButton
-                followChannel={item.channelName}
+                channelLogin={item.channelName}
+                forceTemplate="HEART"
+                disableTheme
                 onClick={props.onFollowClick}
-                disabled={props.disabled}
               />{" "}
-              Follow {item.displayName || item.channelName}
+              {listOptions.showAvatars && (
+                <img
+                  src={userInfo[item.channelName]?.profile_image_url}
+                  className={styles.avatar}
+                />
+              )}
+              {item.displayName || item.channelName}
               {isBroadcaster && (
                 <button
                   onClick={() =>
-                    setLiveItems(items.filter(i => i.id !== item.id))
+                    setLiveItems(items.filter((i) => i.id !== item.id))
                   }
                 >
-                  Delete
+                  x
                 </button>
+              )}
+              {listOptions.showDescriptions && userInfo[item.channelName] && (
+                <caption>{userInfo[item.channelName].description}</caption>
               )}
             </li>
           );

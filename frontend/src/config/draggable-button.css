@@ -1,46 +1,39 @@
-.button {
-  border: 1px solid transparent;
-  border-radius: 4px;
-  background: #9147ff;
-  color: #fff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  outline: none;
+.draggable {
   font-size: 2.2vw;
-  line-height: 1.3em;
-  text-decoration: none;
-  white-space: nowrap;
-  vertical-align: middle;
-  user-select: none;
-  box-shadow: grey 0 0 3px;
-  margin: 0;
-  padding: 0;
   position: absolute;
   cursor: grab;
 }
 
-.buttonText {
-  position: relative;
-  flex-grow: 1;
-  padding: 0.4em 0.7em;
-  text-align: center;
+.draggable:after {
+  display: block;
+  position: absolute;
+  top: -13px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 3px 3px 0 0;
+  height: 12px;
+  line-height: 12px;
+  border-color: black;
+  border-width: 1px 1px 0 1px;
+  border-style: solid;
+  font-size: 12px;
+  z-index: 1;
+  padding: 0 3px;
 }
 
-.button:hover {
-  border-color: #772ce8;
-  background: #772ce8;
-  color: #fff;
+.draggable > * {
+  pointer-events: none;
 }
 
 .dragging {
   cursor: grabbing;
 }
 
-svg {
-  fill: currentColor;
-  vertical-align: text-top;
-  margin-right: 0.3em;
-  height: 1.2em;
-  width: 1.2em;
+.draggable.rightAligned:after {
+  content: "⬅Grows";
+  left: 0;
+}
+
+.draggable.leftAligned:after {
+  content: "Grows➡";
+  right: 0;
 }

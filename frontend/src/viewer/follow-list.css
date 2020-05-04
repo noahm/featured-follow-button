@@ -9,13 +9,21 @@
   text-align: center;
 }
 
-ul {
+.followList ul {
   flex: 1 1 auto;
   list-style: none;
   margin: 0;
   padding: 0 1em;
   line-height: 3em;
   overflow-y: auto;
+}
+
+.avatar {
+  height: 2.2em;
+  width: 2.2em;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 0.25em;
 }
 
 .addItem {

@@ -1,4 +1,4 @@
-import styles from "./style.css";
+import styles from "./channel-input.css";
 import {
   Component,
   createRef,
@@ -6,9 +6,9 @@ import {
   ChangeEvent,
   useContext
 } from "react";
-import { Auth } from "../../../auth";
-import { LiveButton } from "../../../models";
-import { ConfigContext } from "../../../config";
+import { LiveButton } from "../../models";
+import { ConfigContext } from "../../config";
+import { getUserInfo } from "../../utils";
 
 const LOGIN_REGEX = /^[a-zA-Z0-9]\w{0,23}$/;
 const remoteCheckCache: Record<string, boolean> = {};
@@ -184,71 +184,48 @@ class ChannelInputImpl extends Component<Props & ContextProps, State> {
     return false;
   }
 
-  checkValidRemote() {
+  async checkValidRemote() {
     if (this.state.isValidating) {
-      return Promise.resolve(false);
+      return false;
+    }
+    if (!this.isValid()) {
+      return false;
     }
 
-    return new Promise<boolean>(resolve => {
-      if (!Auth.clientID) {
-        resolve(true);
-        return;
-      }
-      if (!this.isValid()) {
-        resolve(false);
-        return;
-      }
-      const channelName = this.state.pendingChannelName;
-      if (
-        !this.state.useRemoteDisplayName &&
-        typeof remoteCheckCache[channelName] === "boolean"
-      ) {
-        resolve(remoteCheckCache[channelName]);
-        return;
-      }
-
-      this.setState({
-        isValidating: true
-      });
-      const remoteCheck = fetch(
-        "https://api.twitch.tv/helix/users?login=" + channelName,
-        {
-          headers: {
-            "Client-ID": Auth.clientID
-          }
-        }
-      )
-        .then(r => r.json())
-        .then((response: { data: Array<{ display_name: string }> }) => {
-          // fill in display name if left blank?
-          if (response.data && response.data.length) {
-            if (this.state.useRemoteDisplayName) {
-              return new Promise<boolean>(res => {
-                this.setState(
-                  {
-                    pendingDisplayName: response.data[0].display_name
-                  },
-                  () => res(true)
-                );
-              });
-            } else {
-              return true;
-            }
-          }
-          return false;
-        })
-        .catch(() => {
-          // maybe throws here should be treated differently...?
-          return false;
-        });
-      remoteCheck.then(result => {
-        remoteCheckCache[channelName] = result;
-        this.setState({
-          isValidating: false
-        });
-        resolve(result);
-      });
+    const channelName = this.state.pendingChannelName;
+    if (
+      !this.state.useRemoteDisplayName &&
+      typeof remoteCheckCache[channelName] === "boolean"
+    ) {
+      return remoteCheckCache[channelName];
+    }
+    this.setState({
+      isValidating: true
     });
+
+    const response = await getUserInfo([channelName]);
+    let ret = false;
+    // fill in display name if left blank?
+    if (response.length && response[0]) {
+      if (this.state.useRemoteDisplayName) {
+        const pendingDisplayName = response[0].display_name;
+        await new Promise<boolean>(resolve => {
+          this.setState(
+            {
+              pendingDisplayName
+            },
+            () => resolve()
+          );
+        });
+      }
+      ret = true;
+    }
+
+    remoteCheckCache[channelName] = ret;
+    this.setState({
+      isValidating: false
+    });
+    return ret;
   }
 }
 

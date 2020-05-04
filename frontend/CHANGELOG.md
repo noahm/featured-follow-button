@@ -1,3 +1,12 @@
+# v2.4.0
+
+- Consolidated two config screens down to a single tabbed interface available both from live dashboard and extensions settings.
+- Added options to display avatars and channel descriptions in list mode (component, panel, and mobile views).
+- Automatically uses current live stream thumbnail as background of layout editor when you are live.
+- Added new option providing manual control over L/R alignment of buttons in an overlay layout.
+- Added tons of options to control visual style of follow zones and buttons.
+- Changed default font to match the rest of twitch.
+
 # v2.3.1
 
 - Fixed tracking calls enum definitions.

@@ -21,5 +21,8 @@ export function applyThemeClass(force?: "dark" | "light") {
 }
 
 export function setTransparentBg() {
-  document.body.className = classNames(document.body.className, commonStyles.transparentBg);
+  document.body.className = classNames(
+    document.body.className,
+    commonStyles.transparentBg
+  );
 }

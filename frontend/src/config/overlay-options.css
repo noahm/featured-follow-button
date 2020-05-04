@@ -1,0 +1,73 @@
+@keyframes scrolling {
+  from {
+    background-position-x: 0%;
+  }
+
+  to {
+    background-position-x: 110%;
+  }
+}
+
+.options {
+  display: flex;
+  flex-direction: row;
+}
+
+.options h3:not(:first-child) {
+  margin-top: 3em;
+}
+
+.previews {
+  margin: 2rem;
+  position: fixed;
+  left: 22em;
+}
+
+.squarePreview {
+  height: 10rem;
+  width: 10rem;
+  position: relative;
+  margin: 2rem 0;
+  border-radius: 1em;
+}
+
+.buttonPreview {
+  height: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rainbowBg {
+  background: linear-gradient(
+    90deg,
+    hsl(0, 80%, 50%),
+    hsl(15, 80%, 50%),
+    hsl(30, 80%, 50%),
+    hsl(45, 80%, 50%),
+    hsl(60, 80%, 50%),
+    hsl(75, 80%, 50%),
+    hsl(90, 80%, 50%),
+    hsl(105, 80%, 50%),
+    hsl(120, 80%, 50%),
+    hsl(135, 80%, 50%),
+    hsl(150, 80%, 50%),
+    hsl(165, 80%, 50%),
+    hsl(180, 80%, 50%),
+    hsl(195, 80%, 50%),
+    hsl(210, 80%, 50%),
+    hsl(225, 80%, 50%),
+    hsl(240, 80%, 50%),
+    hsl(255, 80%, 50%),
+    hsl(270, 80%, 50%),
+    hsl(285, 80%, 50%),
+    hsl(300, 80%, 50%),
+    hsl(315, 80%, 50%),
+    hsl(330, 80%, 50%),
+    hsl(345, 80%, 50%),
+    hsl(360, 80%, 50%)
+  );
+  background-size: 1000% 100%;
+  animation: 10s linear 0s infinite both;
+  animation-name: scrolling;
+}

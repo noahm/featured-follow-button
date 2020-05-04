@@ -1,0 +1,8 @@
+.maxWidth {
+  max-width: 50em;
+}
+
+.lessWidth {
+  max-width: 25em;
+  margin-top: 1em;
+}

@@ -26,6 +26,7 @@ export interface PositionedButton {
    * percentage from edge, 0 - 100
    */
   left: number;
+  align: "left" | "right";
 }
 
 export interface PositionedZone {
@@ -68,8 +69,42 @@ export interface LiveState {
   hideAll: boolean;
   /**
    * Message displayed at the top of the follow list in component mode
+   * @deprecated 2-11-2020
    */
-  componentHeader: string;
+  componentHeader?: string;
+  listOptions: ListOptions;
+  styles: UserStyles;
+}
+
+export interface UserStyles {
+  fontFamily: string;
+  zoneBorderWidth: number;
+  zoneBorderStyle: string;
+  zoneBorderColor: string;
+  zoneBorderRadius: string;
+  zoneShadowStrength: number;
+  zoneShadowColor: string;
+  zoneBorderVisible: "never" | "hover" | "always";
+  zoneTextVisible: "never" | "hover" | "always";
+  zoneTextAlign: "NW" | "N" | "NE" | "E" | "SE" | "S" | "SW" | "W" | "C";
+  zoneTextColor: string;
+  zoneTextSize: number;
+  zoneTextWeight: string;
+  buttonBaseColor: string;
+  buttonTextSize: number;
+  buttonTextColor: string;
+  buttonShadowColor: string;
+  buttonShadowDirection: "SW" | "SE" | "NW" | "NE" | "";
+  buttonPadding: string;
+  buttonBorderRadius: string;
+  /**
+   * Template string for button content.
+   * Substitution values include:
+   * CHANNEL_LOGIN - lowercased
+   * CHANNEL_NAME - localized/capitalized
+   * HEART - heart icon :)
+   */
+  buttonTemplate: string;
 }
 
 export interface Settings {
@@ -83,4 +118,10 @@ export interface Settings {
 export interface ChannelData {
   liveState: LiveState;
   settings: Settings;
+}
+
+export interface ListOptions {
+  title: string;
+  showAvatars: boolean;
+  showDescriptions: boolean;
 }
