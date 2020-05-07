@@ -1,3 +1,7 @@
+# v2.4.1
+
+- Fixed parsing and display of button template string
+
 # v2.4.0
 
 - Consolidated two config screens down to a single tabbed interface available both from live dashboard and extensions settings.
