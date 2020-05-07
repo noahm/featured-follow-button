@@ -36,7 +36,9 @@ function Heart() {
   );
 }
 
-const subTokens = /HEART|CHANNEL_NAME|CHANNEL_LOGIN/g;
+const tokenNames = ["HEART", "DISPLAYNAME", "USERNAME"];
+
+const subTokens = new RegExp(tokenNames.join("|"), "g");
 
 function tokenizeTemplate(template: string) {
   const nonTokens = template.split(subTokens);
