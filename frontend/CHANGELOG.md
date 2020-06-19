@@ -1,3 +1,7 @@
+# v2.4.2
+
+- Fixed a bug that could cause the extension to completely blank out the video player
+
 # v2.4.1
 
 - Fixed parsing and display of button template string
