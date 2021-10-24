@@ -1,12 +1,14 @@
 # Featured Follow Button
 
-A simple extension for Twitch supporting video overlay and component mode!
+A simple extension for Twitch supporting a full video overlay, or use as a component or panel!
 
 Install it on your own channel here:
-https://www.twitch.tv/ext/ih4ptg04wzw6nf4qms0612b8uj0tbh
+https://dashboard.twitch.tv/extensions/ih4ptg04wzw6nf4qms0612b8uj0tbh
 
 ## Frontend
+
 ### Local Dev
+
 You will need your own extension on twitch in local dev mode.
 Under Asset Hosting, configure the viewer path to `viewer.html`,
 the config path to `config.html`, and the live config path
