@@ -40,6 +40,10 @@ declare namespace Twitch {
      */
     token: string;
     /**
+     * JWT that can be used for front end API requests.
+     */
+    helixToken: string;
+    /**
      * Opaque user ID.
      */
     userId: string;

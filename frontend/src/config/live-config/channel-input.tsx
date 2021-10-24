@@ -209,7 +209,7 @@ class ChannelInputImpl extends Component<Props & ContextProps, State> {
     if (response.length && response[0]) {
       if (this.state.useRemoteDisplayName) {
         const pendingDisplayName = response[0].display_name;
-        await new Promise<boolean>(resolve => {
+        await new Promise<void>(resolve => {
           this.setState(
             {
               pendingDisplayName

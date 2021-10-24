@@ -183,6 +183,7 @@ export async function getUserInfo(
       {
         headers: {
           "Client-ID": Auth.clientID || "ih4ptg04wzw6nf4qms0612b8uj0tbh",
+          Authorization: `Extension ${Auth.helixToken}`,
         },
       }
     ).then((r) => r.json());
