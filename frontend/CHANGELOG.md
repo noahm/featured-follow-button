@@ -1,3 +1,7 @@
+# v2.4.3
+
+- Updated calls to the new Twitch API to use the latest authorization methods
+
 # v2.4.2
 
 - Fixed a bug that could cause the extension to completely blank out the video player
