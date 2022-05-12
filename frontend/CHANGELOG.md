@@ -1,3 +1,7 @@
+# v2.4.4
+
+- Calls to the new Twitch API will wait for auth tokens to be available
+
 # v2.4.3
 
 - Updated calls to the new Twitch API to use the latest authorization methods
