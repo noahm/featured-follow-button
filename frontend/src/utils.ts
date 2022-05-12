@@ -178,6 +178,7 @@ export async function getUserInfo(
   }
 
   try {
+    await Auth.authAvailable;
     const response: { data: Array<HelixUser> } = await fetch(
       "https://api.twitch.tv/helix/users?" + params,
       {
