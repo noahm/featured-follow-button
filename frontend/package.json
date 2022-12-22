@@ -18,7 +18,7 @@
     "@hot-loader/react-dom": "^16.13.0",
     "classnames": "^2.2.6",
     "immutable-assign": "^2.0.9",
-    "jsonwebtoken": "^8.3.0",
+    "jsonwebtoken": "^9.0.0",
     "querystringify": "^2.0.0",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
